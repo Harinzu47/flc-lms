@@ -3,6 +3,7 @@
 use App\Http\Controllers\ProfileController;
 use App\Livewire\GamifiedDashboard;
 use App\Livewire\GradingStation;
+use App\Livewire\HallOfFame;
 use App\Livewire\MaterialShow;
 use App\Livewire\TaskShow;
 use Illuminate\Support\Facades\Route;
@@ -29,6 +30,9 @@ Route::middleware('auth')->group(function () {
     // ── Tasks ─────────────────────────────────────────────────────────────
     // {task} is automatically resolved to App\Models\Task via route model binding.
     Route::get('/tasks/{task}', TaskShow::class)->name('tasks.show');
+
+    // ── Leaderboard ───────────────────────────────────────────────────────
+    Route::get('/leaderboard', HallOfFame::class)->name('leaderboard');
 
     // ── Admin ─────────────────────────────────────────────────────────────
     // TODO: Replace 'auth' with a dedicated 'role:admin' middleware later.
