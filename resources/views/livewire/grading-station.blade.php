@@ -59,7 +59,7 @@
     </div>
 
     {{-- ── PANEL 1: Admin Sidebar ───────────────────────────────────────────── --}}
-    @include('livewire.partials.grading.admin-sidebar')
+    @include('livewire.partials.admin.sidebar', ['activePage' => 'grading'])
 
     {{-- ── MAIN CONTENT (offset for fixed sidebar) ─────────────────────────── --}}
     <main class="pl-64 min-h-screen flex flex-col w-full">

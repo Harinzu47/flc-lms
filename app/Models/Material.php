@@ -22,6 +22,7 @@ class Material extends Model
         'description',
         'file_url',
         'type',
+        'xp_reward',
     ];
 
     // -------------------------------------------------------------------------

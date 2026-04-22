@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\ProfileController;
+use App\Livewire\Admin\MaterialManager;
 use App\Livewire\GamifiedDashboard;
 use App\Livewire\GradingStation;
 use App\Livewire\HallOfFame;
@@ -36,7 +37,8 @@ Route::middleware('auth')->group(function () {
 
     // ── Admin ─────────────────────────────────────────────────────────────
     // TODO: Replace 'auth' with a dedicated 'role:admin' middleware later.
-    Route::get('/admin/grading', GradingStation::class)->name('admin.grading');
+    Route::get('/admin/grading',   GradingStation::class)->name('admin.grading');
+    Route::get('/admin/materials', MaterialManager::class)->name('admin.materials');
 });
 
 require __DIR__.'/auth.php';
