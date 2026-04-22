@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>FLC UMJ | Gamified Dashboard</title>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;800&amp;family=Public+Sans:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-tertiary-fixed-variant": "#653e00",
+                        "surface-tint": "#3755c3",
+                        "on-primary": "#ffffff",
+                        "on-secondary": "#ffffff",
+                        "tertiary-fixed-dim": "#ffb95f",
+                        "on-primary-fixed": "#001453",
+                        "on-surface-variant": "#434655",
+                        "on-secondary-container": "#00714d",
+                        "tertiary-fixed": "#ffddb8",
+                        "surface-container-highest": "#e0e3e5",
+                        "inverse-surface": "#2d3133",
+                        "background": "#f7f9fb",
+                        "surface-container-low": "#f2f4f6",
+                        "surface-container-high": "#e6e8ea",
+                        "on-tertiary-fixed": "#2a1700",
+                        "primary": "#2b4bb9",
+                        "primary-fixed-dim": "#b8c4ff",
+                        "on-primary-container": "#efefff",
+                        "secondary-container": "#6cf8bb",
+                        "on-error": "#ffffff",
+                        "on-tertiary-container": "#ffeedd",
+                        "surface-dim": "#d8dadc",
+                        "on-tertiary": "#ffffff",
+                        "surface-variant": "#e0e3e5",
+                        "secondary-fixed-dim": "#4edea3",
+                        "error-container": "#ffdad6",
+                        "outline-variant": "#c3c6d7",
+                        "on-secondary-fixed": "#002113",
+                        "tertiary": "#784b00",
+                        "inverse-primary": "#b8c4ff",
+                        "on-secondary-fixed-variant": "#005236",
+                        "outline": "#737686",
+                        "on-background": "#191c1e",
+                        "on-surface": "#191c1e",
+                        "secondary": "#006c49",
+                        "tertiary-container": "#996100",
+                        "on-error-container": "#93000a",
+                        "on-primary-fixed-variant": "#173bab",
+                        "surface-bright": "#f7f9fb",
+                        "surface-container": "#eceef0",
+                        "primary-fixed": "#dde1ff",
+                        "secondary-fixed": "#6ffbbe",
+                        "inverse-on-surface": "#eff1f3",
+                        "primary-container": "#4865d3",
+                        "surface-container-lowest": "#ffffff",
+                        "error": "#ba1a1a",
+                        "surface": "#f7f9fb"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "fontFamily": {
+                        "headline": ["Manrope"],
+                        "body": ["Public Sans"],
+                        "label": ["Public Sans"]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        body { font-family: 'Public Sans', sans-serif; }
+        h1, h2, h3 { font-family: 'Manrope', sans-serif; }
+    </style>
+</head>
+<body class="bg-surface text-on-surface">
+<!-- TopAppBar -->
+<nav class="fixed top-0 w-full z-50 bg-surface dark:bg-slate-900 bg-opacity-80 backdrop-blur-xl shadow-sm dark:shadow-none">
+<div class="flex justify-between items-center px-8 py-4 w-full max-w-screen-2xl mx-auto">
+<div class="flex items-center gap-8">
+<span class="text-2xl font-black text-blue-700 dark:text-blue-500 italic">FLC UMJ</span>
+<div class="hidden md:flex gap-6">
+<a class="text-blue-800 dark:text-blue-300 font-bold border-b-2 border-blue-600 font-manrope tracking-tight" href="#">Academy</a>
+<a class="text-slate-600 dark:text-slate-400 font-medium font-manrope tracking-tight hover:bg-blue-50/50 transition-all" href="#">Library</a>
+<a class="text-slate-600 dark:text-slate-400 font-medium font-manrope tracking-tight hover:bg-blue-50/50 transition-all" href="#">Arena</a>
+</div>
+</div>
+<div class="flex items-center gap-4">
+<button class="p-2 rounded-full hover:bg-blue-50/50 transition-all">
+<span class="material-symbols-outlined text-slate-600">notifications</span>
+</button>
+<button class="p-2 rounded-full hover:bg-blue-50/50 transition-all">
+<span class="material-symbols-outlined text-slate-600">workspace_premium</span>
+</button>
+<div class="flex items-center gap-3 pl-4 border-l border-outline-variant/20">
+<div class="text-right hidden sm:block">
+<p class="text-sm font-bold text-on-surface">Ahmad Fauzi</p>
+<p class="text-xs text-slate-500">Level 42 Polymath</p>
+</div>
+<img alt="Distinguished Scholar Profile" class="w-10 h-10 rounded-full border-2 border-primary shadow-sm" data-alt="close-up portrait of a professional young man with a warm smile in a brightly lit academic setting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDmWF2bf1h5qBRIftgKteD1wicLmXqZgfn1uPz8NmzLdMefdkBx0apUXj-_s8K3eT3XdghHmZFDFd-hv--Tpf16n4D86kvY48guP9pKdIWeksXS_TIoeyDfu3MjkJnzf4BkAkSP4w0HsUo9N37S4lepriBrcA8IRckFAPBdzvIvuckBC_VvSu306h70kJ-7AvxGCEQaDgj2J8Jn9nTg6oTNmhXDKRiAICJllOWy8k9LE_M7_C7RCg8o_jNUmY3o8Dfm01JVjwt79uoT"/>
+</div>
+</div>
+</div>
+</nav>
+<main class="pt-24 pb-12 px-8 max-w-screen-2xl mx-auto min-h-screen">
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+<!-- Left Column: Primary Content (2/3) -->
+<div class="lg:col-span-8 space-y-8">
+<!-- Player Card -->
+<section class="relative overflow-hidden bg-gradient-to-br from-primary to-primary-container rounded-2xl p-8 text-white shadow-xl">
+<div class="relative z-10">
+<div class="flex flex-col md:flex-row md:items-end justify-between gap-6">
+<div>
+<span class="bg-secondary-container/20 text-secondary-fixed px-3 py-1 rounded-full text-xs font-bold uppercase tracking-widest mb-4 inline-block">Current Rank: Intermediate</span>
+<h1 class="text-4xl md:text-5xl font-extrabold tracking-tight mb-2">Ahmad Fauzi</h1>
+<p class="text-primary-fixed-dim text-lg">Mastering "The Art of Linguistics" — 12 Day Streak</p>
+</div>
+<div class="text-right">
+<span class="text-5xl font-black text-tertiary-fixed-dim leading-none">150</span>
+<span class="text-xl font-medium opacity-80 uppercase tracking-tighter">/ 300 XP</span>
+<p class="text-xs font-bold uppercase tracking-widest mt-1 opacity-70">Next: Polyglot</p>
+</div>
+</div>
+<!-- Progress Bar Container -->
+<div class="mt-8">
+<div class="flex justify-between text-xs font-bold uppercase tracking-widest mb-2 opacity-80">
+<span>Progression</span>
+<span>50% Complete</span>
+</div>
+<div class="h-4 w-full bg-on-primary/10 rounded-full overflow-hidden backdrop-blur-md">
+<div class="h-full bg-gradient-to-r from-secondary-fixed to-secondary-container w-1/2 rounded-full relative shadow-[0_0_15px_rgba(111,251,190,0.4)]"></div>
+</div>
+</div>
+</div>
+<!-- Decorative Background Elements -->
+<div class="absolute -right-16 -top-16 w-64 h-64 bg-secondary-fixed/10 rounded-full blur-3xl"></div>
+<div class="absolute -left-16 -bottom-16 w-48 h-48 bg-tertiary-fixed/10 rounded-full blur-2xl"></div>
+<span class="material-symbols-outlined absolute right-8 top-1/2 -translate-y-1/2 text-[180px] opacity-5 pointer-events-none">school</span>
+</section>
+<!-- Recent Materials -->
+<section>
+<div class="flex items-center justify-between mb-6">
+<h2 class="text-2xl font-bold text-on-surface tracking-tight">Recent Materials</h2>
+<button class="text-primary font-bold text-sm flex items-center gap-1 hover:underline">
+                            View All <span class="material-symbols-outlined text-sm">arrow_forward</span>
+</button>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+<!-- Module Card 1 -->
+<div class="group bg-surface-container-lowest rounded-2xl p-5 shadow-sm hover:shadow-md transition-all border border-outline-variant/10">
+<div class="aspect-video rounded-xl mb-4 overflow-hidden relative">
+<img alt="German Syntax Module" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" data-alt="neatly organized desk with a vintage typewriter, books, and a cup of coffee in soft cinematic lighting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBaNblVr7Ust8K2JWa6FQU3bS6vHI2yiaDcWBFTJLHEwCaD3E2qIarsWxy9_JLYu5N82_LrI8X02hdASTASx2lFPQGqbHOTWHpDRu2ttOQ4Vr4Niz3yHdDrBGFaBVa4utFplv9CFfEN2h9kGzuHrbc6VQ2nfrSq3575JC8BubBgzc4v4btnP2mcHHgrimGlPzZ2BokisF7JNI75HO5XKWybZ8JQDvvi4rJNo2rkm1shQJKqED-wVqypUpqxhdFq3jLhFPhXbtr7yI1C"/>
+<div class="absolute top-2 right-2 bg-white/90 backdrop-blur px-2 py-1 rounded-lg text-[10px] font-bold text-primary uppercase">German</div>
+</div>
+<h3 class="font-bold text-lg leading-tight mb-2 group-hover:text-primary transition-colors">Advanced German Syntax</h3>
+<div class="flex items-center gap-4 text-xs text-slate-500 font-medium">
+<span class="flex items-center gap-1"><span class="material-symbols-outlined text-sm">timer</span> 45m</span>
+<span class="flex items-center gap-1"><span class="material-symbols-outlined text-sm text-secondary">check_circle</span> 80%</span>
+</div>
+</div>
+<!-- Module Card 2 -->
+<div class="group bg-surface-container-lowest rounded-2xl p-5 shadow-sm hover:shadow-md transition-all border border-outline-variant/10">
+<div class="aspect-video rounded-xl mb-4 overflow-hidden relative">
+<img alt="Academic Writing Module" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" data-alt="macro shot of an elegant fountain pen resting on an open leather-bound journal with creamy paper" src="https://lh3.googleusercontent.com/aida-public/AB6AXuC97BsXKLMyivqoIdRnKX_rqRF1ZnshdBBcev533U9_8zhnH6eMLSICqjINTrN5qqiOwwpQfiOARBrdd_zLWWWfAqGQpv-gsjDLN2Ts0BZ-d2ube6GleYwCN3MCyljbsXvPpcLbg0prkTyU-Cek0KAmx7gS-vZzk2-CTRagrwg9p-d-SQWItJEFnK7_2U1XNQ9hnshCeV5uLWLzTCPASRFs6spKrbNJEMgFPNuK-VbbeAMIBGC4RJxizKOBeoFBowYApcPHdm5vgvTM"/>
+<div class="absolute top-2 right-2 bg-white/90 backdrop-blur px-2 py-1 rounded-lg text-[10px] font-bold text-primary uppercase">English</div>
+</div>
+<h3 class="font-bold text-lg leading-tight mb-2 group-hover:text-primary transition-colors">Scholarly Thesis Structures</h3>
+<div class="flex items-center gap-4 text-xs text-slate-500 font-medium">
+<span class="flex items-center gap-1"><span class="material-symbols-outlined text-sm">timer</span> 120m</span>
+<span class="flex items-center gap-1"><span class="material-symbols-outlined text-sm text-secondary">check_circle</span> 15%</span>
+</div>
+</div>
+<!-- Module Card 3 -->
+<div class="group bg-surface-container-lowest rounded-2xl p-5 shadow-sm hover:shadow-md transition-all border border-outline-variant/10">
+<div class="aspect-video rounded-xl mb-4 overflow-hidden relative">
+<img alt="Arabic Phonetics Module" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" data-alt="abstract architectural detail of modern geometric patterns with sharp shadows and warm desert-toned stone" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCv-L-H8l5a6XOl-gVNlHbhlzRSmz2k5SwW4mjACPxR07P3K_a70CYvkPVy48F1vhDGLziaoI2VmmbLcN3zw19FWjEJwmuutvlyrvmWI77o35gKgb5HUtPoyqNQv-pkukwQo-DBhxc7DiSOTms7VkHuIUvxBRCtxdZ4TJQHK9kEcmR0FIGP39U3Hmuq6Hvt8wqbOv9PRkllLQp-KAREZhxr0UExvZsYRxnX7pzHm6aL6Ygsb_KYk1-a-SBrLNLyhfW0F6BIlLzkDWFO"/>
+<div class="absolute top-2 right-2 bg-white/90 backdrop-blur px-2 py-1 rounded-lg text-[10px] font-bold text-primary uppercase">Arabic</div>
+</div>
+<h3 class="font-bold text-lg leading-tight mb-2 group-hover:text-primary transition-colors">Arabic Phonetics Mastery</h3>
+<div class="flex items-center gap-4 text-xs text-slate-500 font-medium">
+<span class="flex items-center gap-1"><span class="material-symbols-outlined text-sm">timer</span> 30m</span>
+<span class="flex items-center gap-1"><span class="material-symbols-outlined text-sm text-tertiary">bolt</span> New</span>
+</div>
+</div>
+</div>
+</section>
+</div>
+<!-- Right Column: Sidebar (1/3) -->
+<div class="lg:col-span-4 space-y-8">
+<!-- Mini Leaderboard -->
+<section class="bg-surface-container-low rounded-2xl p-6 border border-outline-variant/10">
+<h2 class="text-xl font-bold mb-6 flex items-center gap-2">
+<span class="material-symbols-outlined text-tertiary">leaderboard</span>
+                        Global Arena
+                    </h2>
+<div class="space-y-4">
+<!-- Rank 1 -->
+<div class="flex items-center justify-between p-3 bg-surface-container-lowest rounded-xl shadow-sm border-l-4 border-tertiary">
+<div class="flex items-center gap-3">
+<span class="font-black text-tertiary w-4">1</span>
+<img alt="Scholar Avatar" class="w-10 h-10 rounded-full object-cover" data-alt="headshot of a confident young woman with glasses in a professional studio setting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCLFOwCcf7rGOGt-Tej2GUjkcT1NsEoHMuuCImliPUey-xH6bcvdtJSI5zHUT_wZBvoOw0rPJ1cx0zh1JbC4w_ja5dg33-AgVmFnlXgCwaGStdfcp8OmUd3PMzv5yDrM782lACyqM6ki1qAxqAf3n-CLd4bBazpLIWvwJvUlBbev1xtTauCd3dBNTsCdTqX4yTfjvSeAid2T4eYHGsDkjBkB8Std_gKdKjvDpmYPpJ2Y_r05j3dVv5q81G9IUeO-Em6VTSrKVhimwqE"/>
+<div>
+<p class="text-sm font-bold">Sarah Jenkins</p>
+<p class="text-[10px] uppercase tracking-widest text-slate-400">Archmage</p>
+</div>
+</div>
+<span class="text-sm font-black text-primary">2,450 XP</span>
+</div>
+<!-- Rank 2 -->
+<div class="flex items-center justify-between p-3 bg-surface-container-lowest rounded-xl shadow-sm border-l-4 border-slate-300">
+<div class="flex items-center gap-3">
+<span class="font-black text-slate-400 w-4">2</span>
+<img alt="Scholar Avatar" class="w-10 h-10 rounded-full object-cover" data-alt="portrait of a focused student in a university library background" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDaGNG1wY0KmEyHHzwi5BPsPB4eP23mx47yRojgKDzDBaitgqxNV4GMKMEjlVTon-aIVhdzFfq3AmV7_ZpdwGeONVTUwTvQmhaIOqfZvc_v0NCD_VQMUftle8Cbbzk6NLIvWNzzSmi6qU5zDy8RN0lckWTkbML5-SfnjrbgrTN-P1uGzT_13tmlInWn1NZGm0Tfy3L4dMIx5D0vFC0_c5CiXpq61ApmPwxYt5f8X8Rl7tkBLGXq9QIMnlzFLlBvvLBPVajWkew9Bwt3"/>
+<div>
+<p class="text-sm font-bold">Kenji Sato</p>
+<p class="text-[10px] uppercase tracking-widest text-slate-400">Grandmaster</p>
+</div>
+</div>
+<span class="text-sm font-black text-primary">2,100 XP</span>
+</div>
+<!-- Rank 3 -->
+<div class="flex items-center justify-between p-3 bg-surface-container-lowest rounded-xl shadow-sm border-l-4 border-amber-600/30">
+<div class="flex items-center gap-3">
+<span class="font-black text-amber-700/50 w-4">3</span>
+<img alt="Scholar Avatar" class="w-10 h-10 rounded-full object-cover" data-alt="friendly smiling young woman with a creative flair in soft daylight" src="https://lh3.googleusercontent.com/aida-public/AB6AXuB7-mwKuO2Yu15tuLhEiJzFpxGsYLzMusIqyuurj_Xq1MC8ieAlZs_HV0eSsbLu1R4ELghN2Pk0DxmQ3-LP0gl8DjMOEXzHQebL_D_txwwsfIPwEb7G4kd6pMXRxdzURFMrVK796hw3-PH4PehSISvrCKMQW4D-KTNBPLhBVCAAPEgZZpBE8NQFe8s4R35nOzwnWtZFgS1lG29LRUbKBzgAVX7lbh2fAlkxrrgE4lS8G9xiiY9Kkxfe8j4rboVbCyt4FsAilA4Nz-RK"/>
+<div>
+<p class="text-sm font-bold">Lina Qassim</p>
+<p class="text-[10px] uppercase tracking-widest text-slate-400">Polymath</p>
+</div>
+</div>
+<span class="text-sm font-black text-primary">1,980 XP</span>
+</div>
+<!-- User Rank -->
+<div class="pt-4 mt-2 border-t border-outline-variant/30">
+<div class="flex items-center justify-between p-3 bg-primary/5 rounded-xl border border-primary/10">
+<div class="flex items-center gap-3">
+<span class="font-black text-primary w-4">42</span>
+<div class="w-10 h-10 rounded-full bg-primary flex items-center justify-center text-white font-bold text-xs">AF</div>
+<div>
+<p class="text-sm font-bold">You</p>
+<p class="text-[10px] uppercase tracking-widest text-primary/60">Rising Scholar</p>
+</div>
+</div>
+<span class="text-sm font-black text-primary">1,150 XP</span>
+</div>
+</div>
+</div>
+</section>
+<!-- Upcoming Deadlines -->
+<section class="bg-surface-container-low rounded-2xl p-6 border border-outline-variant/10">
+<h2 class="text-xl font-bold mb-6 flex items-center gap-2">
+<span class="material-symbols-outlined text-error">event_upcoming</span>
+                        Critical Tasks
+                    </h2>
+<div class="space-y-4">
+<!-- Deadline 1 -->
+<div class="bg-surface-container-lowest p-4 rounded-xl shadow-sm border-r-4 border-error">
+<div class="flex justify-between items-start mb-2">
+<h4 class="font-bold text-sm">German Vocabulary Quiz</h4>
+<span class="bg-error/10 text-error px-2 py-0.5 rounded text-[10px] font-black uppercase">Today</span>
+</div>
+<p class="text-xs text-slate-500 mb-3">Complete module 4 assessment to maintain streak.</p>
+<div class="flex items-center justify-between">
+<div class="flex -space-x-2">
+<div class="w-6 h-6 rounded-full border-2 border-white bg-slate-200 text-[8px] flex items-center justify-center font-bold">12k</div>
+<div class="w-6 h-6 rounded-full border-2 border-white bg-slate-300 text-[8px] flex items-center justify-center font-bold">P</div>
+</div>
+<button class="bg-error text-white px-3 py-1.5 rounded-lg text-[10px] font-bold hover:opacity-90 transition-opacity">Submit Now</button>
+</div>
+</div>
+<!-- Deadline 2 -->
+<div class="bg-surface-container-lowest p-4 rounded-xl shadow-sm border-r-4 border-tertiary">
+<div class="flex justify-between items-start mb-2">
+<h4 class="font-bold text-sm">Arabic Script Practice</h4>
+<span class="bg-tertiary/10 text-tertiary px-2 py-0.5 rounded text-[10px] font-black uppercase">Tomorrow</span>
+</div>
+<p class="text-xs text-slate-500 mb-3">Practice handwriting for Kufic calligraphy module.</p>
+<div class="flex items-center justify-between">
+<div class="flex -space-x-2">
+<div class="w-6 h-6 rounded-full border-2 border-white bg-slate-200 text-[8px] flex items-center justify-center font-bold">5k</div>
+</div>
+<button class="bg-surface-container-high text-on-surface px-3 py-1.5 rounded-lg text-[10px] font-bold hover:bg-surface-dim transition-colors">Launch Arena</button>
+</div>
+</div>
+</div>
+</section>
+</div>
+</div>
+</main>
+<!-- SideNavBar (Mobile Bottom Version) -->
+<div class="md:hidden fixed bottom-0 left-0 w-full bg-surface-container-lowest border-t border-outline-variant/10 px-4 py-2 flex justify-around items-center z-50">
+<button class="flex flex-col items-center p-2 text-primary">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">school</span>
+<span class="text-[10px] font-bold uppercase tracking-tighter">Academy</span>
+</button>
+<button class="flex flex-col items-center p-2 text-slate-400">
+<span class="material-symbols-outlined">menu_book</span>
+<span class="text-[10px] font-bold uppercase tracking-tighter">Library</span>
+</button>
+<button class="flex flex-col items-center p-2 text-slate-400">
+<span class="material-symbols-outlined">sports_esports</span>
+<span class="text-[10px] font-bold uppercase tracking-tighter">Arena</span>
+</button>
+<button class="flex flex-col items-center p-2 text-slate-400">
+<span class="material-symbols-outlined">leaderboard</span>
+<span class="text-[10px] font-bold uppercase tracking-tighter">Leader</span>
+</button>
+<button class="flex flex-col items-center p-2 text-slate-400">
+<span class="material-symbols-outlined">military_tech</span>
+<span class="text-[10px] font-bold uppercase tracking-tighter">Awards</span>
+</button>
+</div>
+</body></html>

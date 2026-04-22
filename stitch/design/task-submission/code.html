@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Task Submission - Advanced Academic Writing</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&amp;family=Public+Sans:wght@300;400;500;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "surface-bright": "#f7f9fb",
+                    "secondary": "#006c49",
+                    "surface-container-highest": "#e0e3e5",
+                    "secondary-fixed": "#6ffbbe",
+                    "tertiary": "#784b00",
+                    "surface-dim": "#d8dadc",
+                    "on-surface": "#191c1e",
+                    "on-tertiary-fixed-variant": "#653e00",
+                    "on-tertiary": "#ffffff",
+                    "on-primary-fixed-variant": "#173bab",
+                    "on-primary": "#ffffff",
+                    "secondary-fixed-dim": "#4edea3",
+                    "tertiary-container": "#996100",
+                    "surface-tint": "#3755c3",
+                    "surface-container-low": "#f2f4f6",
+                    "surface-variant": "#e0e3e5",
+                    "surface-container": "#eceef0",
+                    "inverse-primary": "#b8c4ff",
+                    "surface": "#f7f9fb",
+                    "on-error": "#ffffff",
+                    "secondary-container": "#6cf8bb",
+                    "on-primary-fixed": "#001453",
+                    "background": "#f7f9fb",
+                    "primary-container": "#4865d3",
+                    "surface-container-high": "#e6e8ea",
+                    "outline-variant": "#c3c6d7",
+                    "on-error-container": "#93000a",
+                    "inverse-surface": "#2d3133",
+                    "on-secondary-fixed": "#002113",
+                    "on-primary-container": "#efefff",
+                    "primary-fixed-dim": "#b8c4ff",
+                    "on-secondary-fixed-variant": "#005236",
+                    "error": "#ba1a1a",
+                    "on-secondary-container": "#00714d",
+                    "primary-fixed": "#dde1ff",
+                    "on-background": "#191c1e",
+                    "on-tertiary-container": "#ffeedd",
+                    "tertiary-fixed-dim": "#ffb95f",
+                    "on-tertiary-fixed": "#2a1700",
+                    "error-container": "#ffdad6",
+                    "inverse-on-surface": "#eff1f3",
+                    "outline": "#737686",
+                    "tertiary-fixed": "#ffddb8",
+                    "surface-container-lowest": "#ffffff",
+                    "on-surface-variant": "#434655",
+                    "primary": "#2b4bb9",
+                    "on-secondary": "#ffffff"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "fontFamily": {
+                    "headline": ["Manrope"],
+                    "body": ["Public Sans"],
+                    "label": ["Public Sans"]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .glass-header {
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(20px);
+        }
+    </style>
+</head>
+<body class="bg-background text-on-surface font-body selection:bg-primary/20">
+<!-- TopAppBar -->
+<nav class="fixed top-0 w-full z-50 glass-header shadow-sm dark:shadow-none bg-white/80 backdrop-blur-md">
+<div class="flex justify-between items-center w-full px-8 py-4 max-w-screen-2xl mx-auto">
+<div class="flex items-center gap-8">
+<span class="text-2xl font-bold tracking-tighter text-blue-800 dark:text-blue-300 font-headline">FLC UMJ LMS</span>
+<div class="hidden md:flex gap-6 items-center">
+<a class="font-headline font-semibold tracking-tight text-slate-600 hover:text-blue-600 transition-colors" href="#">Dashboard</a>
+<a class="font-headline font-semibold tracking-tight text-blue-700 border-b-2 border-blue-700 pb-1" href="#">Courses</a>
+<a class="font-headline font-semibold tracking-tight text-slate-600 hover:text-blue-600 transition-colors" href="#">Calendar</a>
+<a class="font-headline font-semibold tracking-tight text-slate-600 hover:text-blue-600 transition-colors" href="#">Resources</a>
+</div>
+</div>
+<div class="flex items-center gap-4">
+<button class="p-2 rounded-full hover:bg-slate-100 transition-all">
+<span class="material-symbols-outlined text-slate-600">notifications</span>
+</button>
+<button class="p-2 rounded-full hover:bg-slate-100 transition-all">
+<span class="material-symbols-outlined text-slate-600">account_circle</span>
+</button>
+</div>
+</div>
+</nav>
+<!-- SideNavBar -->
+<aside class="fixed left-0 top-20 flex flex-col h-[calc(100vh-5rem)] p-4 bg-slate-50 w-64 font-label">
+<div class="mb-8 px-4">
+<h2 class="text-blue-800 font-bold font-headline">Task Submission</h2>
+<p class="text-xs text-slate-500">Advanced Academic Writing</p>
+</div>
+<nav class="flex flex-col gap-2">
+<a class="flex items-center gap-3 text-slate-500 px-4 py-3 hover:bg-blue-50/50 rounded-xl transition-all" href="#">
+<span class="material-symbols-outlined">assignment</span>
+<span>Overview</span>
+</a>
+<a class="flex items-center gap-3 text-slate-500 px-4 py-3 hover:bg-blue-50/50 rounded-xl transition-all" href="#">
+<span class="material-symbols-outlined">description</span>
+<span>Instructions</span>
+</a>
+<a class="flex items-center gap-3 bg-white text-blue-700 rounded-xl px-4 py-3 shadow-sm font-medium" href="#">
+<span class="material-symbols-outlined">upload_file</span>
+<span>Submissions</span>
+</a>
+<a class="flex items-center gap-3 text-slate-500 px-4 py-3 hover:bg-blue-50/50 rounded-xl transition-all" href="#">
+<span class="material-symbols-outlined">grade</span>
+<span>Grades</span>
+</a>
+<a class="flex items-center gap-3 text-slate-500 px-4 py-3 hover:bg-blue-50/50 rounded-xl transition-all" href="#">
+<span class="material-symbols-outlined">forum</span>
+<span>Feedback</span>
+</a>
+</nav>
+<div class="mt-auto p-4 bg-primary-container/10 rounded-2xl border border-primary/5">
+<button class="w-full bg-primary text-white py-3 rounded-xl font-headline font-bold text-sm shadow-lg shadow-primary/20 hover:scale-[1.02] active:scale-[0.98] transition-all">
+                Submit Final Draft
+            </button>
+</div>
+</aside>
+<!-- Main Canvas -->
+<main class="ml-64 pt-24 px-8 pb-12 min-h-screen">
+<div class="max-w-6xl mx-auto">
+<!-- Breadcrumbs -->
+<nav class="flex items-center gap-2 text-sm text-slate-500 mb-6 font-label tracking-wide uppercase">
+<span class="hover:text-primary cursor-pointer">COURSES</span>
+<span class="material-symbols-outlined text-xs">chevron_right</span>
+<span class="hover:text-primary cursor-pointer">ADVANCED WRITING</span>
+<span class="material-symbols-outlined text-xs">chevron_right</span>
+<span class="text-on-surface font-semibold">TASK SUBMISSION</span>
+</nav>
+<div class="grid grid-cols-12 gap-12 items-start">
+<!-- Left Side: Task Info -->
+<div class="col-span-12 lg:col-span-7 space-y-10">
+<section>
+<div class="flex items-start gap-4 mb-4">
+<div class="bg-primary/10 p-3 rounded-2xl">
+<span class="material-symbols-outlined text-primary text-3xl">history_edu</span>
+</div>
+<div>
+<h1 class="text-4xl font-headline font-extrabold tracking-tight text-on-surface">Drafting the Research Proposal</h1>
+<p class="text-slate-500 mt-1 font-medium">Advanced Academic Writing • Module 4</p>
+</div>
+</div>
+<div class="flex flex-wrap gap-4 mt-6">
+<div class="flex items-center gap-2 bg-secondary-container px-4 py-2 rounded-full border border-secondary/10">
+<span class="material-symbols-outlined text-on-secondary-container text-sm" style="font-variation-settings: 'FILL' 1;">stars</span>
+<span class="text-sm font-bold text-on-secondary-container font-label uppercase">+50 XP Reward</span>
+</div>
+<div class="flex items-center gap-2 bg-tertiary-container/10 px-4 py-2 rounded-full border border-tertiary/10">
+<span class="material-symbols-outlined text-tertiary text-sm">schedule</span>
+<span class="text-sm font-bold text-tertiary font-label uppercase">Level 4 Requirement</span>
+</div>
+</div>
+</section>
+<section class="bg-surface-container-low rounded-3xl p-8 relative overflow-hidden">
+<div class="absolute top-0 right-0 w-32 h-32 bg-primary/5 rounded-full -mr-16 -mt-16 blur-3xl"></div>
+<h3 class="font-headline font-bold text-xl mb-4 flex items-center gap-2">
+<span class="w-1 h-6 bg-primary rounded-full"></span>
+                            Instructions
+                        </h3>
+<div class="prose prose-slate max-w-none text-on-surface-variant leading-relaxed font-body">
+<p class="mb-4">For this submission, you are required to synthesize your preliminary research into a formal proposal. Please ensure your document follows the APA 7th Edition styling guidelines strictly.</p>
+<ul class="space-y-3 list-none p-0">
+<li class="flex items-start gap-3">
+<span class="material-symbols-outlined text-primary mt-1 text-sm">check_circle</span>
+<span>Define a clear research question and methodology.</span>
+</li>
+<li class="flex items-start gap-3">
+<span class="material-symbols-outlined text-primary mt-1 text-sm">check_circle</span>
+<span>Include a literature review summary of at least 5 peer-reviewed sources.</span>
+</li>
+<li class="flex items-start gap-3">
+<span class="material-symbols-outlined text-primary mt-1 text-sm">check_circle</span>
+<span>The final document should be 1,500 - 2,000 words.</span>
+</li>
+</ul>
+</div>
+</section>
+<!-- Deadline Card -->
+<section class="bg-white rounded-3xl p-8 shadow-sm border border-outline-variant/10 flex items-center justify-between">
+<div>
+<p class="text-xs font-label font-bold text-slate-400 uppercase tracking-widest mb-1">Time Remaining</p>
+<div class="flex items-baseline gap-2">
+<span class="text-3xl font-headline font-extrabold text-error">2 days, 4 hours</span>
+<span class="text-slate-400 text-sm">left</span>
+</div>
+</div>
+<div class="w-20 h-20 relative">
+<svg class="w-full h-full transform -rotate-90">
+<circle class="text-slate-100" cx="40" cy="40" fill="transparent" r="34" stroke="currentColor" stroke-width="8"></circle>
+<circle class="text-error" cx="40" cy="40" fill="transparent" r="34" stroke="currentColor" stroke-dasharray="213.6" stroke-dashoffset="53.4" stroke-linecap="round" stroke-width="8"></circle>
+</svg>
+<div class="absolute inset-0 flex items-center justify-center">
+<span class="material-symbols-outlined text-error">alarm</span>
+</div>
+</div>
+</section>
+</div>
+<!-- Right Side: Form Card -->
+<div class="col-span-12 lg:col-span-5">
+<div class="sticky top-28 bg-surface-container-lowest rounded-[2rem] p-8 shadow-xl shadow-slate-200/50 border border-white">
+<header class="mb-8">
+<h2 class="text-2xl font-headline font-bold text-on-surface">Your Submission</h2>
+<p class="text-slate-500 text-sm">Submit your final draft in PDF or DOCX format.</p>
+</header>
+<div class="space-y-6">
+<!-- File Upload Zone -->
+<div class="group relative bg-surface-container-low border-2 border-dashed border-outline-variant rounded-2xl p-10 transition-all hover:border-primary hover:bg-primary/5 flex flex-col items-center justify-center text-center cursor-pointer">
+<div class="w-16 h-16 bg-white rounded-full flex items-center justify-center shadow-sm mb-4 group-hover:scale-110 transition-transform">
+<span class="material-symbols-outlined text-primary text-3xl">upload_file</span>
+</div>
+<h4 class="font-headline font-bold text-on-surface group-hover:text-primary transition-colors">Click or drag file to upload</h4>
+<p class="text-slate-400 text-xs mt-2 uppercase font-label font-bold tracking-tight">Maximum size: 20MB • PDF, DOCX</p>
+<input class="absolute inset-0 opacity-0 cursor-pointer" type="file"/>
+</div>
+<!-- Additional Comments -->
+<div class="space-y-2">
+<label class="text-xs font-label font-bold text-slate-500 uppercase tracking-widest px-1">Additional Comments</label>
+<textarea class="w-full bg-surface-container-high border-none rounded-2xl focus:ring-2 focus:ring-primary/20 p-4 font-body placeholder:text-slate-400 text-on-surface-variant transition-all" placeholder="Tell your instructor anything important about this draft..." rows="4"></textarea>
+</div>
+<!-- Submit Button -->
+<div class="pt-4">
+<button class="w-full bg-gradient-to-br from-primary to-primary-container text-white py-5 rounded-2xl font-headline font-extrabold text-lg shadow-lg shadow-primary/30 hover:translate-y-[-2px] active:translate-y-[1px] transition-all flex items-center justify-center gap-3">
+<span>Submit Task</span>
+<span class="material-symbols-outlined text-xl">send</span>
+</button>
+<p class="text-center text-[10px] text-slate-400 mt-4 uppercase font-label font-bold tracking-[0.1em]">By submitting, you agree to the Academic Integrity Policy</p>
+</div>
+</div>
+</div>
+<!-- Side Stats / Contextual Mini-Card -->
+<div class="mt-6 bg-surface-bright rounded-2xl p-6 border border-outline-variant/10">
+<div class="flex items-center gap-4">
+<div class="w-12 h-12 rounded-full overflow-hidden border-2 border-secondary-fixed">
+<img alt="User avatar" data-alt="close-up portrait of a young professional student with glasses and a friendly expression in a modern academic setting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDljyRl8Ybxj_x0KQrpFB7O-PQip-AKfZDAQCBrbrfxA1nGIJ67GOlYzEm5PZbsaOg7JL0kEcD_UOWVdCGydpgvg_LZaLWf1mM5bSH6GR8kbAC9toGqYomvYndIIYzD5nuvgvNeFTKFIZAtG0UuDU9wACNhWka1shnyusU2hb_r4mdmn-6b1MkiJzJ9ywiDCQzBCTIjYfeK1ZoTOdvYT3FWtBiGmna3ujk1OEHhRD8RcBKFs3AzqkEHrnFGIoSK_J5Vr96o0YFuJ-xH"/>
+</div>
+<div>
+<p class="text-xs font-label font-bold text-slate-400 uppercase">STUDENT PROFILE</p>
+<h5 class="font-headline font-bold text-on-surface">Alex Johnston</h5>
+</div>
+<div class="ml-auto text-right">
+<span class="text-xs font-label font-bold text-secondary">LVL 3</span>
+<div class="w-16 h-1.5 bg-slate-200 rounded-full mt-1">
+<div class="w-3/4 h-full bg-secondary rounded-full"></div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</main>
+<!-- Background Decoration Elements -->
+<div class="fixed top-0 right-0 -z-10 opacity-30 pointer-events-none">
+<svg fill="none" height="600" viewbox="0 0 600 600" width="600" xmlns="http://www.w3.org/2000/svg">
+<circle cx="450" cy="150" fill="url(#paint0_linear)" r="150"></circle>
+<defs>
+<lineargradient gradientunits="userSpaceOnUse" id="paint0_linear" x1="450" x2="450" y1="0" y2="300">
+<stop stop-color="#4865d3"></stop>
+<stop offset="1" stop-color="white" stop-opacity="0"></stop>
+</lineargradient>
+</defs>
+</svg>
+</div>
+</body></html>

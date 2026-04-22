@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="csrf-token" content="{{ csrf_token() }}">
+
+        <title>{{ config('app.name', 'FLC LMS') }}</title>
+
+        <!-- Vite: compiles Tailwind CSS + Alpine.js (via Livewire) -->
+        @vite(['resources/css/app.css', 'resources/js/app.js'])
+
+        <!-- Per-page styles pushed by child components (Google Fonts, custom CSS) -->
+        @stack('styles')
+
+        <!-- Livewire styles (required for Livewire 3 full-page components) -->
+        @livewireStyles
+    </head>
+
+    {{--
+        No Breeze navigation. No wrapper divs.
+        The component's Blade view owns 100% of the viewport.
+        bg-background matches the Stitch "Academic Prestige" design system token.
+    --}}
+    <body class="font-sans antialiased bg-background text-on-surface">
+
+        {{ $slot }}
+
+        @livewireScripts
+    </body>
+</html>
