@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\ProfileController;
 use App\Livewire\Admin\MaterialManager;
+use App\Livewire\Admin\TaskManager;
 use App\Livewire\GamifiedDashboard;
 use App\Livewire\GradingStation;
 use App\Livewire\HallOfFame;
@@ -35,10 +36,14 @@ Route::middleware('auth')->group(function () {
     // ── Leaderboard ───────────────────────────────────────────────────────
     Route::get('/leaderboard', HallOfFame::class)->name('leaderboard');
 
-    // ── Admin ─────────────────────────────────────────────────────────────
-    // TODO: Replace 'auth' with a dedicated 'role:admin' middleware later.
-    Route::get('/admin/grading',   GradingStation::class)->name('admin.grading');
-    Route::get('/admin/materials', MaterialManager::class)->name('admin.materials');
+    // ── Admin Portal ───────────────────────────────────────────────────────
+    // Double-guarded: 'auth' ensures the user is logged in,
+    // 'admin' (EnsureUserIsAdmin) ensures they have the admin role.
+    Route::middleware('admin')->prefix('admin')->name('admin.')->group(function () {
+        Route::get('/grading',   GradingStation::class)->name('grading');
+        Route::get('/materials', MaterialManager::class)->name('materials');
+        Route::get('/tasks',     TaskManager::class)->name('tasks');
+    });
 });
 
 require __DIR__.'/auth.php';

@@ -22,7 +22,7 @@
         ['key' => 'dashboard', 'label' => 'Dashboard',  'icon' => 'dashboard',      'route' => route('dashboard')],
         ['key' => 'users',     'label' => 'Users',       'icon' => 'group',          'route' => '#'],
         ['key' => 'materials', 'label' => 'Materials',   'icon' => 'library_books',  'route' => route('admin.materials')],
-        ['key' => 'tasks',     'label' => 'Tasks',       'icon' => 'assignment',     'route' => '#'],
+        ['key' => 'tasks',     'label' => 'Tasks',       'icon' => 'assignment',     'route' => route('admin.tasks')],
         ['key' => 'grading',   'label' => 'Grading',     'icon' => 'grade',          'route' => route('admin.grading')],
     ];
 @endphp

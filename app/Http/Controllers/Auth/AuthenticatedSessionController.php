@@ -28,7 +28,14 @@ class AuthenticatedSessionController extends Controller
 
         $request->session()->regenerate();
 
-        return redirect()->intended(route('dashboard', absolute: false));
+        // ── Role-based post-login redirect ────────────────────────────────
+        // redirect()->intended() respects any URL the user was trying to
+        // reach before being bounced to login. The fallback differs by role.
+        $fallback = $request->user()->role === 'admin'
+            ? route('admin.materials', absolute: false)
+            : route('dashboard', absolute: false);
+
+        return redirect()->intended($fallback);
     }
 
     /**
