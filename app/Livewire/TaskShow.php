@@ -75,7 +75,7 @@ class TaskShow extends Component
                 'answerText' => ['required', 'string', 'min:10'],
             ],
             'file_upload' => [
-                'uploadedFile' => ['required', 'file', 'max:2048'], // 2 MB
+                'uploadedFile' => ['required', 'file', 'mimes:pdf,zip,rar,doc,docx', 'max:2048'], // 2 MB, safe formats
             ],
             default => [],
         };
