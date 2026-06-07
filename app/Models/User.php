@@ -112,6 +112,18 @@ class User extends Authenticatable
     }
 
     /**
+     * Determine the user's level tier from a pre-loaded in-memory collection of Level models,
+     * completely bypassing database queries to prevent N+1 query patterns.
+     */
+    public function determineLevelFromCollection(\Illuminate\Support\Collection $levelsCollection): ?Level
+    {
+        return $levelsCollection
+            ->filter(fn (Level $level) => $level->min_xp <= $this->total_xp)
+            ->sortByDesc('min_xp')
+            ->first();
+    }
+
+    /**
      * The next Level tier above the user's current XP.
      * Returns null if the user is already at the maximum level.
      */

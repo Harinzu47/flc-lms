@@ -72,7 +72,7 @@
                             {{ $isMe ? 'You (' . $rankedUser->name . ')' : $rankedUser->name }}
                         </p>
                         <p class="text-[10px] uppercase tracking-widest text-on-surface-variant font-label mt-0.5 truncate">
-                            {{ $rankedUser->currentLevel()?->name ?? 'Novice' }}
+                            {{ $rankedUser->determineLevelFromCollection($allLevels)?->name ?? 'Novice' }}
                         </p>
                     </div>
 

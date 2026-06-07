@@ -38,7 +38,7 @@
                 <div class="min-w-0">
                     <p class="font-headline font-bold text-on-surface text-sm truncate">{{ $authUser->name }}</p>
                     <p class="text-[10px] uppercase tracking-widest text-on-surface-variant font-label mt-0.5">
-                        {{ $authUser->currentLevel()?->name ?? 'Novice' }}
+                        {{ $authUser->determineLevelFromCollection($allLevels)?->name ?? 'Novice' }}
                     </p>
                 </div>
             </div>

@@ -53,7 +53,7 @@
             <div class="text-center">
                 <p class="font-headline font-bold text-on-surface text-sm leading-tight">{{ $silver->name }}</p>
                 <p class="text-[10px] text-on-surface-variant uppercase tracking-widest font-label mt-0.5">
-                    {{ $silver->currentLevel()?->name ?? 'Novice' }}
+                    {{ $silver->determineLevelFromCollection($allLevels)?->name ?? 'Novice' }}
                 </p>
             </div>
             {{-- XP Chip --}}
@@ -92,7 +92,7 @@
             <div class="text-center">
                 <p class="font-headline font-bold text-on-surface text-base leading-tight">{{ $gold->name }}</p>
                 <p class="text-[10px] text-on-surface-variant uppercase tracking-widest font-label mt-0.5">
-                    {{ $gold->currentLevel()?->name ?? 'Novice' }}
+                    {{ $gold->determineLevelFromCollection($allLevels)?->name ?? 'Novice' }}
                 </p>
             </div>
             {{-- XP Chip (gold accent) --}}
@@ -127,7 +127,7 @@
             <div class="text-center">
                 <p class="font-headline font-bold text-on-surface text-sm leading-tight">{{ $bronze->name }}</p>
                 <p class="text-[10px] text-on-surface-variant uppercase tracking-widest font-label mt-0.5">
-                    {{ $bronze->currentLevel()?->name ?? 'Novice' }}
+                    {{ $bronze->determineLevelFromCollection($allLevels)?->name ?? 'Novice' }}
                 </p>
             </div>
             {{-- XP Chip --}}

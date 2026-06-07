@@ -48,6 +48,9 @@ final class GradeSubmissionAction
             $submission->user->increment('total_xp', $earnedXp);
         });
 
+        // Dispatch decoupled event for level/badge sync for the graded student
+        \App\Events\XpEarned::dispatch($submission->user, $earnedXp);
+
         return $earnedXp;
     }
 }

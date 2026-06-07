@@ -48,6 +48,11 @@ class HallOfFame extends Component
             ->where('total_xp', '>', $authUser->total_xp)
             ->count() + 1;
 
-        return view('livewire.hall-of-fame', compact('topUsers', 'currentUserRank'));
+        // Fetch all levels sorted by min_xp once to avoid N+1 query loops in the view
+        $allLevels = \App\Models\Level::query()
+            ->orderBy('min_xp')
+            ->get();
+
+        return view('livewire.hall-of-fame', compact('topUsers', 'currentUserRank', 'allLevels'));
     }
 }

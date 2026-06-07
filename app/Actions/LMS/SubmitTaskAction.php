@@ -44,7 +44,17 @@ final class SubmitTaskAction
         // ── Store the uploaded file (if any) ──────────────────────────────────
         $fileUrl = null;
         if ($file !== null) {
-            // Stored in storage/app/public/submissions — symlink with sail artisan storage:link
+            // Defense in depth: Double check extension before storing
+            $extension = strtolower($file->getClientOriginalExtension());
+            $allowedExtensions = ['pdf', 'zip', 'rar', 'docx', 'doc', 'xlsx'];
+            
+            if (!in_array($extension, $allowedExtensions, true)) {
+                throw new RuntimeException('Security Validation Failed: Unsupported file extension.');
+            }
+
+            // Stored in storage/app/public/submissions.
+            // store() automatically generates a cryptographically secure randomized hash
+            // (e.g. submissions/8ab3d9...zip) to prevent guessing and path traversal attacks.
             $fileUrl = $file->store('submissions', 'public');
         }
 

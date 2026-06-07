@@ -56,6 +56,9 @@ final class AwardMaterialXpAction
             $user->increment('total_xp', self::XP_AMOUNT);
         });
 
+        // Dispatch decoupled event for level/badge sync
+        \App\Events\XpEarned::dispatch($user, self::XP_AMOUNT);
+
         return true;
     }
 }
