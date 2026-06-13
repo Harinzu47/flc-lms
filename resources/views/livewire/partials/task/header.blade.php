@@ -6,6 +6,14 @@
     ────────────────────────────────────────────────────────────────────────────
 --}}
 
+{{-- Back to Course Pathway --}}
+@if($task->module && $task->module->course)
+    <a href="{{ route('courses.show', $task->module->course) }}" wire:navigate class="inline-flex items-center gap-2 text-sm text-primary hover:text-blue-700 transition-colors font-semibold mb-4">
+        <span class="material-symbols-outlined text-lg">arrow_back</span>
+        Back to Course Pathway
+    </a>
+@endif
+
 {{-- ── Breadcrumbs ──────────────────────────────────────────────────────────── --}}
 <nav class="flex items-center gap-2 text-sm text-on-surface-variant mb-6 font-label tracking-wide uppercase"
      id="task-overview"

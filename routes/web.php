@@ -1,13 +1,15 @@
 <?php
 
 use App\Http\Controllers\ProfileController;
-use App\Livewire\Admin\MaterialManager;
-use App\Livewire\Admin\TaskManager;
+use App\Livewire\Admin\CourseManager;
+use App\Livewire\Admin\UserManager;
 use App\Livewire\GamifiedDashboard;
 use App\Livewire\GradingStation;
 use App\Livewire\HallOfFame;
+use App\Livewire\Library;
 use App\Livewire\MaterialShow;
 use App\Livewire\TaskShow;
+use App\Livewire\CourseShow;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -15,7 +17,6 @@ Route::get('/', function () {
 });
 
 // ── Dashboard (replaces Breeze's default closure) ─────────────────────────
-// GamifiedDashboard uses layouts.base — it brings its own nav & shell.
 Route::get('/dashboard', GamifiedDashboard::class)
     ->middleware(['auth', 'verified'])
     ->name('dashboard');
@@ -26,23 +27,26 @@ Route::middleware('auth')->group(function () {
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
+    // ── Courses (Student View) ───────────────────────────────────────────
+    Route::get('/courses/{course}', CourseShow::class)->name('courses.show');
+
     // ── Materials ─────────────────────────────────────────────────────────
     Route::get('/materials/{material}', MaterialShow::class)->name('materials.show');
 
+    // ── Library ───────────────────────────────────────────────────────────
+    Route::get('/library', Library::class)->name('library');
+
     // ── Tasks ─────────────────────────────────────────────────────────────
-    // {task} is automatically resolved to App\Models\Task via route model binding.
     Route::get('/tasks/{task}', TaskShow::class)->name('tasks.show');
 
     // ── Leaderboard ───────────────────────────────────────────────────────
     Route::get('/leaderboard', HallOfFame::class)->name('leaderboard');
 
     // ── Admin Portal ───────────────────────────────────────────────────────
-    // Double-guarded: 'auth' ensures the user is logged in,
-    // 'admin' (EnsureUserIsAdmin) ensures they have the admin role.
     Route::middleware('admin')->prefix('admin')->name('admin.')->group(function () {
-        Route::get('/grading',   GradingStation::class)->name('grading');
-        Route::get('/materials', MaterialManager::class)->name('materials');
-        Route::get('/tasks',     TaskManager::class)->name('tasks');
+        Route::get('/grading', GradingStation::class)->name('grading');
+        Route::get('/courses', CourseManager::class)->name('courses');
+        Route::get('/users',   UserManager::class)->name('users');
     });
 });
 

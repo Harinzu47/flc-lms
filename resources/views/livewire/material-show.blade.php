@@ -107,7 +107,7 @@
             <nav class="hidden md:flex items-center gap-8 font-headline font-semibold tracking-tight">
                 <a class="text-on-surface-variant hover:text-primary transition-colors" href="{{ route('dashboard') }}">Dashboard</a>
                 <a class="text-primary border-b-2 border-primary pb-1" href="#">Courses</a>
-                <a class="text-on-surface-variant hover:text-primary transition-colors" href="#">Library</a>
+                <a class="text-on-surface-variant hover:text-primary transition-colors" href="{{ route('library') }}">Library</a>
                 <a class="text-on-surface-variant hover:text-primary transition-colors" href="#">Achievements</a>
             </nav>
 
@@ -134,6 +134,14 @@
     {{-- ── MAIN CONTENT ────────────────────────────────────────────────────── --}}
     <main class="pt-28 pb-32 px-4">
         <article class="max-w-3xl mx-auto">
+
+            {{-- Back to Course Pathway --}}
+            @if($material->module && $material->module->course)
+                <a href="{{ route('courses.show', $material->module->course) }}" wire:navigate class="inline-flex items-center gap-2 text-sm text-primary hover:text-blue-700 transition-colors font-semibold mb-6">
+                    <span class="material-symbols-outlined text-lg">arrow_back</span>
+                    Back to Course Pathway
+                </a>
+            @endif
 
             {{-- ── Breadcrumb / Meta ───────────────────────────────── --}}
             <div class="flex items-center gap-4 mb-6">

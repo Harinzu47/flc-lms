@@ -32,7 +32,7 @@ class AuthenticatedSessionController extends Controller
         // redirect()->intended() respects any URL the user was trying to
         // reach before being bounced to login. The fallback differs by role.
         $fallback = $request->user()->role === 'admin'
-            ? route('admin.materials', absolute: false)
+            ? route('admin.courses', absolute: false)
             : route('dashboard', absolute: false);
 
         return redirect()->intended($fallback);

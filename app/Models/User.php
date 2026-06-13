@@ -106,7 +106,7 @@ class User extends Authenticatable
     public function currentLevel(): ?Level
     {
         return Level::query()
-            ->where('min_xp', '<=', $this->total_xp)
+            ->where('min_xp', '<=', (int) ($this->total_xp ?? 0))
             ->orderByDesc('min_xp')
             ->first();
     }
@@ -117,8 +117,9 @@ class User extends Authenticatable
      */
     public function determineLevelFromCollection(\Illuminate\Support\Collection $levelsCollection): ?Level
     {
+        $xp = (int) ($this->total_xp ?? 0);
         return $levelsCollection
-            ->filter(fn (Level $level) => $level->min_xp <= $this->total_xp)
+            ->filter(fn (Level $level) => $level->min_xp <= $xp)
             ->sortByDesc('min_xp')
             ->first();
     }
@@ -130,7 +131,7 @@ class User extends Authenticatable
     public function nextLevel(): ?Level
     {
         return Level::query()
-            ->where('min_xp', '>', $this->total_xp)
+            ->where('min_xp', '>', (int) ($this->total_xp ?? 0))
             ->orderBy('min_xp')
             ->first();
     }
@@ -144,6 +145,7 @@ class User extends Authenticatable
     {
         $current = $this->currentLevel();
         $next    = $this->nextLevel();
+        $xp      = (int) ($this->total_xp ?? 0);
 
         // Max level reached — bar is full
         if ($current !== null && $next === null) {
@@ -157,7 +159,7 @@ class User extends Authenticatable
             }
 
             // Progress from 0 toward first level
-            $percentage = ($this->total_xp / $next->min_xp) * 100;
+            $percentage = ($xp / $next->min_xp) * 100;
             return (int) min(100, max(0, round($percentage)));
         }
 
@@ -167,7 +169,7 @@ class User extends Authenticatable
             return 100;
         }
 
-        $earned     = $this->total_xp - $current->min_xp;
+        $earned     = $xp - $current->min_xp;
         $percentage = ($earned / $range) * 100;
 
         return (int) min(100, max(0, round($percentage)));

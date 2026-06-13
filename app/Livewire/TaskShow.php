@@ -49,6 +49,11 @@ class TaskShow extends Component
 
     public function mount(Task $task): void
     {
+        // Secure back-door progression gate: Abort if the task is locked for the authenticated user
+        if ($task->isLockedForUser(auth()->user())) {
+            abort(403, 'Tugas ini masih terkunci! Selesaikan modul/materi sebelumnya terlebih dahulu.');
+        }
+
         $this->task = $task;
         $this->loadExistingSubmission();
     }

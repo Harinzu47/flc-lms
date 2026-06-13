@@ -20,9 +20,8 @@
 
     $navItems = [
         ['key' => 'dashboard', 'label' => 'Dashboard',  'icon' => 'dashboard',      'route' => route('dashboard')],
-        ['key' => 'users',     'label' => 'Users',       'icon' => 'group',          'route' => '#'],
-        ['key' => 'materials', 'label' => 'Materials',   'icon' => 'library_books',  'route' => route('admin.materials')],
-        ['key' => 'tasks',     'label' => 'Tasks',       'icon' => 'assignment',     'route' => route('admin.tasks')],
+        ['key' => 'users',     'label' => 'Users',       'icon' => 'group',          'route' => route('admin.users')],
+        ['key' => 'courses',   'label' => 'Courses',     'icon' => 'auto_stories',   'route' => route('admin.courses')],
         ['key' => 'grading',   'label' => 'Grading',     'icon' => 'grade',          'route' => route('admin.grading')],
     ];
 @endphp
@@ -50,6 +49,7 @@
             @foreach($navItems as $item)
                 @php $isActive = $activePage === $item['key']; @endphp
                 <a href="{{ $item['route'] }}"
+                   wire:navigate
                    class="flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-200 text-sm font-medium
                        {{ $isActive
                            ? 'bg-blue-50 text-blue-700 border-l-4 border-primary'
@@ -72,10 +72,12 @@
 
         {{-- Bottom Actions --}}
         <div class="px-4 mt-auto pt-6">
-            <button class="w-full bg-primary text-on-primary py-3 rounded-xl font-semibold flex items-center justify-center gap-2 shadow-md hover:opacity-90 transition-opacity text-sm">
+            <a href="{{ route('admin.courses') }}"
+               wire:navigate
+               class="w-full bg-primary text-on-primary py-3 rounded-xl font-semibold flex items-center justify-center gap-2 shadow-md hover:opacity-90 transition-opacity text-sm">
                 <span class="material-symbols-outlined" aria-hidden="true">add</span>
                 New Course
-            </button>
+            </a>
             <div class="mt-6 pt-4 space-y-1" style="border-top: 1px solid rgba(195,198,215,0.4);">
                 <a href="#"
                    class="flex items-center gap-3 text-on-surface-variant px-4 py-3 hover:text-primary transition-colors text-sm">

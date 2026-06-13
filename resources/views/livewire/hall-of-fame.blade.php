@@ -26,25 +26,29 @@
 
 @section('sidebar-nav')
     <a href="{{ route('dashboard') }}"
+       wire:navigate
        class="flex items-center gap-3 text-on-surface-variant px-4 py-3 hover:bg-blue-50/50 rounded-xl transition-all">
-        <span class="material-symbols-outlined" aria-hidden="true">dashboard</span>
-        <span>Dashboard</span>
+        <span class="material-symbols-outlined" aria-hidden="true">school</span>
+        <span>Academy</span>
+    </a>
+    <a href="{{ route('library') }}"
+       wire:navigate
+       class="flex items-center gap-3 text-on-surface-variant px-4 py-3 hover:bg-blue-50/50 rounded-xl transition-all">
+        <span class="material-symbols-outlined" aria-hidden="true">menu_book</span>
+        <span>Library</span>
     </a>
     <a href="{{ route('leaderboard') }}"
+       wire:navigate
        class="flex items-center gap-3 bg-surface-container-lowest text-primary rounded-xl px-4 py-3 shadow-sm font-medium"
        aria-current="page">
         <span class="material-symbols-outlined" style="font-variation-settings:'FILL' 1;" aria-hidden="true">leaderboard</span>
         <span>Hall of Fame</span>
     </a>
-    <a href="#"
+    <a href="{{ route('admin.grading') }}"
+       wire:navigate
        class="flex items-center gap-3 text-on-surface-variant px-4 py-3 hover:bg-blue-50/50 rounded-xl transition-all">
-        <span class="material-symbols-outlined" aria-hidden="true">menu_book</span>
-        <span>Courses</span>
-    </a>
-    <a href="#"
-       class="flex items-center gap-3 text-on-surface-variant px-4 py-3 hover:bg-blue-50/50 rounded-xl transition-all">
-        <span class="material-symbols-outlined" aria-hidden="true">calendar_month</span>
-        <span>Calendar</span>
+        <span class="material-symbols-outlined" aria-hidden="true">admin_panel_settings</span>
+        <span>Admin</span>
     </a>
 @endsection
 

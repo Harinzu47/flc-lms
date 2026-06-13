@@ -58,12 +58,18 @@ class GamifiedDashboard extends Component
             ->take(3)
             ->get();
 
+        // Fetch all levels sorted by min_xp once to avoid N+1 query loops in the view
+        $allLevels = \App\Models\Level::query()
+            ->orderBy('min_xp')
+            ->get();
+
         return view('livewire.gamified-dashboard', compact(
             'user',
             'badges',
             'xpLogs',
             'leaderboard',
             'upcomingTasks',
+            'allLevels',
         ));
     }
 }

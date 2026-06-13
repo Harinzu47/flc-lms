@@ -37,6 +37,11 @@ class MaterialShow extends Component
     {
         $this->material = $material;
 
+        // Secure back-door progression gate: Abort if the material is locked for the authenticated user
+        if ($material->isLockedForUser(auth()->user())) {
+            abort(403, 'Materi ini masih terkunci! Tingkatkan level Anda terlebih dahulu.');
+        }
+
         // Efficient single EXISTS query — no XpLog collection loaded into memory.
         $this->hasRead = $material->xpLogs()
             ->where('user_id', auth()->id())
