@@ -222,4 +222,36 @@ class GatedProgressionTest extends TestCase
         $response = $this->actingAs($user)->get(route('materials.show', $material));
         $response->assertStatus(200);
     }
+
+    public function test_article_material_type_is_accessible_and_renders_safely(): void
+    {
+        $user = User::factory()->create(['total_xp' => 100]);
+
+        $course = Course::create([
+            'title' => 'Basic Course',
+            'difficulty_level' => 'beginner',
+            'is_published' => true,
+        ]);
+
+        $module = Module::create([
+            'course_id' => $course->id,
+            'title' => 'Module One',
+            'sort_order' => 1,
+        ]);
+
+        $material = Material::create([
+            'module_id' => $module->id,
+            'title' => 'Markdown Lesson',
+            'description' => '# Hello World Story',
+            'type' => 'article',
+            'xp_reward' => 10,
+            'file_url' => 'https://example.com/attachment.pdf',
+        ]);
+
+        $response = $this->actingAs($user)->get(route('materials.show', $material));
+        $response->assertStatus(200);
+        $response->assertSee('Hello World Story');
+        $response->assertSee('Resource Pendukung Kuliah');
+        $response->assertSee('https://example.com/attachment.pdf');
+    }
 }

@@ -142,6 +142,17 @@ class DatabaseSeeder extends Seeder
             ]
         );
 
+        $material1_1_2 = Material::updateOrCreate(
+            ['title' => 'Sintaksis Dasar & Struktur Kalimat'],
+            [
+                'module_id' => $module1_1->id,
+                'description' => "# Sintaksis Dasar Bahasa Inggris\n\nSintaksis adalah cabang ilmu linguistik yang mempelajari struktur dan pembentukan kalimat. Dalam bahasa Inggris, kalimat yang benar wajib mengikuti pola dasar.\n\n## Pola Dasar Kalimat (Sentence Patterns)\n\nSetiap kalimat lengkap minimal harus memiliki **Subject (S)** dan **Verb (V)**. Berikut pola-pola yang umum digunakan:\n\n1. **S + V (Subject + Verb)**\n   * *Example:* \"She speaks.\"\n2. **S + V + O (Subject + Verb + Object)**\n   * *Example:* \"They learn English.\"\n3. **S + V + C (Subject + Verb + Complement)**\n   * *Example:* \"He is a competent teacher.\"\n\n> **Catatan Penting:** Kata kerja (*Verb*) harus menyesuaikan dengan subjeknya (*Subject-Verb Agreement*). Jika subjek tunggal (singular), tambahkan akhiran `-s` atau `-es` pada kata kerja dasar dalam bentuk Simple Present.\n\n### Contoh Latihan Pendek:\n* *Salah:* \"He play football.\"\n* *Benar:* \"He plays football.\"",
+                'type' => 'article',
+                'xp_reward' => 15,
+                'file_url' => 'https://lms-assets.local/handout-sintaksis.pdf',
+            ]
+        );
+
         $task1_1_2 = Task::updateOrCreate(
             ['title' => 'Tugas: Menulis Paragraf Perkenalan'],
             [

@@ -258,9 +258,9 @@ class CourseManager extends Component
     {
         $this->validate([
             'materialTitle' => ['required', 'string', 'max:255'],
-            'materialDescription' => ['nullable', 'string', 'max:1000'],
+            'materialDescription' => ['nullable', 'string', 'max:20000'], // Extended for rich markdown articles
             'materialFileUrl' => ['nullable', 'url', 'max:500'],
-            'materialType' => ['required', 'in:video,document,link'],
+            'materialType' => ['required', 'in:video,document,link,article'],
             'materialXpReward' => ['required', 'integer', 'min:0', 'max:9999'],
         ]);
 

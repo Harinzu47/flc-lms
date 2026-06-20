@@ -485,19 +485,46 @@
                     @error('materialTitle') <span class="text-xs text-error mt-1 block">{{ $message }}</span> @enderror
                 </div>
                 
-                <div>
-                    <label class="block text-sm font-bold font-headline text-on-surface mb-1">Description</label>
-                    <textarea wire:model="materialDescription" rows="3" class="w-full bg-surface-container-low border border-slate-200 rounded-xl px-4 py-2.5 text-sm focus:border-primary focus:ring-1 focus:ring-primary outline-none"></textarea>
+                <div x-data="{ tab: 'write' }" class="space-y-2">
+                    <div class="flex justify-between items-center mb-1">
+                        <label class="block text-sm font-bold font-headline text-on-surface">
+                            {{ $materialType === 'article' ? 'Konten Artikel (Markdown)' : 'Description' }}
+                        </label>
+                        @if ($materialType === 'article')
+                            <div class="flex border border-slate-200 rounded-lg overflow-hidden bg-slate-100 p-0.5 text-xs">
+                                <button type="button" @click="tab = 'write'" :class="tab === 'write' ? 'bg-white text-slate-800 shadow-sm font-bold' : 'text-slate-500 hover:text-slate-800'" class="px-3 py-1 rounded-md transition-all">Write</button>
+                                <button type="button" @click="tab = 'preview'" :class="tab === 'preview' ? 'bg-white text-slate-800 shadow-sm font-bold' : 'text-slate-500 hover:text-slate-800'" class="px-3 py-1 rounded-md transition-all">Preview</button>
+                            </div>
+                        @endif
+                    </div>
+                    
+                    <div x-show="tab === 'write' || '{{ $materialType }}' !== 'article'">
+                        <textarea wire:model.live.debounce.300ms="materialDescription" rows="{{ $materialType === 'article' ? 8 : 3 }}" class="w-full bg-surface-container-low border border-slate-200 rounded-xl px-4 py-2.5 text-sm focus:border-primary focus:ring-1 focus:ring-primary outline-none" placeholder="{{ $materialType === 'article' ? 'Tulis artikel menggunakan sintaksis Markdown...' : '' }}"></textarea>
+                    </div>
+
+                    @if ($materialType === 'article')
+                        <div x-show="tab === 'preview'" class="p-4 bg-slate-50 rounded-xl border border-slate-200 max-h-60 overflow-y-auto prose prose-slate max-w-none text-sm leading-relaxed text-slate-700">
+                            @if(empty($materialDescription))
+                                <span class="text-slate-400 italic">Belum ada konten untuk dipratinjau.</span>
+                            @else
+                                {!! \Illuminate\Support\Str::markdown($materialDescription ?? '', [
+                                    'html_input' => 'escape',
+                                    'allow_unsafe_links' => false,
+                                ]) !!}
+                            @endif
+                        </div>
+                    @endif
                     @error('materialDescription') <span class="text-xs text-error mt-1 block">{{ $message }}</span> @enderror
                 </div>
 
                 <div class="grid grid-cols-2 gap-4">
                     <div>
                         <label class="block text-sm font-bold font-headline text-on-surface mb-1">Material Type</label>
-                        <select wire:model="materialType" class="w-full bg-surface-container-low border border-slate-200 rounded-xl px-4 py-2.5 text-sm focus:border-primary focus:ring-1 focus:ring-primary outline-none">
+                        <select wire:model.live="materialType" class="w-full bg-surface-container-low border border-slate-200 rounded-xl px-4 py-2.5 text-sm focus:border-primary focus:ring-1 focus:ring-primary outline-none">
                             <option value="document">PDF / Document</option>
                             <option value="video">Video URL</option>
                             <option value="link">External Web Link</option>
+                            <option value="article">Markdown Article</option>
                         </select>
                         @error('materialType') <span class="text-xs text-error mt-1 block">{{ $message }}</span> @enderror
                     </div>
@@ -510,7 +537,9 @@
                 </div>
 
                 <div>
-                    <label class="block text-sm font-bold font-headline text-on-surface mb-1">External File URL</label>
+                    <label class="block text-sm font-bold font-headline text-on-surface mb-1">
+                        {{ $materialType === 'article' ? 'Lampiran Dokumen Tambahan (Opsional)' : 'External File URL' }}
+                    </label>
                     <input type="url" wire:model="materialFileUrl" placeholder="https://example.com/file.pdf" class="w-full bg-surface-container-low border border-slate-200 rounded-xl px-4 py-2.5 text-sm focus:border-primary focus:ring-1 focus:ring-primary outline-none">
                     @error('materialFileUrl') <span class="text-xs text-error mt-1 block">{{ $message }}</span> @enderror
                 </div>

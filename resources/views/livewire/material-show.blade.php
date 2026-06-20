@@ -165,7 +165,7 @@
                         <source src="{{ $material->file_url }}">
                     </video>
                 </div>
-            @elseif($material->file_url)
+            @elseif($material->type !== 'article' && $material->file_url)
                 {{-- Document / Link — show a styled resource card instead of a hero image --}}
                 <div class="relative w-full rounded-2xl overflow-hidden mb-12 p-6 bg-surface-container-low flex items-center gap-4">
                     <span class="material-symbols-outlined text-5xl text-primary">
@@ -182,6 +182,18 @@
                         </a>
                     </div>
                 </div>
+            @elseif($material->type === 'article')
+                {{-- Markdown Article Editorial Banner --}}
+                <div class="relative w-full h-48 rounded-2xl overflow-hidden mb-8 shadow-sm bg-gradient-to-r from-blue-700 to-indigo-900 flex items-center justify-center p-6 text-center">
+                    <div class="relative z-10 space-y-2">
+                        <div class="inline-flex items-center justify-center bg-white/20 backdrop-blur-md rounded-full p-2.5 text-white mb-2">
+                            <span class="material-symbols-outlined text-2xl">menu_book</span>
+                        </div>
+                        <p class="text-xs font-bold uppercase tracking-[0.2em] text-blue-100">Hybrid Article Lesson</p>
+                        <p class="text-sm text-blue-200/90 font-medium max-w-md mx-auto">Selesaikan membaca artikel di bawah ini untuk mendapatkan poin XP.</p>
+                    </div>
+                    <div class="absolute inset-0 bg-black/10"></div>
+                </div>
             @else
                 {{-- Placeholder banner when no file is attached --}}
                 <div class="relative w-full aspect-video rounded-2xl overflow-hidden mb-12 shadow-sm bg-surface-container-low flex items-center justify-center">
@@ -192,9 +204,35 @@
             @endif
 
             {{-- ── Rich Text Content ───────────────────────────────── --}}
-            <section class="prose prose-slate lg:prose-xl max-w-none">
-                {!! $material->description !!}
+            <section class="prose prose-indigo max-w-none">
+                @if($material->type === 'article')
+                    {!! \Illuminate\Support\Str::markdown($material->description ?? '', [
+                        'html_input' => 'escape',
+                        'allow_unsafe_links' => false,
+                    ]) !!}
+                @else
+                    {!! $material->description !!}
+                @endif
             </section>
+
+            {{-- ── Bottom Resource Card (Hybrid Lesson attachment) ───────────────── --}}
+            @if($material->type === 'article' && !empty($material->file_url))
+                <div class="mt-8 p-6 bg-gradient-to-r from-slate-50 to-indigo-50/30 rounded-2xl border border-indigo-100 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 shadow-sm">
+                    <div class="flex items-center gap-4">
+                        <div class="w-12 h-12 rounded-xl bg-indigo-100 flex items-center justify-center text-indigo-700">
+                            <span class="material-symbols-outlined text-2xl">attachment</span>
+                        </div>
+                        <div>
+                            <h4 class="font-headline font-bold text-slate-800 text-sm">Resource Pendukung Kuliah</h4>
+                            <p class="text-xs text-slate-500 mt-0.5">Unduh atau buka lampiran dokumen pendukung materi ini.</p>
+                        </div>
+                    </div>
+                    <a href="{{ $material->file_url }}" target="_blank" rel="noopener" class="inline-flex items-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold px-4 py-2.5 rounded-xl transition-all shadow-sm">
+                        <span class="material-symbols-outlined text-sm">download</span>
+                        Buka Lampiran
+                    </a>
+                </div>
+            @endif
 
             {{-- ── Bottom Action Bar / Gamification ───────────────── --}}
             {{-- Outer Alpine scope kept for smooth in-page "XP Added" flip     --}}
