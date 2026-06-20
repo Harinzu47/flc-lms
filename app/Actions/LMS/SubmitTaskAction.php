@@ -31,20 +31,51 @@ final class SubmitTaskAction
         ?string       $answerText,
         ?UploadedFile $file
     ): Submission {
-        // ── Guard: one submission per user per task ───────────────────────────
-        $alreadySubmitted = Submission::query()
+        // Find existing submission first
+        $existing = Submission::query()
             ->where('user_id', $user->id)
             ->where('task_id', $task->id)
-            ->exists();
+            ->first();
 
-        if ($alreadySubmitted) {
-            throw new RuntimeException('You have already submitted this task.');
+        if ($existing) {
+            // Guard: block resubmission if not flagged for review/revision
+            if (!$existing->is_flagged) {
+                throw new RuntimeException('You have already submitted this task.');
+            }
+
+            // ── Store the new uploaded file (if any) ──────────────────────────
+            $fileUrl = $existing->file_url;
+            if ($file !== null) {
+                // Delete old file if it exists
+                if ($existing->file_url) {
+                    Storage::disk('public')->delete($existing->file_url);
+                }
+
+                $extension = strtolower($file->getClientOriginalExtension());
+                $allowedExtensions = ['pdf', 'zip', 'rar', 'docx', 'doc', 'xlsx'];
+                
+                if (!in_array($extension, $allowedExtensions, true)) {
+                    throw new RuntimeException('Security Validation Failed: Unsupported file extension.');
+                }
+
+                $fileUrl = $file->store('submissions', 'public');
+            }
+
+            // ── Update the existing submission ───────────────────────────────
+            $existing->update([
+                'answer_text' => $answerText,
+                'file_url'    => $fileUrl,
+                'status'      => 'pending',
+                'is_flagged'  => false,
+                'review_comment' => null,
+            ]);
+
+            return $existing;
         }
 
-        // ── Store the uploaded file (if any) ──────────────────────────────────
+        // ── Store the uploaded file (if any) for new submission ───────────────
         $fileUrl = null;
         if ($file !== null) {
-            // Defense in depth: Double check extension before storing
             $extension = strtolower($file->getClientOriginalExtension());
             $allowedExtensions = ['pdf', 'zip', 'rar', 'docx', 'doc', 'xlsx'];
             
@@ -52,9 +83,6 @@ final class SubmitTaskAction
                 throw new RuntimeException('Security Validation Failed: Unsupported file extension.');
             }
 
-            // Stored in storage/app/public/submissions.
-            // store() automatically generates a cryptographically secure randomized hash
-            // (e.g. submissions/8ab3d9...zip) to prevent guessing and path traversal attacks.
             $fileUrl = $file->store('submissions', 'public');
         }
 
@@ -65,6 +93,8 @@ final class SubmitTaskAction
             'answer_text' => $answerText,
             'file_url'    => $fileUrl,
             'status'      => 'pending',
+            'is_flagged'  => false,
+            'review_comment' => null,
         ]);
     }
 }

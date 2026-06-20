@@ -61,8 +61,7 @@ class CourseManager extends Component
     public string $taskDescription = '';
     public string $taskType = 'essay';
     public int $taskBaseXp = 50;
-    public string $taskDeadline = '';
-
+    public ?int $taskDaysLimit = null;
     // ── Render ───────────────────────────────────────────────────────────────
     public function render(): View
     {
@@ -298,7 +297,6 @@ class CourseManager extends Component
         $this->taskModuleId = $moduleId;
         $this->isTaskModalOpen = true;
     }
-
     public function editTask(Task $task): void
     {
         $this->resetTaskForm();
@@ -308,7 +306,7 @@ class CourseManager extends Component
         $this->taskDescription = $task->description;
         $this->taskType = $task->type;
         $this->taskBaseXp = $task->base_xp;
-        $this->taskDeadline = $task->deadline ? $task->deadline->format('Y-m-d\TH:i') : '';
+        $this->taskDaysLimit = $task->days_limit;
         $this->isTaskModalOpen = true;
     }
 
@@ -319,7 +317,7 @@ class CourseManager extends Component
             'taskDescription' => ['required', 'string', 'max:2000'],
             'taskType' => ['required', 'in:essay,file_upload,quiz'],
             'taskBaseXp' => ['required', 'integer', 'min:1', 'max:9999'],
-            'taskDeadline' => ['nullable', 'date'],
+            'taskDaysLimit' => ['nullable', 'integer', 'min:1', 'max:365'],
         ]);
 
         $data = [
@@ -328,7 +326,7 @@ class CourseManager extends Component
             'description' => $this->taskDescription,
             'type' => $this->taskType,
             'base_xp' => $this->taskBaseXp,
-            'deadline' => $this->taskDeadline ?: null,
+            'days_limit' => $this->taskDaysLimit,
         ];
 
         if ($this->taskId !== null) {
@@ -342,7 +340,6 @@ class CourseManager extends Component
         $this->closeTaskModal();
         $this->dispatch('notify', message: $message);
     }
-
     public function deleteTask(Task $task): void
     {
         $task->delete();
@@ -415,7 +412,7 @@ class CourseManager extends Component
         $this->taskDescription = '';
         $this->taskType = 'essay';
         $this->taskBaseXp = 50;
-        $this->taskDeadline = '';
+        $this->taskDaysLimit = null;
         $this->resetValidation();
     }
 }

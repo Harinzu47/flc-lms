@@ -55,9 +55,16 @@
                                     {{ $submission->task->title }}
                                 </p>
                                 <div class="flex items-center gap-2 mt-2">
-                                    <span class="px-2 py-0.5 bg-secondary-container text-on-secondary-container rounded-full text-[10px] font-bold font-label uppercase">
-                                        Pending
-                                    </span>
+                                    @if($submission->is_flagged)
+                                        <span class="px-2 py-0.5 bg-error-container text-on-error-container border border-error/10 rounded-full text-[10px] font-bold font-label uppercase flex items-center gap-0.5">
+                                            <span class="material-symbols-outlined text-[12px]" style="font-variation-settings:'FILL' 1;">flag</span>
+                                            Review
+                                        </span>
+                                    @else
+                                        <span class="px-2 py-0.5 bg-secondary-container text-on-secondary-container rounded-full text-[10px] font-bold font-label uppercase">
+                                            Pending
+                                        </span>
+                                    @endif
                                     <span class="text-[10px] text-on-surface-variant">
                                         {{ $submission->created_at->diffForHumans() }}
                                     </span>

@@ -24,12 +24,6 @@
         <span class="material-symbols-outlined" aria-hidden="true">menu_book</span>
         <span>Library</span>
     </a>
-    <a href="{{ route('admin.grading') }}"
-       wire:navigate
-       class="flex items-center gap-3 text-on-surface-variant px-4 py-3 hover:bg-blue-50/50 rounded-xl transition-all">
-        <span class="material-symbols-outlined" aria-hidden="true">admin_panel_settings</span>
-        <span>Admin</span>
-    </a>
 @endsection
 
 <div class="max-w-4xl mx-auto space-y-8">
@@ -121,16 +115,17 @@
                             @php
                                 $hasRead = $readMaterialIds->contains($mat->id);
                             @endphp
-                            <div class="px-6 py-4 flex items-center justify-between hover:bg-slate-50/20 transition-colors">
+                            <a href="{{ route('materials.show', $mat) }}" wire:navigate
+                               class="px-6 py-4 flex items-center justify-between hover:bg-blue-50/30 transition-colors group cursor-pointer">
                                 <div class="flex items-center gap-3">
-                                    <div class="w-8 h-8 rounded-lg bg-blue-50 flex items-center justify-center text-primary shadow-sm border border-blue-100">
+                                    <div class="w-8 h-8 rounded-lg {{ $hasRead ? 'bg-green-50 border-green-100' : 'bg-blue-50 border-blue-100' }} flex items-center justify-center {{ $hasRead ? 'text-green-600' : 'text-primary' }} shadow-sm border">
                                         <span class="material-symbols-outlined text-base">
-                                            {{ $mat->type === 'video' ? 'play_circle' : ($mat->type === 'link' ? 'link' : 'description') }}
+                                            {{ $mat->type === 'video' ? 'play_circle' : ($mat->type === 'article' ? 'menu_book' : ($mat->type === 'link' ? 'link' : 'description')) }}
                                         </span>
                                     </div>
                                     <div>
-                                        <p class="text-sm font-semibold text-on-surface font-headline">{{ $mat->title }}</p>
-                                        <p class="text-xs text-on-surface-variant line-clamp-1 max-w-lg">{{ $mat->description }}</p>
+                                        <p class="text-sm font-semibold text-on-surface font-headline group-hover:text-primary transition-colors">{{ $mat->title }}</p>
+                                        <p class="text-xs text-on-surface-variant line-clamp-1 max-w-lg">{{ Str::limit(strip_tags($mat->description), 80) }}</p>
                                     </div>
                                 </div>
                                 <div class="flex items-center gap-4">
@@ -140,18 +135,16 @@
                                     </span>
                                     
                                     @if($hasRead)
-                                        <span class="inline-flex items-center justify-center w-8 h-8 rounded-full bg-green-50 text-green-600 border border-green-100" title="Completed">
+                                        <span class="inline-flex items-center justify-center w-8 h-8 rounded-full bg-green-50 text-green-600 border border-green-100" title="Completed — Click to review">
                                             <span class="material-symbols-outlined text-lg" style="font-variation-settings:'FILL' 1;">check_circle</span>
                                         </span>
                                     @else
-                                        <a href="{{ route('materials.show', $mat) }}"
-                                           wire:navigate
-                                           class="bg-primary hover:bg-primary-container text-on-primary hover:text-primary px-3 py-1.5 rounded-xl text-xs font-bold transition-all shadow-sm">
+                                        <span class="bg-primary group-hover:bg-primary-container text-on-primary group-hover:text-primary px-3 py-1.5 rounded-xl text-xs font-bold transition-all shadow-sm">
                                             Read Lesson
-                                        </a>
+                                        </span>
                                     @endif
                                 </div>
-                            </div>
+                            </a>
                         @endforeach
 
                         {{-- Tasks --}}
@@ -169,8 +162,43 @@
                                         </span>
                                     </div>
                                     <div>
-                                        <p class="text-sm font-semibold text-on-surface font-headline">{{ $task->title }}</p>
+                                        <div class="flex items-center gap-2">
+                                            <p class="text-sm font-semibold text-on-surface font-headline">{{ $task->title }}</p>
+                                            @if($sub && $sub->is_flagged)
+                                                <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-error-container text-on-error-container text-[9px] font-extrabold uppercase border border-error/10 animate-pulse">
+                                                    <span class="w-1.5 h-1.5 rounded-full bg-error animate-ping"></span>
+                                                    Butuh Revisi
+                                                </span>
+                                            @endif
+                                        </div>
                                         <p class="text-xs text-on-surface-variant line-clamp-1 max-w-lg">{{ $task->description }}</p>
+                                        @if($task->days_limit)
+                                            @php
+                                                $start = $taskStartsMap->get($task->id);
+                                            @endphp
+                                            @if($start)
+                                                @php
+                                                    $deadline = $start->started_at->copy()->addDays($task->days_limit);
+                                                    $isPast = now()->gt($deadline);
+                                                    $diff = now()->diff($deadline);
+                                                @endphp
+                                                <p class="text-[11px] mt-1 flex items-center gap-1 font-medium {{ $isPast ? 'text-error font-bold' : 'text-tertiary' }}">
+                                                    <span class="material-symbols-outlined text-[12px]">schedule</span>
+                                                    @if($isPast)
+                                                        Batas waktu terlewati (Wajib disubmit)
+                                                    @else
+                                                        Bisa dikerjakan s/d {{ $deadline->format('d M Y, H:i') }} (
+                                                        @if($diff->d > 0) {{ $diff->d }} hari @endif
+                                                        {{ $diff->h }} jam lagi)
+                                                    @endif
+                                                </p>
+                                            @else
+                                                <p class="text-[11px] mt-1 text-slate-500 flex items-center gap-1 font-medium">
+                                                    <span class="material-symbols-outlined text-[12px]">schedule</span>
+                                                    Batas waktu: {{ $task->days_limit }} hari (dimulai sejak tugas dibuka)
+                                                </p>
+                                            @endif
+                                        @endif
                                     </div>
                                 </div>
                                 <div class="flex items-center gap-4">
@@ -179,7 +207,13 @@
                                         {{ $task->base_xp }} XP max
                                     </span>
                                     
-                                    @if($isGraded)
+                                    @if($sub && $sub->is_flagged)
+                                        <a href="{{ route('tasks.show', $task) }}"
+                                           wire:navigate
+                                           class="bg-error hover:bg-red-700 text-white px-3 py-1.5 rounded-xl text-xs font-bold transition-all shadow-sm">
+                                            Revisi Tugas
+                                        </a>
+                                    @elseif($isGraded)
                                         <div class="flex items-center gap-2">
                                             <span class="text-[10px] font-bold text-green-700 bg-green-50 px-2 py-0.5 rounded-md border border-green-200">
                                                 Score: {{ $sub->score }}

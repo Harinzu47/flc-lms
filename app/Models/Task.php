@@ -25,7 +25,7 @@ class Task extends Model
         'description',
         'type',
         'base_xp',
-        'deadline',
+        'days_limit',
     ];
 
     /**
@@ -36,7 +36,7 @@ class Task extends Model
     protected function casts(): array
     {
         return [
-            'deadline' => 'datetime',
+            'days_limit' => 'integer',
             'base_xp'  => 'integer',
         ];
     }
@@ -61,7 +61,25 @@ class Task extends Model
         return $this->hasMany(Submission::class);
     }
 
-    // -------------------------------------------------------------------------
+    /**
+     * A task has many user starts.
+     */
+    public function userStarts(): HasMany
+    {
+        return $this->hasMany(UserTaskStart::class);
+    }
+
+    /**
+     * Get the computed personal deadline for a given user.
+     */
+    public function getPersonalDeadlineFor(User $user): ?\Carbon\Carbon
+    {
+        if ($this->days_limit === null) {
+            return null;
+        }
+        $start = $this->userStarts->where('user_id', $user->id)->first();
+        return $start ? $start->started_at->copy()->addDays($this->days_limit) : null;
+    }
     // Gamification Helpers
     // -------------------------------------------------------------------------
 

@@ -24,6 +24,8 @@ class Submission extends Model
         'file_url',
         'score',
         'status',
+        'is_flagged',
+        'review_comment',
     ];
 
     /**
@@ -35,6 +37,7 @@ class Submission extends Model
     {
         return [
             'score' => 'integer',
+            'is_flagged' => 'boolean',
         ];
     }
 
@@ -56,5 +59,29 @@ class Submission extends Model
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
+    }
+    /**
+     * Get a clean, human-readable name for the submitted file.
+     */
+    public function getFriendlyFileNameAttribute(): string
+    {
+        if (!$this->file_url) {
+            return '';
+        }
+
+        $extension = pathinfo($this->file_url, PATHINFO_EXTENSION);
+        
+        $userName = $this->user ? $this->user->name : 'Mahasiswa';
+        $taskTitle = $this->task ? $this->task->title : 'Tugas';
+
+        // Clean special characters and replace spaces with underscores
+        $studentNameClean = preg_replace('/[^a-zA-Z0-9]/', '_', $userName);
+        $taskTitleClean = preg_replace('/[^a-zA-Z0-9]/', '_', $taskTitle);
+
+        // Remove duplicate underscores and clean borders
+        $studentNameClean = trim(preg_replace('/_+/', '_', $studentNameClean), '_');
+        $taskTitleClean = trim(preg_replace('/_+/', '_', $taskTitleClean), '_');
+
+        return "Tugas_{$studentNameClean}_{$taskTitleClean}.{$extension}";
     }
 }

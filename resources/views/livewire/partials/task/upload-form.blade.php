@@ -53,6 +53,14 @@
                     <p class="text-on-surface-variant text-xs mt-2">
                         {{ number_format($uploadedFile->getSize() / 1024, 1) }} KB — click to change
                     </p>
+                @elseif($existingSubmission && $existingSubmission->file_url)
+                    <h4 class="font-headline font-bold text-secondary flex items-center gap-1.5 justify-center">
+                        <span class="material-symbols-outlined text-lg" style="font-variation-settings:'FILL' 1;">check_circle</span>
+                        {{ basename($existingSubmission->file_url) }}
+                    </h4>
+                    <p class="text-on-surface-variant text-xs mt-2">
+                        Berkas terunggah sebelumnya — klik atau seret untuk mengganti
+                    </p>
                 @else
                     <h4 class="font-headline font-bold text-on-surface group-hover:text-primary transition-colors">
                         Click or drag file to upload
@@ -147,7 +155,9 @@
                 class="w-full bg-gradient-to-br from-primary to-primary-container text-on-primary py-5 rounded-2xl font-headline font-extrabold text-lg shadow-lg shadow-primary/30 hover:-translate-y-0.5 active:translate-y-px transition-all flex items-center justify-center gap-3 focus:outline-none focus:ring-2 focus:ring-primary/50"
                 aria-label="Submit your task"
             >
-                <span wire:loading.remove wire:target="submitTask">Submit Task</span>
+                <span wire:loading.remove wire:target="submitTask">
+                    {{ $existingSubmission && $existingSubmission->is_flagged ? 'Kirim Revisi Tugas' : 'Submit Task' }}
+                </span>
                 <span wire:loading.remove wire:target="submitTask"
                       class="material-symbols-outlined text-xl"
                       aria-hidden="true">send</span>

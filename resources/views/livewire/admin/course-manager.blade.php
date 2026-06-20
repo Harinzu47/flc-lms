@@ -236,8 +236,8 @@
                                                         </div>
                                                         <div class="flex items-center gap-2 text-[10px] text-on-surface-variant">
                                                             <span class="bg-amber-100/50 text-amber-800 px-1.5 py-0.2 rounded-md font-bold">{{ $tsk->base_xp }} XP</span>
-                                                            @if($tsk->deadline)
-                                                                <span class="text-error-container text-error font-semibold">Deadline: {{ $tsk->deadline->format('d M Y, H:i') }}</span>
+                                                            @if($tsk->days_limit)
+                                                                <span class="text-error-container text-error font-semibold">Deadline: {{ $tsk->days_limit }} hari setelah dibuka</span>
                                                             @else
                                                                 <span>No Deadline</span>
                                                             @endif
@@ -589,9 +589,9 @@
                 </div>
 
                 <div>
-                    <label class="block text-sm font-bold font-headline text-on-surface mb-1">Submission Deadline</label>
-                    <input type="datetime-local" wire:model="taskDeadline" class="w-full bg-surface-container-low border border-slate-200 rounded-xl px-4 py-2.5 text-sm focus:border-primary focus:ring-1 focus:ring-primary outline-none">
-                    @error('taskDeadline') <span class="text-xs text-error mt-1 block">{{ $message }}</span> @enderror
+                    <label class="block text-sm font-bold font-headline text-on-surface mb-1">Deadline Duration (Days)</label>
+                    <input type="number" min="1" max="365" wire:model="taskDaysLimit" placeholder="No deadline (unlimited)" class="w-full bg-surface-container-low border border-slate-200 rounded-xl px-4 py-2.5 text-sm focus:border-primary focus:ring-1 focus:ring-primary outline-none">
+                    @error('taskDaysLimit') <span class="text-xs text-error mt-1 block">{{ $message }}</span> @enderror
                 </div>
             </div>
 

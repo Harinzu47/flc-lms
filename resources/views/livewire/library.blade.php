@@ -25,12 +25,6 @@
         <span class="material-symbols-outlined" style="font-variation-settings:'FILL' 1;" aria-hidden="true">menu_book</span>
         <span>Library</span>
     </a>
-    <a href="{{ route('admin.grading') }}"
-       wire:navigate
-       class="flex items-center gap-3 text-on-surface-variant px-4 py-3 hover:bg-blue-50/50 rounded-xl transition-all">
-        <span class="material-symbols-outlined" aria-hidden="true">admin_panel_settings</span>
-        <span>Admin</span>
-    </a>
 @endsection
 
 <div class="max-w-6xl mx-auto space-y-8">

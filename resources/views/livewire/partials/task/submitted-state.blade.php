@@ -64,17 +64,20 @@
             <a href="{{ Storage::url($existingSubmission->file_url) }}"
                target="_blank"
                rel="noopener noreferrer"
-               class="flex items-center gap-3 text-primary hover:underline font-medium group"
-               aria-label="Open submitted file: {{ basename($existingSubmission->file_url) }}">
-                <div class="w-10 h-10 bg-primary/10 rounded-xl flex items-center justify-center group-hover:bg-primary/20 transition-colors"
+               download="{{ $existingSubmission->friendly_file_name }}"
+               class="flex items-center gap-3 text-primary hover:underline font-medium group min-w-0"
+               aria-label="Open submitted file: {{ $existingSubmission->friendly_file_name }}">
+                <div class="w-10 h-10 bg-primary/10 rounded-xl flex items-center justify-center group-hover:bg-primary/20 transition-colors flex-shrink-0"
                      aria-hidden="true">
                     <span class="material-symbols-outlined text-primary">description</span>
                 </div>
-                <div>
+                <div class="min-w-0 flex-1">
                     <p class="font-headline font-semibold text-on-surface">View Submitted File</p>
-                    <p class="text-xs text-on-surface-variant">{{ basename($existingSubmission->file_url) }}</p>
+                    <p class="text-xs text-on-surface-variant truncate" title="{{ $existingSubmission->friendly_file_name }}">
+                        {{ $existingSubmission->friendly_file_name }}
+                    </p>
                 </div>
-                <span class="material-symbols-outlined text-sm ml-auto text-on-surface-variant group-hover:text-primary transition-colors"
+                <span class="material-symbols-outlined text-sm ml-auto text-on-surface-variant group-hover:text-primary transition-colors flex-shrink-0"
                       aria-hidden="true">open_in_new</span>
             </a>
         </div>

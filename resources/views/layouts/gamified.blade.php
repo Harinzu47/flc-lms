@@ -95,14 +95,60 @@
                             </a>
                         </div>
                     </div>
-                    <div class="flex items-center gap-4">
-                        <button class="p-2 rounded-full hover:bg-surface-container-low transition-all" aria-label="Notifications">
-                            <span class="material-symbols-outlined text-on-surface-variant">notifications</span>
-                        </button>
-                        <button class="p-2 rounded-full hover:bg-surface-container-low transition-all"
-                                aria-label="{{ auth()->user()->name }}">
-                            <span class="material-symbols-outlined text-on-surface-variant">account_circle</span>
-                        </button>
+                    <div class="flex items-center gap-3" x-data="{ userMenuOpen: false }">
+                        {{-- User Avatar & Dropdown Trigger --}}
+                        <div class="relative">
+                            <button @click="userMenuOpen = !userMenuOpen"
+                                    @keydown.escape.window="userMenuOpen = false"
+                                    class="flex items-center gap-2 pl-3 pr-2 py-1.5 rounded-full hover:bg-surface-container-low transition-all border border-transparent hover:border-outline-variant/20"
+                                    aria-label="User menu">
+                                <span class="text-sm font-semibold text-on-surface-variant font-headline hidden sm:block">
+                                    {{ auth()->user()->name }}
+                                </span>
+                                <div class="w-8 h-8 rounded-full bg-gradient-to-br from-primary to-primary-container flex items-center justify-center text-on-primary font-bold text-xs border-2 border-primary/10">
+                                    {{ strtoupper(substr(auth()->user()->name, 0, 1)) }}
+                                </div>
+                            </button>
+
+                            {{-- Dropdown Menu --}}
+                            <div x-show="userMenuOpen"
+                                 x-cloak
+                                 @click.away="userMenuOpen = false"
+                                 x-transition:enter="transition ease-out duration-150"
+                                 x-transition:enter-start="opacity-0 scale-95 -translate-y-1"
+                                 x-transition:enter-end="opacity-100 scale-100 translate-y-0"
+                                 x-transition:leave="transition ease-in duration-100"
+                                 x-transition:leave-start="opacity-100 scale-100"
+                                 x-transition:leave-end="opacity-0 scale-95"
+                                 class="absolute right-0 mt-2 w-56 bg-white rounded-xl shadow-lg border border-outline-variant/10 py-2 z-[200]">
+
+                                {{-- User Info Header --}}
+                                <div class="px-4 py-2 border-b border-outline-variant/10 mb-1">
+                                    <p class="text-sm font-bold font-headline text-on-surface truncate">{{ auth()->user()->name }}</p>
+                                    <p class="text-xs text-on-surface-variant truncate">{{ auth()->user()->email }}</p>
+                                </div>
+
+                                {{-- Profile Link --}}
+                                <a href="{{ route('profile.edit') }}"
+                                   class="flex items-center gap-3 px-4 py-2.5 text-sm text-on-surface-variant hover:bg-blue-50/60 hover:text-primary transition-colors">
+                                    <span class="material-symbols-outlined text-lg">person</span>
+                                    Profil Saya
+                                </a>
+
+                                {{-- Divider --}}
+                                <div class="border-t border-outline-variant/10 my-1"></div>
+
+                                {{-- Logout (POST form) --}}
+                                <form method="POST" action="{{ route('logout') }}">
+                                    @csrf
+                                    <button type="submit"
+                                            class="flex items-center gap-3 w-full px-4 py-2.5 text-sm text-red-600 hover:bg-red-50/60 transition-colors text-left">
+                                        <span class="material-symbols-outlined text-lg">logout</span>
+                                        Keluar
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </nav>

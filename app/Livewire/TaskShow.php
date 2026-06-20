@@ -25,7 +25,7 @@ use Throwable;
  *   - Conditional input validation based on task type.
  *   - Delegating submission persistence to SubmitTaskAction.
  */
-#[Layout('layouts.gamified')]
+#[Layout('layouts.base')]
 #[Title('Task Submission — FLC LMS')]
 class TaskShow extends Component
 {
@@ -46,7 +46,6 @@ class TaskShow extends Component
     // ─────────────────────────────────────────────────────────────────────────
     // Lifecycle
     // ─────────────────────────────────────────────────────────────────────────
-
     public function mount(Task $task): void
     {
         // Secure back-door progression gate: Abort if the task is locked for the authenticated user
@@ -55,9 +54,28 @@ class TaskShow extends Component
         }
 
         $this->task = $task;
-        $this->loadExistingSubmission();
-    }
 
+        if ($this->task->days_limit !== null) {
+            try {
+                $start = \App\Models\UserTaskStart::firstOrCreate(
+                    ['user_id' => auth()->id(), 'task_id' => $this->task->id],
+                    ['started_at' => now()]
+                );
+            } catch (\Illuminate\Database\QueryException $e) {
+                $start = \App\Models\UserTaskStart::where('user_id', auth()->id())->where('task_id', $this->task->id)->firstOrFail();
+            }
+            $this->task->deadline = $start->started_at->copy()->addDays($this->task->days_limit);
+        } else {
+            $this->task->deadline = null;
+        }
+
+        $this->loadExistingSubmission();
+
+        // RETENSI DATA LAMA: Pre-populate existing text answer if available
+        if ($this->existingSubmission) {
+            $this->answerText = $this->existingSubmission->answer_text ?? '';
+        }
+    }
     // ─────────────────────────────────────────────────────────────────────────
     // Actions
     // ─────────────────────────────────────────────────────────────────────────

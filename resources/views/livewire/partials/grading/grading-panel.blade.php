@@ -117,16 +117,62 @@
         <div class="absolute inset-0 bg-white/10 opacity-0 group-hover:opacity-100 transition-opacity" aria-hidden="true"></div>
     </button>
 
+    {{-- Review Comment Textarea --}}
+    <div class="space-y-2 mt-6 pt-4 border-t border-outline-variant/15">
+        <label for="review-comment-{{ $selectedSubmission->id }}"
+               class="text-[11px] font-label text-on-surface-variant uppercase tracking-widest block font-bold">
+            Catatan Revisi / Umpan Balik
+        </label>
+        <textarea
+            id="review-comment-{{ $selectedSubmission->id }}"
+            wire:model="reviewComment"
+            rows="3"
+            placeholder="Tulis instruksi revisi untuk mahasiswa (min. 5 karakter)..."
+            class="w-full bg-surface-container-high border-none rounded-xl p-3 font-body placeholder:text-outline text-sm text-on-surface-variant transition-all resize-none focus:ring-2 focus:ring-primary/20 disabled:opacity-60 disabled:cursor-not-allowed"
+            {{ $selectedSubmission->is_flagged ? 'disabled' : '' }}
+        ></textarea>
+        @error('reviewComment')
+            <p class="text-xs text-error font-medium flex items-center gap-1 mt-1" role="alert">
+                <span class="material-symbols-outlined" style="font-size:14px;" aria-hidden="true">error</span>
+                {{ $message }}
+            </p>
+        @enderror
+    </div>
+
 </div>{{-- /space-y-6 --}}
 
 {{-- Footer Actions --}}
 <div class="mt-8 pt-6 flex justify-between items-center" style="border-top: 1px solid rgba(195,198,215,0.4);">
-    <button class="text-on-surface-variant hover:text-error flex items-center gap-2 text-sm font-semibold transition-colors">
-        <span class="material-symbols-outlined text-lg" aria-hidden="true">flag</span>
+    <button
+        wire:click="toggleFlag({{ $selectedSubmission->id }})"
+        class="flex items-center gap-2 text-sm font-bold transition-all px-3 py-1.5 rounded-lg border
+            {{ $selectedSubmission->is_flagged
+                ? 'bg-error-container text-on-error-container border-error/30'
+                : 'text-on-surface-variant hover:text-error border-transparent hover:bg-error-container/10' }}"
+    >
+        <span class="material-symbols-outlined text-lg"
+              style="font-variation-settings:'FILL' {{ $selectedSubmission->is_flagged ? 1 : 0 }};"
+              aria-hidden="true">flag</span>
         Flag for Review
     </button>
-    <div class="flex items-center gap-2 text-outline-variant" aria-hidden="true">
-        <span class="material-symbols-outlined text-lg">history</span>
-        <span class="text-xs">Ready to grade</span>
-    </div>
+
+    @if($selectedSubmission->is_flagged)
+        <button
+            wire:click="toggleFlag({{ $selectedSubmission->id }})"
+            class="flex items-center gap-2 text-primary hover:text-blue-700 text-sm font-semibold transition-colors cursor-pointer"
+            aria-label="Remove flag and mark ready to grade"
+        >
+            <span class="material-symbols-outlined text-lg" aria-hidden="true">history</span>
+            <span class="text-xs font-semibold">Ready to grade</span>
+        </button>
+    @else
+        <button
+            disabled
+            class="flex items-center gap-2 text-outline-variant text-sm font-semibold pointer-events-none select-none opacity-50"
+            aria-disabled="true"
+        >
+            <span class="material-symbols-outlined text-lg" aria-hidden="true">history</span>
+            <span class="text-xs">Ready to grade</span>
+        </button>
+    @endif
 </div>

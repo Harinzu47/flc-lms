@@ -43,6 +43,9 @@ class GradingStation extends Component
      */
     public array $scoreForm = [];
 
+    /** Feedback/review comment to provide when flagging a submission. */
+    public string $reviewComment = '';
+
     // ── Lifecycle ─────────────────────────────────────────────────────────────
 
     public function mount(): void
@@ -60,6 +63,49 @@ class GradingStation extends Component
         // Resolve from the in-memory collection first (avoids an extra query
         // when the user clicks between items).
         $this->selectedSubmission = $this->pendingSubmissions->firstWhere('id', $id);
+
+        if ($this->selectedSubmission) {
+            $this->reviewComment = $this->selectedSubmission->review_comment ?? '';
+        } else {
+            $this->reviewComment = '';
+        }
+    }
+
+    /**
+     * Toggle the flagged status of a submission.
+     */
+    public function toggleFlag(int $id): void
+    {
+        $submission = Submission::findOrFail($id);
+
+        if (! $submission->is_flagged) {
+            // Validate that reviewComment is required, string, and of appropriate length
+            $this->validate([
+                'reviewComment' => ['required', 'string', 'min:5', 'max:1000'],
+            ], [
+                'reviewComment.required' => 'Wajib memberikan catatan revisi jika menandai tugas.',
+                'reviewComment.min' => 'Catatan revisi minimal harus terdiri dari 5 karakter.',
+                'reviewComment.max' => 'Catatan revisi maksimal 1000 karakter.',
+            ]);
+
+            $submission->update([
+                'is_flagged' => true,
+                'review_comment' => $this->reviewComment,
+            ]);
+        } else {
+            // Clear state by setting is_flagged to false and review_comment to null
+            $submission->update([
+                'is_flagged' => false,
+                'review_comment' => null,
+            ]);
+            $this->reviewComment = '';
+        }
+
+        if ($this->selectedSubmission && $this->selectedSubmission->id === $id) {
+            $this->selectedSubmission->refresh();
+        }
+
+        $this->loadPendingSubmissions();
     }
 
     /**
@@ -110,7 +156,8 @@ class GradingStation extends Component
         $this->pendingSubmissions = Submission::query()
             ->where('status', 'pending')
             ->with(['user', 'task'])      // Eager-load: avoids N+1 in the sidebar list
-            ->latest()
+            ->orderByDesc('is_flagged')
+            ->orderBy('created_at')
             ->get();
     }
 

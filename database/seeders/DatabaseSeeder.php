@@ -160,7 +160,7 @@ class DatabaseSeeder extends Seeder
                 'description' => 'Tulis perkenalan diri Anda sepanjang minimal 5 kalimat, menggunakan setidaknya 3 jenis pronouns berbeda.',
                 'type' => 'essay',
                 'base_xp' => 50,
-                'deadline' => now()->addDays(7),
+                'days_limit' => 7,
             ]
         );
 
@@ -191,7 +191,7 @@ class DatabaseSeeder extends Seeder
                 'description' => 'Tulis esai pendek (100 kata) mengenai rutinitas harian Anda dari pagi hingga malam.',
                 'type' => 'essay',
                 'base_xp' => 80,
-                'deadline' => now()->addDays(10),
+                'days_limit' => 10,
             ]
         );
 
@@ -233,7 +233,7 @@ class DatabaseSeeder extends Seeder
                 'description' => 'Unggah rekaman suara Anda memberikan arah dari stasiun terdekat menuju kampus.',
                 'type' => 'file_upload',
                 'base_xp' => 100,
-                'deadline' => now()->addDays(5),
+                'days_limit' => 5,
             ]
         );
 

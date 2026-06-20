@@ -163,22 +163,25 @@
                                 {{-- File Attachment --}}
                                 @if($selectedSubmission->file_url)
                                     <div class="mt-10 pt-8" style="border-top: 1px solid rgba(195,198,215,0.3);">
-                                        <div class="flex items-center justify-between p-4 bg-surface-container-low rounded-xl">
-                                            <div class="flex items-center gap-4">
-                                                <div class="w-12 h-12 rounded-lg bg-white flex items-center justify-center text-primary shadow-sm"
+                                        <div class="flex items-center justify-between gap-4 p-4 bg-surface-container-low rounded-xl">
+                                            <div class="flex items-center gap-4 min-w-0 flex-1">
+                                                <div class="w-12 h-12 rounded-lg bg-white flex items-center justify-center text-primary shadow-sm flex-shrink-0"
                                                      aria-hidden="true">
                                                     <span class="material-symbols-outlined text-3xl">description</span>
                                                 </div>
-                                                <div>
-                                                    <p class="font-semibold text-on-surface">{{ basename($selectedSubmission->file_url) }}</p>
+                                                <div class="min-w-0 flex-1">
+                                                    <p class="font-semibold text-on-surface truncate" title="{{ $selectedSubmission->friendly_file_name }}">
+                                                        {{ $selectedSubmission->friendly_file_name }}
+                                                    </p>
                                                     <p class="text-xs text-on-surface-variant uppercase tracking-tighter">Submitted File</p>
                                                 </div>
                                             </div>
                                             <a href="{{ Storage::url($selectedSubmission->file_url) }}"
                                                target="_blank"
                                                rel="noopener noreferrer"
-                                               class="px-5 py-2.5 bg-surface-container-highest text-on-primary-fixed-variant rounded-xl font-bold flex items-center gap-2 hover:bg-surface-container-high transition-all text-sm"
-                                               aria-label="Download {{ basename($selectedSubmission->file_url) }}">
+                                               download="{{ $selectedSubmission->friendly_file_name }}"
+                                               class="px-5 py-2.5 bg-surface-container-highest text-on-primary-fixed-variant rounded-xl font-bold flex items-center gap-2 hover:bg-surface-container-high transition-all text-sm flex-shrink-0"
+                                               aria-label="Download {{ $selectedSubmission->friendly_file_name }}">
                                                 <span class="material-symbols-outlined text-lg" aria-hidden="true">download</span>
                                                 Download
                                             </a>

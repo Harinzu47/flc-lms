@@ -30,9 +30,11 @@ class CourseShow extends Component
 
     /** @var Collection<int> Completed module IDs */
     public Collection $completedModuleIds;
-
     /** @var Collection<int, Submission> Submissions keyed by task_id */
     public Collection $submissionsMap;
+
+    /** @var Collection<int, \App\Models\UserTaskStart> Task starts keyed by task_id */
+    public Collection $taskStartsMap;
 
     public int $progressPercent = 0;
 
@@ -63,13 +65,19 @@ class CourseShow extends Component
         if ($course->isLockedForUser($user, $this->completedCourseIds)) {
             abort(403, 'Akses Ditolak: Kursus ini masih terkunci! Selesaikan persyaratan terlebih dahulu.');
         }
-
         // 3. Load full modules tree
         $this->course = $course->load(['modules.materials', 'modules.tasks', 'minLevel', 'prerequisite']);
 
         // 4. Load all submissions for this user to map in-memory
         $taskIds = $course->modules->flatMap->tasks->pluck('id');
         $this->submissionsMap = Submission::query()
+            ->where('user_id', $user->id)
+            ->whereIn('task_id', $taskIds)
+            ->get()
+            ->keyBy('task_id');
+
+        // Load task starts for this user to calculate relative deadlines
+        $this->taskStartsMap = \App\Models\UserTaskStart::query()
             ->where('user_id', $user->id)
             ->whereIn('task_id', $taskIds)
             ->get()

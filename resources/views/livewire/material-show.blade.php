@@ -112,19 +112,52 @@
             </nav>
 
             {{-- Right Actions --}}
-            <div class="flex items-center gap-4">
-                <button class="material-symbols-outlined text-on-surface-variant hover:bg-surface-container-low p-2 rounded-full transition-all duration-200">
-                    notifications
-                </button>
-                <button class="material-symbols-outlined text-on-surface-variant hover:bg-surface-container-low p-2 rounded-full transition-all duration-200">
-                    settings
-                </button>
-                <div class="flex items-center gap-3 pl-4 border-l border-outline-variant/30">
-                    <span class="hidden lg:block text-sm font-semibold text-on-surface-variant">
-                        {{ auth()->user()->name }}
-                    </span>
-                    <div class="w-10 h-10 rounded-full bg-gradient-to-br from-primary to-primary-container flex items-center justify-center text-on-primary font-bold text-sm border-2 border-primary/10">
-                        {{ strtoupper(substr(auth()->user()->name, 0, 1)) }}
+            <div class="flex items-center gap-3" x-data="{ userMenuOpen: false }">
+                <div class="relative">
+                    <button @click="userMenuOpen = !userMenuOpen"
+                            @keydown.escape.window="userMenuOpen = false"
+                            class="flex items-center gap-2 pl-3 pr-2 py-1.5 rounded-full hover:bg-surface-container-low transition-all border border-transparent hover:border-outline-variant/20"
+                            aria-label="User menu">
+                        <span class="text-sm font-semibold text-on-surface-variant font-headline hidden sm:block">
+                            {{ auth()->user()->name }}
+                        </span>
+                        <div class="w-8 h-8 rounded-full bg-gradient-to-br from-primary to-primary-container flex items-center justify-center text-on-primary font-bold text-xs border-2 border-primary/10">
+                            {{ strtoupper(substr(auth()->user()->name, 0, 1)) }}
+                        </div>
+                    </button>
+
+                    <div x-show="userMenuOpen"
+                         x-cloak
+                         @click.away="userMenuOpen = false"
+                         x-transition:enter="transition ease-out duration-150"
+                         x-transition:enter-start="opacity-0 scale-95 -translate-y-1"
+                         x-transition:enter-end="opacity-100 scale-100 translate-y-0"
+                         x-transition:leave="transition ease-in duration-100"
+                         x-transition:leave-start="opacity-100 scale-100"
+                         x-transition:leave-end="opacity-0 scale-95"
+                         class="absolute right-0 mt-2 w-56 bg-white rounded-xl shadow-lg border border-outline-variant/10 py-2 z-[200]">
+
+                        <div class="px-4 py-2 border-b border-outline-variant/10 mb-1">
+                            <p class="text-sm font-bold font-headline text-on-surface truncate">{{ auth()->user()->name }}</p>
+                            <p class="text-xs text-on-surface-variant truncate">{{ auth()->user()->email }}</p>
+                        </div>
+
+                        <a href="{{ route('profile.edit') }}"
+                           class="flex items-center gap-3 px-4 py-2.5 text-sm text-on-surface-variant hover:bg-blue-50/60 hover:text-primary transition-colors">
+                            <span class="material-symbols-outlined text-lg">person</span>
+                            Profil Saya
+                        </a>
+
+                        <div class="border-t border-outline-variant/10 my-1"></div>
+
+                        <form method="POST" action="{{ route('logout') }}">
+                            @csrf
+                            <button type="submit"
+                                    class="flex items-center gap-3 w-full px-4 py-2.5 text-sm text-red-600 hover:bg-red-50/60 transition-colors text-left">
+                                <span class="material-symbols-outlined text-lg">logout</span>
+                                Keluar
+                            </button>
+                        </form>
                     </div>
                 </div>
             </div>
@@ -160,10 +193,34 @@
 
             {{-- ── Hero Image / Media area ─────────────────────────── --}}
             @if($material->type === 'video' && $material->file_url)
-                <div class="relative w-full aspect-video rounded-2xl overflow-hidden mb-12 shadow-sm">
-                    <video controls class="w-full h-full object-cover">
-                        <source src="{{ $material->file_url }}">
-                    </video>
+                @php
+                    $videoUrl = $material->file_url;
+                    $youtubeId = null;
+
+                    // Match: youtu.be/ID, youtube.com/watch?v=ID, youtube.com/embed/ID
+                    if (preg_match('/(?:youtu\.be\/|youtube\.com\/(?:watch\?.*v=|embed\/|shorts\/))([a-zA-Z0-9_-]{11})/', $videoUrl, $m)) {
+                        $youtubeId = $m[1];
+                    }
+                @endphp
+
+                <div class="relative w-full aspect-video rounded-2xl overflow-hidden mb-12 shadow-sm bg-black">
+                    @if($youtubeId)
+                        {{-- YouTube Embed --}}
+                        <iframe
+                            src="https://www.youtube.com/embed/{{ $youtubeId }}"
+                            class="w-full h-full"
+                            frameborder="0"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen
+                            title="{{ $material->title }}"
+                        ></iframe>
+                    @else
+                        {{-- Direct video file fallback --}}
+                        <video controls class="w-full h-full object-cover">
+                            <source src="{{ $videoUrl }}">
+                            Browser Anda tidak mendukung pemutar video.
+                        </video>
+                    @endif
                 </div>
             @elseif($material->type !== 'article' && $material->file_url)
                 {{-- Document / Link — show a styled resource card instead of a hero image --}}
