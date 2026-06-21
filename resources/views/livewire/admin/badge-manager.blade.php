@@ -246,108 +246,137 @@
 
             {{-- Modal Body (Scrollable) --}}
             <div class="flex-1 overflow-y-auto p-8 custom-scrollbar">
-                <form wire:submit.prevent="saveBadge" class="space-y-6">
+                <div wire:loading.remove wire:target="create, edit">
+                    <form wire:submit.prevent="saveBadge" class="space-y-6">
 
-                    {{-- Name --}}
+                        {{-- Name --}}
+                        <div class="space-y-2">
+                            <label for="input-name" class="block text-sm font-bold font-headline text-on-surface">Nama Lencana</label>
+                            <input
+                                id="input-name"
+                                wire:model="name"
+                                class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all @error('name') border-error @enderror"
+                                placeholder="Contoh: Sang Juara Teks"
+                                type="text"
+                                required
+                            >
+                            @error('name') <span class="text-error text-xs block mt-1 font-medium">{{ $message }}</span> @enderror
+                        </div>
+
+                        {{-- Description --}}
+                        <div class="space-y-2">
+                            <label for="input-description" class="block text-sm font-bold font-headline text-on-surface">Deskripsi</label>
+                            <textarea
+                                id="input-description"
+                                wire:model="description"
+                                rows="3"
+                                class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all @error('description') border-error @enderror"
+                                placeholder="Tulis penjelasan bagaimana lencana didapatkan..."
+                                required
+                            ></textarea>
+                            @error('description') <span class="text-error text-xs block mt-1 font-medium">{{ $message }}</span> @enderror
+                        </div>
+
+                        {{-- Icon / Emoji --}}
+                        <div class="space-y-2">
+                            <label for="input-icon" class="block text-sm font-bold font-headline text-on-surface">Ikon / Emoji</label>
+                            <input
+                                id="input-icon"
+                                wire:model="icon"
+                                class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all @error('icon') border-error @enderror"
+                                placeholder="🏅 atau URL gambar"
+                                type="text"
+                                required
+                            >
+                            <p class="text-xs text-on-surface-variant">Gunakan emoji tunggal (seperti 🧙, 🌟, 🏆) atau alamat berkas gambar.</p>
+                            @error('icon') <span class="text-error text-xs block mt-1 font-medium">{{ $message }}</span> @enderror
+                        </div>
+
+                        {{-- Criteria Type --}}
+                        <div class="space-y-2">
+                            <label for="input-criteria-type" class="block text-sm font-bold font-headline text-on-surface">Pilih Kriteria Aturan</label>
+                            <select
+                                id="input-criteria-type"
+                                wire:model.live="criteriaType"
+                                class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
+                            >
+                                <option value="total_xp">Poin Kuantitas XP ('total_xp')</option>
+                                <option value="materials_read">Total Materi yang Dibaca ('materials_read')</option>
+                                <option value="tasks_completed">Total Tugas yang Selesai Dinilai ('tasks_completed')</option>
+                            </select>
+                            @error('criteriaType') <span class="text-error text-xs block mt-1 font-medium">{{ $message }}</span> @enderror
+                        </div>
+
+                        {{-- Target Value (Dynamic Label) --}}
+                        <div class="space-y-2">
+                            <label for="input-target-value" class="block text-sm font-bold font-headline text-on-surface">
+                                @if($criteriaType === 'total_xp')
+                                    Target Poin XP
+                                @elseif($criteriaType === 'materials_read')
+                                    Target Jumlah Materi
+                                @elseif($criteriaType === 'tasks_completed')
+                                    Target Jumlah Tugas
+                                @else
+                                    Target Angka Pencapaian
+                                @endif
+                            </label>
+                            <input
+                                id="input-target-value"
+                                wire:model="targetValue"
+                                class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all @error('targetValue') border-error @enderror"
+                                type="number"
+                                min="1"
+                                required
+                            >
+                            @error('targetValue') <span class="text-error text-xs block mt-1 font-medium">{{ $message }}</span> @enderror
+                        </div>
+
+                        {{-- Save Button for CRUD --}}
+                        <div class="pt-4 border-t border-slate-100 flex justify-end gap-3">
+                            <button
+                                type="button"
+                                wire:click="closeModal"
+                                class="px-5 py-2.5 border border-slate-200 rounded-xl text-xs font-bold text-on-surface-variant hover:bg-slate-50 transition-colors"
+                            >
+                                Batal
+                            </button>
+                            <button
+                                type="submit"
+                                wire:loading.attr="disabled"
+                                wire:target="saveBadge"
+                                class="bg-primary hover:bg-primary-container text-on-primary px-6 py-2.5 rounded-xl text-xs font-bold shadow-md hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center justify-center"
+                            >
+                                <svg wire:loading wire:target="saveBadge" class="animate-spin -ml-1 mr-2 h-4 w-4 text-white inline-block" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                </svg>
+                                <span wire:loading.remove wire:target="saveBadge">Simpan Lencana</span>
+                                <span wire:loading wire:target="saveBadge">Processing...</span>
+                            </button>
+                        </div>
+
+                    </form>
+                </div>
+
+                {{-- Skeleton Loader --}}
+                <div wire:loading wire:target="create, edit" class="animate-pulse space-y-6">
                     <div class="space-y-2">
-                        <label for="input-name" class="block text-sm font-bold font-headline text-on-surface">Nama Lencana</label>
-                        <input
-                            id="input-name"
-                            wire:model="name"
-                            class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all @error('name') border-error @enderror"
-                            placeholder="Contoh: Sang Juara Teks"
-                            type="text"
-                            required
-                        >
-                        @error('name') <span class="text-error text-xs block mt-1 font-medium">{{ $message }}</span> @enderror
+                        <div class="bg-slate-200 h-4 w-24 rounded"></div>
+                        <div class="bg-slate-200 h-11 w-full rounded-xl"></div>
                     </div>
-
-                    {{-- Description --}}
                     <div class="space-y-2">
-                        <label for="input-description" class="block text-sm font-bold font-headline text-on-surface">Deskripsi</label>
-                        <textarea
-                            id="input-description"
-                            wire:model="description"
-                            rows="3"
-                            class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all @error('description') border-error @enderror"
-                            placeholder="Tulis penjelasan bagaimana lencana didapatkan..."
-                            required
-                        ></textarea>
-                        @error('description') <span class="text-error text-xs block mt-1 font-medium">{{ $message }}</span> @enderror
+                        <div class="bg-slate-200 h-4 w-32 rounded"></div>
+                        <div class="bg-slate-200 h-11 w-full rounded-xl"></div>
                     </div>
-
-                    {{-- Icon / Emoji --}}
                     <div class="space-y-2">
-                        <label for="input-icon" class="block text-sm font-bold font-headline text-on-surface">Ikon / Emoji</label>
-                        <input
-                            id="input-icon"
-                            wire:model="icon"
-                            class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all @error('icon') border-error @enderror"
-                            placeholder="🏅 atau URL gambar"
-                            type="text"
-                            required
-                        >
-                        <p class="text-xs text-on-surface-variant">Gunakan emoji tunggal (seperti 🧙, 🌟, 🏆) atau alamat berkas gambar.</p>
-                        @error('icon') <span class="text-error text-xs block mt-1 font-medium">{{ $message }}</span> @enderror
+                        <div class="bg-slate-200 h-4 w-28 rounded"></div>
+                        <div class="bg-slate-200 h-11 w-full rounded-xl"></div>
                     </div>
-
-                    {{-- Criteria Type --}}
                     <div class="space-y-2">
-                        <label for="input-criteria-type" class="block text-sm font-bold font-headline text-on-surface">Pilih Kriteria Aturan</label>
-                        <select
-                            id="input-criteria-type"
-                            wire:model.live="criteriaType"
-                            class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
-                        >
-                            <option value="total_xp">Poin Kuantitas XP ('total_xp')</option>
-                            <option value="materials_read">Total Materi yang Dibaca ('materials_read')</option>
-                            <option value="tasks_completed">Total Tugas yang Selesai Dinilai ('tasks_completed')</option>
-                        </select>
-                        @error('criteriaType') <span class="text-error text-xs block mt-1 font-medium">{{ $message }}</span> @enderror
+                        <div class="bg-slate-200 h-4 w-20 rounded"></div>
+                        <div class="bg-slate-200 h-11 w-full rounded-xl"></div>
                     </div>
-
-                    {{-- Target Value (Dynamic Label) --}}
-                    <div class="space-y-2">
-                        <label for="input-target-value" class="block text-sm font-bold font-headline text-on-surface">
-                            @if($criteriaType === 'total_xp')
-                                Target Poin XP
-                            @elseif($criteriaType === 'materials_read')
-                                Target Jumlah Materi
-                            @elseif($criteriaType === 'tasks_completed')
-                                Target Jumlah Tugas
-                            @else
-                                Target Angka Pencapaian
-                            @endif
-                        </label>
-                        <input
-                            id="input-target-value"
-                            wire:model="targetValue"
-                            class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all @error('targetValue') border-error @enderror"
-                            type="number"
-                            min="1"
-                            required
-                        >
-                        @error('targetValue') <span class="text-error text-xs block mt-1 font-medium">{{ $message }}</span> @enderror
-                    </div>
-
-                    {{-- Save Button for CRUD --}}
-                    <div class="pt-4 border-t border-slate-100 flex justify-end gap-3">
-                        <button
-                            type="button"
-                            wire:click="closeModal"
-                            class="px-5 py-2.5 border border-slate-200 rounded-xl text-xs font-bold text-on-surface-variant hover:bg-slate-50 transition-colors"
-                        >
-                            Batal
-                        </button>
-                        <button
-                            type="submit"
-                            class="bg-primary hover:bg-primary-container text-on-primary px-6 py-2.5 rounded-xl text-xs font-bold shadow-md hover:scale-[1.02] active:scale-[0.98] transition-all"
-                        >
-                            Simpan Lencana
-                        </button>
-                    </div>
-
-                </form>
+                </div>
             </div>
         </div>
     </div>

@@ -36,8 +36,11 @@
     --}}
     <body class="font-sans antialiased bg-background text-on-surface">
 
+        <x-celebration-hub />
+
         {{ $slot }}
 
         @livewireScripts
+        <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
     </body>
 </html>

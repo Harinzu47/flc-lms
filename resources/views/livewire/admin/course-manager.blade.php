@@ -381,62 +381,93 @@
         <div @click.away="open = false; $wire.closeCourseModal()" @keydown.escape.window="open = false; $wire.closeCourseModal()" class="bg-surface-container-lowest border border-outline-variant/10 w-full max-w-lg rounded-2xl shadow-xl overflow-hidden p-6 space-y-4">
             <h3 class="text-xl font-headline font-bold text-on-surface">{{ $courseId ? 'Edit Course Info' : 'Create New Course' }}</h3>
             
-            <div class="space-y-4">
-                <div>
-                    <label class="block text-sm font-bold font-headline text-on-surface mb-1">Course Title</label>
-                    <input type="text" wire:model="courseTitle" class="w-full bg-surface-container-low border border-slate-200 rounded-xl px-4 py-2.5 text-sm focus:border-primary focus:ring-1 focus:ring-primary outline-none">
-                    @error('courseTitle') <span class="text-xs text-error mt-1 block">{{ $message }}</span> @enderror
-                </div>
-                
-                <div>
-                    <label class="block text-sm font-bold font-headline text-on-surface mb-1">Description</label>
-                    <textarea wire:model="courseDescription" rows="3" class="w-full bg-surface-container-low border border-slate-200 rounded-xl px-4 py-2.5 text-sm focus:border-primary focus:ring-1 focus:ring-primary outline-none"></textarea>
-                    @error('courseDescription') <span class="text-xs text-error mt-1 block">{{ $message }}</span> @enderror
-                </div>
-
-                <div class="grid grid-cols-2 gap-4">
+            <div wire:loading.remove wire:target="createCourse, editCourse">
+                <div class="space-y-4">
                     <div>
-                        <label class="block text-sm font-bold font-headline text-on-surface mb-1">Difficulty</label>
-                        <select wire:model="courseDifficultyLevel" class="w-full bg-surface-container-low border border-slate-200 rounded-xl px-4 py-2.5 text-sm focus:border-primary focus:ring-1 focus:ring-primary outline-none">
-                            <option value="beginner">Beginner</option>
-                            <option value="intermediate">Intermediate</option>
-                            <option value="advanced">Advanced</option>
-                        </select>
-                        @error('courseDifficultyLevel') <span class="text-xs text-error mt-1 block">{{ $message }}</span> @enderror
+                        <label class="block text-sm font-bold font-headline text-on-surface mb-1">Course Title</label>
+                        <input type="text" wire:model="courseTitle" class="w-full bg-surface-container-low border border-slate-200 rounded-xl px-4 py-2.5 text-sm focus:border-primary focus:ring-1 focus:ring-primary outline-none">
+                        @error('courseTitle') <span class="text-xs text-error mt-1 block">{{ $message }}</span> @enderror
+                    </div>
+                    
+                    <div>
+                        <label class="block text-sm font-bold font-headline text-on-surface mb-1">Description</label>
+                        <textarea wire:model="courseDescription" rows="3" class="w-full bg-surface-container-low border border-slate-200 rounded-xl px-4 py-2.5 text-sm focus:border-primary focus:ring-1 focus:ring-primary outline-none"></textarea>
+                        @error('courseDescription') <span class="text-xs text-error mt-1 block">{{ $message }}</span> @enderror
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-sm font-bold font-headline text-on-surface mb-1">Difficulty</label>
+                            <select wire:model="courseDifficultyLevel" class="w-full bg-surface-container-low border border-slate-200 rounded-xl px-4 py-2.5 text-sm focus:border-primary focus:ring-1 focus:ring-primary outline-none">
+                                <option value="beginner">Beginner</option>
+                                <option value="intermediate">Intermediate</option>
+                                <option value="advanced">Advanced</option>
+                            </select>
+                            @error('courseDifficultyLevel') <span class="text-xs text-error mt-1 block">{{ $message }}</span> @enderror
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-bold font-headline text-on-surface mb-1">Min Level Required</label>
+                            <select wire:model="courseMinLevelRequired" class="w-full bg-surface-container-low border border-slate-200 rounded-xl px-4 py-2.5 text-sm focus:border-primary focus:ring-1 focus:ring-primary outline-none">
+                                <option value="">None (Any Level)</option>
+                                @foreach($levels as $lvl)
+                                    <option value="{{ $lvl->id }}">{{ $lvl->name }} ({{ $lvl->min_xp }} XP)</option>
+                                @endforeach
+                            </select>
+                            @error('courseMinLevelRequired') <span class="text-xs text-error mt-1 block">{{ $message }}</span> @enderror
+                        </div>
                     </div>
 
                     <div>
-                        <label class="block text-sm font-bold font-headline text-on-surface mb-1">Min Level Required</label>
-                        <select wire:model="courseMinLevelRequired" class="w-full bg-surface-container-low border border-slate-200 rounded-xl px-4 py-2.5 text-sm focus:border-primary focus:ring-1 focus:ring-primary outline-none">
-                            <option value="">None (Any Level)</option>
-                            @foreach($levels as $lvl)
-                                <option value="{{ $lvl->id }}">{{ $lvl->name }} ({{ $lvl->min_xp }} XP)</option>
+                        <label class="block text-sm font-bold font-headline text-on-surface mb-1">Prerequisite Course</label>
+                        <select wire:model="coursePrerequisiteId" class="w-full bg-surface-container-low border border-slate-200 rounded-xl px-4 py-2.5 text-sm focus:border-primary focus:ring-1 focus:ring-primary outline-none">
+                            <option value="">None</option>
+                            @foreach($coursesList as $c)
+                                <option value="{{ $c->id }}">{{ $c->title }}</option>
                             @endforeach
                         </select>
-                        @error('courseMinLevelRequired') <span class="text-xs text-error mt-1 block">{{ $message }}</span> @enderror
+                        @error('coursePrerequisiteId') <span class="text-xs text-error mt-1 block">{{ $message }}</span> @enderror
+                    </div>
+
+                    <div class="flex items-center gap-2 pt-2">
+                        <input type="checkbox" id="courseIsPublished" wire:model="courseIsPublished" class="rounded border-slate-300 text-primary focus:ring-primary">
+                        <label for="courseIsPublished" class="text-sm font-semibold text-on-surface">Publish this Course (Visible to Students)</label>
                     </div>
                 </div>
+            </div>
 
-                <div>
-                    <label class="block text-sm font-bold font-headline text-on-surface mb-1">Prerequisite Course</label>
-                    <select wire:model="coursePrerequisiteId" class="w-full bg-surface-container-low border border-slate-200 rounded-xl px-4 py-2.5 text-sm focus:border-primary focus:ring-1 focus:ring-primary outline-none">
-                        <option value="">None</option>
-                        @foreach($coursesList as $c)
-                            <option value="{{ $c->id }}">{{ $c->title }}</option>
-                        @endforeach
-                    </select>
-                    @error('coursePrerequisiteId') <span class="text-xs text-error mt-1 block">{{ $message }}</span> @enderror
+            {{-- Skeleton Loader for Course Modal --}}
+            <div wire:loading wire:target="createCourse, editCourse" class="animate-pulse space-y-4">
+                <div class="space-y-2">
+                    <div class="bg-slate-200 h-4 w-24 rounded"></div>
+                    <div class="bg-slate-200 h-10 w-full rounded-xl"></div>
                 </div>
-
-                <div class="flex items-center gap-2 pt-2">
-                    <input type="checkbox" id="courseIsPublished" wire:model="courseIsPublished" class="rounded border-slate-300 text-primary focus:ring-primary">
-                    <label for="courseIsPublished" class="text-sm font-semibold text-on-surface">Publish this Course (Visible to Students)</label>
+                <div class="space-y-2">
+                    <div class="bg-slate-200 h-4 w-32 rounded"></div>
+                    <div class="bg-slate-200 h-16 w-full rounded-xl"></div>
+                </div>
+                <div class="grid grid-cols-2 gap-4">
+                    <div class="space-y-2">
+                        <div class="bg-slate-200 h-4 w-20 rounded"></div>
+                        <div class="bg-slate-200 h-10 w-full rounded-xl"></div>
+                    </div>
+                    <div class="space-y-2">
+                        <div class="bg-slate-200 h-4 w-28 rounded"></div>
+                        <div class="bg-slate-200 h-10 w-full rounded-xl"></div>
+                    </div>
                 </div>
             </div>
 
             <div class="flex items-center justify-end gap-2 pt-4 border-t border-outline-variant/10">
                 <button @click="open = false; $wire.closeCourseModal()" type="button" class="bg-slate-100 hover:bg-slate-200 text-slate-800 px-4 py-2 rounded-xl text-xs font-bold transition-all">Cancel</button>
-                <button wire:click="saveCourse" type="button" class="bg-primary text-on-primary px-4 py-2 rounded-xl text-xs font-bold hover:opacity-90 transition-opacity">Save Course</button>
+                <button wire:click="saveCourse" type="button" wire:loading.attr="disabled" wire:target="saveCourse" class="bg-primary text-on-primary px-4 py-2 rounded-xl text-xs font-bold hover:opacity-90 transition-opacity flex items-center justify-center">
+                    <svg wire:loading wire:target="saveCourse" class="animate-spin -ml-1 mr-2 h-4 w-4 text-white inline-block" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
+                    <span wire:loading.remove wire:target="saveCourse">Save Course</span>
+                    <span wire:loading wire:target="saveCourse">Processing...</span>
+                </button>
             </div>
         </div>
     </div>
@@ -446,29 +477,54 @@
         <div @click.away="open = false; $wire.closeModuleModal()" @keydown.escape.window="open = false; $wire.closeModuleModal()" class="bg-surface-container-lowest border border-outline-variant/10 w-full max-w-lg rounded-2xl shadow-xl overflow-hidden p-6 space-y-4">
             <h3 class="text-xl font-headline font-bold text-on-surface">{{ $moduleId ? 'Edit Module' : 'Add New Module' }}</h3>
             
-            <div class="space-y-4">
-                <div>
-                    <label class="block text-sm font-bold font-headline text-on-surface mb-1">Module Title</label>
-                    <input type="text" wire:model="moduleTitle" class="w-full bg-surface-container-low border border-slate-200 rounded-xl px-4 py-2.5 text-sm focus:border-primary focus:ring-1 focus:ring-primary outline-none">
-                    @error('moduleTitle') <span class="text-xs text-error mt-1 block">{{ $message }}</span> @enderror
-                </div>
-                
-                <div>
-                    <label class="block text-sm font-bold font-headline text-on-surface mb-1">Description</label>
-                    <textarea wire:model="moduleDescription" rows="3" class="w-full bg-surface-container-low border border-slate-200 rounded-xl px-4 py-2.5 text-sm focus:border-primary focus:ring-1 focus:ring-primary outline-none"></textarea>
-                    @error('moduleDescription') <span class="text-xs text-error mt-1 block">{{ $message }}</span> @enderror
-                </div>
+            <div wire:loading.remove wire:target="createModule, editModule">
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-sm font-bold font-headline text-on-surface mb-1">Module Title</label>
+                        <input type="text" wire:model="moduleTitle" class="w-full bg-surface-container-low border border-slate-200 rounded-xl px-4 py-2.5 text-sm focus:border-primary focus:ring-1 focus:ring-primary outline-none">
+                        @error('moduleTitle') <span class="text-xs text-error mt-1 block">{{ $message }}</span> @enderror
+                    </div>
+                    
+                    <div>
+                        <label class="block text-sm font-bold font-headline text-on-surface mb-1">Description</label>
+                        <textarea wire:model="moduleDescription" rows="3" class="w-full bg-surface-container-low border border-slate-200 rounded-xl px-4 py-2.5 text-sm focus:border-primary focus:ring-1 focus:ring-primary outline-none"></textarea>
+                        @error('moduleDescription') <span class="text-xs text-error mt-1 block">{{ $message }}</span> @enderror
+                    </div>
 
-                <div>
-                    <label class="block text-sm font-bold font-headline text-on-surface mb-1">Sort Order</label>
-                    <input type="number" wire:model="moduleSortOrder" class="w-full bg-surface-container-low border border-slate-200 rounded-xl px-4 py-2.5 text-sm focus:border-primary focus:ring-1 focus:ring-primary outline-none">
-                    @error('moduleSortOrder') <span class="text-xs text-error mt-1 block">{{ $message }}</span> @enderror
+                    <div>
+                        <label class="block text-sm font-bold font-headline text-on-surface mb-1">Sort Order</label>
+                        <input type="number" wire:model="moduleSortOrder" class="w-full bg-surface-container-low border border-slate-200 rounded-xl px-4 py-2.5 text-sm focus:border-primary focus:ring-1 focus:ring-primary outline-none">
+                        @error('moduleSortOrder') <span class="text-xs text-error mt-1 block">{{ $message }}</span> @enderror
+                    </div>
+                </div>
+            </div>
+
+            {{-- Skeleton Loader for Module Modal --}}
+            <div wire:loading wire:target="createModule, editModule" class="animate-pulse space-y-4">
+                <div class="space-y-2">
+                    <div class="bg-slate-200 h-4 w-24 rounded"></div>
+                    <div class="bg-slate-200 h-10 w-full rounded-xl"></div>
+                </div>
+                <div class="space-y-2">
+                    <div class="bg-slate-200 h-4 w-32 rounded"></div>
+                    <div class="bg-slate-200 h-16 w-full rounded-xl"></div>
+                </div>
+                <div class="space-y-2">
+                    <div class="bg-slate-200 h-4 w-20 rounded"></div>
+                    <div class="bg-slate-200 h-10 w-full rounded-xl"></div>
                 </div>
             </div>
 
             <div class="flex items-center justify-end gap-2 pt-4 border-t border-outline-variant/10">
                 <button @click="open = false; $wire.closeModuleModal()" type="button" class="bg-slate-100 hover:bg-slate-200 text-slate-800 px-4 py-2 rounded-xl text-xs font-bold transition-all">Cancel</button>
-                <button wire:click="saveModule" type="button" class="bg-primary text-on-primary px-4 py-2 rounded-xl text-xs font-bold hover:opacity-90 transition-opacity">Save Module</button>
+                <button wire:click="saveModule" type="button" wire:loading.attr="disabled" wire:target="saveModule" class="bg-primary text-on-primary px-4 py-2 rounded-xl text-xs font-bold hover:opacity-90 transition-opacity flex items-center justify-center">
+                    <svg wire:loading wire:target="saveModule" class="animate-spin -ml-1 mr-2 h-4 w-4 text-white inline-block" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
+                    <span wire:loading.remove wire:target="saveModule">Save Module</span>
+                    <span wire:loading wire:target="saveModule">Processing...</span>
+                </button>
             </div>
         </div>
     </div>
@@ -478,76 +534,107 @@
         <div @click.away="open = false; $wire.closeMaterialModal()" @keydown.escape.window="open = false; $wire.closeMaterialModal()" class="bg-surface-container-lowest border border-outline-variant/10 w-full max-w-lg rounded-2xl shadow-xl overflow-hidden p-6 space-y-4">
             <h3 class="text-xl font-headline font-bold text-on-surface">{{ $materialId ? 'Edit Material' : 'Add Learning Material' }}</h3>
             
-            <div class="space-y-4">
-                <div>
-                    <label class="block text-sm font-bold font-headline text-on-surface mb-1">Material Title</label>
-                    <input type="text" wire:model="materialTitle" class="w-full bg-surface-container-low border border-slate-200 rounded-xl px-4 py-2.5 text-sm focus:border-primary focus:ring-1 focus:ring-primary outline-none">
-                    @error('materialTitle') <span class="text-xs text-error mt-1 block">{{ $message }}</span> @enderror
-                </div>
-                
-                <div x-data="{ tab: 'write' }" class="space-y-2">
-                    <div class="flex justify-between items-center mb-1">
-                        <label class="block text-sm font-bold font-headline text-on-surface">
-                            {{ $materialType === 'article' ? 'Konten Artikel (Markdown)' : 'Description' }}
-                        </label>
-                        @if ($materialType === 'article')
-                            <div class="flex border border-slate-200 rounded-lg overflow-hidden bg-slate-100 p-0.5 text-xs">
-                                <button type="button" @click="tab = 'write'" :class="tab === 'write' ? 'bg-white text-slate-800 shadow-sm font-bold' : 'text-slate-500 hover:text-slate-800'" class="px-3 py-1 rounded-md transition-all">Write</button>
-                                <button type="button" @click="tab = 'preview'" :class="tab === 'preview' ? 'bg-white text-slate-800 shadow-sm font-bold' : 'text-slate-500 hover:text-slate-800'" class="px-3 py-1 rounded-md transition-all">Preview</button>
-                            </div>
-                        @endif
+            <div wire:loading.remove wire:target="createMaterial, editMaterial">
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-sm font-bold font-headline text-on-surface mb-1">Material Title</label>
+                        <input type="text" wire:model="materialTitle" class="w-full bg-surface-container-low border border-slate-200 rounded-xl px-4 py-2.5 text-sm focus:border-primary focus:ring-1 focus:ring-primary outline-none">
+                        @error('materialTitle') <span class="text-xs text-error mt-1 block">{{ $message }}</span> @enderror
                     </div>
                     
-                    <div x-show="tab === 'write' || '{{ $materialType }}' !== 'article'">
-                        <textarea wire:model.live.debounce.300ms="materialDescription" rows="{{ $materialType === 'article' ? 8 : 3 }}" class="w-full bg-surface-container-low border border-slate-200 rounded-xl px-4 py-2.5 text-sm focus:border-primary focus:ring-1 focus:ring-primary outline-none" placeholder="{{ $materialType === 'article' ? 'Tulis artikel menggunakan sintaksis Markdown...' : '' }}"></textarea>
-                    </div>
-
-                    @if ($materialType === 'article')
-                        <div x-show="tab === 'preview'" class="p-4 bg-slate-50 rounded-xl border border-slate-200 max-h-60 overflow-y-auto prose prose-slate max-w-none text-sm leading-relaxed text-slate-700">
-                            @if(empty($materialDescription))
-                                <span class="text-slate-400 italic">Belum ada konten untuk dipratinjau.</span>
-                            @else
-                                {!! \Illuminate\Support\Str::markdown($materialDescription ?? '', [
-                                    'html_input' => 'escape',
-                                    'allow_unsafe_links' => false,
-                                ]) !!}
+                    <div x-data="{ tab: 'write' }" class="space-y-2">
+                        <div class="flex justify-between items-center mb-1">
+                            <label class="block text-sm font-bold font-headline text-on-surface">
+                                {{ $materialType === 'article' ? 'Konten Artikel (Markdown)' : 'Description' }}
+                            </label>
+                            @if ($materialType === 'article')
+                                <div class="flex border border-slate-200 rounded-lg overflow-hidden bg-slate-100 p-0.5 text-xs">
+                                    <button type="button" @click="tab = 'write'" :class="tab === 'write' ? 'bg-white text-slate-800 shadow-sm font-bold' : 'text-slate-500 hover:text-slate-800'" class="px-3 py-1 rounded-md transition-all">Write</button>
+                                    <button type="button" @click="tab = 'preview'" :class="tab === 'preview' ? 'bg-white text-slate-800 shadow-sm font-bold' : 'text-slate-500 hover:text-slate-800'" class="px-3 py-1 rounded-md transition-all">Preview</button>
+                                </div>
                             @endif
                         </div>
-                    @endif
-                    @error('materialDescription') <span class="text-xs text-error mt-1 block">{{ $message }}</span> @enderror
-                </div>
+                        
+                        <div x-show="tab === 'write' || '{{ $materialType }}' !== 'article'">
+                            <textarea wire:model.live.debounce.300ms="materialDescription" rows="{{ $materialType === 'article' ? 8 : 3 }}" class="w-full bg-surface-container-low border border-slate-200 rounded-xl px-4 py-2.5 text-sm focus:border-primary focus:ring-1 focus:ring-primary outline-none" placeholder="{{ $materialType === 'article' ? 'Tulis artikel menggunakan sintaksis Markdown...' : '' }}"></textarea>
+                        </div>
 
+                        @if ($materialType === 'article')
+                            <div x-show="tab === 'preview'" class="p-4 bg-slate-50 rounded-xl border border-slate-200 max-h-60 overflow-y-auto prose prose-slate max-w-none text-sm leading-relaxed text-slate-700">
+                                @if(empty($materialDescription))
+                                    <span class="text-slate-400 italic">Belum ada konten untuk dipratinjau.</span>
+                                @else
+                                    {!! \Illuminate\Support\Str::markdown($materialDescription ?? '', [
+                                        'html_input' => 'escape',
+                                        'allow_unsafe_links' => false,
+                                    ]) !!}
+                                @endif
+                            </div>
+                        @endif
+                        @error('materialDescription') <span class="text-xs text-error mt-1 block">{{ $message }}</span> @enderror
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-sm font-bold font-headline text-on-surface mb-1">Material Type</label>
+                            <select wire:model.live="materialType" class="w-full bg-surface-container-low border border-slate-200 rounded-xl px-4 py-2.5 text-sm focus:border-primary focus:ring-1 focus:ring-primary outline-none">
+                                <option value="document">PDF / Document</option>
+                                <option value="video">Video URL</option>
+                                <option value="link">External Web Link</option>
+                                <option value="article">Markdown Article</option>
+                            </select>
+                            @error('materialType') <span class="text-xs text-error mt-1 block">{{ $message }}</span> @enderror
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-bold font-headline text-on-surface mb-1">XP Reward</label>
+                            <input type="number" wire:model="materialXpReward" class="w-full bg-surface-container-low border border-slate-200 rounded-xl px-4 py-2.5 text-sm focus:border-primary focus:ring-1 focus:ring-primary outline-none">
+                            @error('materialXpReward') <span class="text-xs text-error mt-1 block">{{ $message }}</span> @enderror
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-bold font-headline text-on-surface mb-1">
+                            {{ $materialType === 'article' ? 'Lampiran Dokumen Tambahan (Opsional)' : 'External File URL' }}
+                        </label>
+                        <input type="url" wire:model="materialFileUrl" placeholder="https://example.com/file.pdf" class="w-full bg-surface-container-low border border-slate-200 rounded-xl px-4 py-2.5 text-sm focus:border-primary focus:ring-1 focus:ring-primary outline-none">
+                        @error('materialFileUrl') <span class="text-xs text-error mt-1 block">{{ $message }}</span> @enderror
+                    </div>
+                </div>
+            </div>
+
+            {{-- Skeleton Loader for Material Modal --}}
+            <div wire:loading wire:target="createMaterial, editMaterial" class="animate-pulse space-y-4">
+                <div class="space-y-2">
+                    <div class="bg-slate-200 h-4 w-24 rounded"></div>
+                    <div class="bg-slate-200 h-10 w-full rounded-xl"></div>
+                </div>
+                <div class="space-y-2">
+                    <div class="bg-slate-200 h-4 w-32 rounded"></div>
+                    <div class="bg-slate-200 h-16 w-full rounded-xl"></div>
+                </div>
                 <div class="grid grid-cols-2 gap-4">
-                    <div>
-                        <label class="block text-sm font-bold font-headline text-on-surface mb-1">Material Type</label>
-                        <select wire:model.live="materialType" class="w-full bg-surface-container-low border border-slate-200 rounded-xl px-4 py-2.5 text-sm focus:border-primary focus:ring-1 focus:ring-primary outline-none">
-                            <option value="document">PDF / Document</option>
-                            <option value="video">Video URL</option>
-                            <option value="link">External Web Link</option>
-                            <option value="article">Markdown Article</option>
-                        </select>
-                        @error('materialType') <span class="text-xs text-error mt-1 block">{{ $message }}</span> @enderror
+                    <div class="space-y-2">
+                        <div class="bg-slate-200 h-4 w-20 rounded"></div>
+                        <div class="bg-slate-200 h-10 w-full rounded-xl"></div>
                     </div>
-
-                    <div>
-                        <label class="block text-sm font-bold font-headline text-on-surface mb-1">XP Reward</label>
-                        <input type="number" wire:model="materialXpReward" class="w-full bg-surface-container-low border border-slate-200 rounded-xl px-4 py-2.5 text-sm focus:border-primary focus:ring-1 focus:ring-primary outline-none">
-                        @error('materialXpReward') <span class="text-xs text-error mt-1 block">{{ $message }}</span> @enderror
+                    <div class="space-y-2">
+                        <div class="bg-slate-200 h-4 w-28 rounded"></div>
+                        <div class="bg-slate-200 h-10 w-full rounded-xl"></div>
                     </div>
-                </div>
-
-                <div>
-                    <label class="block text-sm font-bold font-headline text-on-surface mb-1">
-                        {{ $materialType === 'article' ? 'Lampiran Dokumen Tambahan (Opsional)' : 'External File URL' }}
-                    </label>
-                    <input type="url" wire:model="materialFileUrl" placeholder="https://example.com/file.pdf" class="w-full bg-surface-container-low border border-slate-200 rounded-xl px-4 py-2.5 text-sm focus:border-primary focus:ring-1 focus:ring-primary outline-none">
-                    @error('materialFileUrl') <span class="text-xs text-error mt-1 block">{{ $message }}</span> @enderror
                 </div>
             </div>
 
             <div class="flex items-center justify-end gap-2 pt-4 border-t border-outline-variant/10">
                 <button @click="open = false; $wire.closeMaterialModal()" type="button" class="bg-slate-100 hover:bg-slate-200 text-slate-800 px-4 py-2 rounded-xl text-xs font-bold transition-all">Cancel</button>
-                <button wire:click="saveMaterial" type="button" class="bg-primary text-on-primary px-4 py-2 rounded-xl text-xs font-bold hover:opacity-90 transition-opacity">Save Material</button>
+                <button wire:click="saveMaterial" type="button" wire:loading.attr="disabled" wire:target="saveMaterial" class="bg-primary text-on-primary px-4 py-2 rounded-xl text-xs font-bold hover:opacity-90 transition-opacity flex items-center justify-center">
+                    <svg wire:loading wire:target="saveMaterial" class="animate-spin -ml-1 mr-2 h-4 w-4 text-white inline-block" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
+                    <span wire:loading.remove wire:target="saveMaterial">Save Material</span>
+                    <span wire:loading wire:target="saveMaterial">Processing...</span>
+                </button>
             </div>
         </div>
     </div>
@@ -557,47 +644,78 @@
         <div @click.away="open = false; $wire.closeTaskModal()" @keydown.escape.window="open = false; $wire.closeTaskModal()" class="bg-surface-container-lowest border border-outline-variant/10 w-full max-w-lg rounded-2xl shadow-xl overflow-hidden p-6 space-y-4">
             <h3 class="text-xl font-headline font-bold text-on-surface">{{ $taskId ? 'Edit Task' : 'Add Task / Assignment' }}</h3>
             
-            <div class="space-y-4">
-                <div>
-                    <label class="block text-sm font-bold font-headline text-on-surface mb-1">Task Title</label>
-                    <input type="text" wire:model="taskTitle" class="w-full bg-surface-container-low border border-slate-200 rounded-xl px-4 py-2.5 text-sm focus:border-primary focus:ring-1 focus:ring-primary outline-none">
-                    @error('taskTitle') <span class="text-xs text-error mt-1 block">{{ $message }}</span> @enderror
-                </div>
-                
-                <div>
-                    <label class="block text-sm font-bold font-headline text-on-surface mb-1">Instructions / Description</label>
-                    <textarea wire:model="taskDescription" rows="4" placeholder="Detail petunjuk pengerjaan tugas bagi mahasiswa..." class="w-full bg-surface-container-low border border-slate-200 rounded-xl px-4 py-2.5 text-sm focus:border-primary focus:ring-1 focus:ring-primary outline-none"></textarea>
-                    @error('taskDescription') <span class="text-xs text-error mt-1 block">{{ $message }}</span> @enderror
-                </div>
+            <div wire:loading.remove wire:target="createTask, editTask">
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-sm font-bold font-headline text-on-surface mb-1">Task Title</label>
+                        <input type="text" wire:model="taskTitle" class="w-full bg-surface-container-low border border-slate-200 rounded-xl px-4 py-2.5 text-sm focus:border-primary focus:ring-1 focus:ring-primary outline-none">
+                        @error('taskTitle') <span class="text-xs text-error mt-1 block">{{ $message }}</span> @enderror
+                    </div>
+                    
+                    <div>
+                        <label class="block text-sm font-bold font-headline text-on-surface mb-1">Instructions / Description</label>
+                        <textarea wire:model="taskDescription" rows="4" placeholder="Detail petunjuk pengerjaan tugas bagi mahasiswa..." class="w-full bg-surface-container-low border border-slate-200 rounded-xl px-4 py-2.5 text-sm focus:border-primary focus:ring-1 focus:ring-primary outline-none"></textarea>
+                        @error('taskDescription') <span class="text-xs text-error mt-1 block">{{ $message }}</span> @enderror
+                    </div>
 
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-sm font-bold font-headline text-on-surface mb-1">Submission Type</label>
+                            <select wire:model="taskType" class="w-full bg-surface-container-low border border-slate-200 rounded-xl px-4 py-2.5 text-sm focus:border-primary focus:ring-1 focus:ring-primary outline-none">
+                                <option value="essay">Online Writing (Essay)</option>
+                                <option value="file_upload">File Upload (PDF/ZIP)</option>
+                                <option value="quiz">Interactive Quiz</option>
+                            </select>
+                            @error('taskType') <span class="text-xs text-error mt-1 block">{{ $message }}</span> @enderror
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-bold font-headline text-on-surface mb-1">Max Base XP</label>
+                            <input type="number" wire:model="taskBaseXp" class="w-full bg-surface-container-low border border-slate-200 rounded-xl px-4 py-2.5 text-sm focus:border-primary focus:ring-1 focus:ring-primary outline-none">
+                            @error('taskBaseXp') <span class="text-xs text-error mt-1 block">{{ $message }}</span> @enderror
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-bold font-headline text-on-surface mb-1">Deadline Duration (Days)</label>
+                        <input type="number" min="1" max="365" wire:model="taskDaysLimit" placeholder="No deadline (unlimited)" class="w-full bg-surface-container-low border border-slate-200 rounded-xl px-4 py-2.5 text-sm focus:border-primary focus:ring-1 focus:ring-primary outline-none">
+                        @error('taskDaysLimit') <span class="text-xs text-error mt-1 block">{{ $message }}</span> @enderror
+                    </div>
+                </div>
+            </div>
+
+            {{-- Skeleton Loader for Task Modal --}}
+            <div wire:loading wire:target="createTask, editTask" class="animate-pulse space-y-4">
+                <div class="space-y-2">
+                    <div class="bg-slate-200 h-4 w-24 rounded"></div>
+                    <div class="bg-slate-200 h-10 w-full rounded-xl"></div>
+                </div>
+                <div class="space-y-2">
+                    <div class="bg-slate-200 h-4 w-32 rounded"></div>
+                    <div class="bg-slate-200 h-16 w-full rounded-xl"></div>
+                </div>
                 <div class="grid grid-cols-2 gap-4">
-                    <div>
-                        <label class="block text-sm font-bold font-headline text-on-surface mb-1">Submission Type</label>
-                        <select wire:model="taskType" class="w-full bg-surface-container-low border border-slate-200 rounded-xl px-4 py-2.5 text-sm focus:border-primary focus:ring-1 focus:ring-primary outline-none">
-                            <option value="essay">Online Writing (Essay)</option>
-                            <option value="file_upload">File Upload (PDF/ZIP)</option>
-                            <option value="quiz">Interactive Quiz</option>
-                        </select>
-                        @error('taskType') <span class="text-xs text-error mt-1 block">{{ $message }}</span> @enderror
+                    <div class="space-y-2">
+                        <div class="bg-slate-200 h-4 w-20 rounded"></div>
+                        <div class="bg-slate-200 h-10 w-full rounded-xl"></div>
                     </div>
-
-                    <div>
-                        <label class="block text-sm font-bold font-headline text-on-surface mb-1">Max Base XP</label>
-                        <input type="number" wire:model="taskBaseXp" class="w-full bg-surface-container-low border border-slate-200 rounded-xl px-4 py-2.5 text-sm focus:border-primary focus:ring-1 focus:ring-primary outline-none">
-                        @error('taskBaseXp') <span class="text-xs text-error mt-1 block">{{ $message }}</span> @enderror
+                    <div class="space-y-2">
+                        <div class="bg-slate-200 h-4 w-28 rounded"></div>
+                        <div class="bg-slate-200 h-10 w-full rounded-xl"></div>
                     </div>
-                </div>
-
-                <div>
-                    <label class="block text-sm font-bold font-headline text-on-surface mb-1">Deadline Duration (Days)</label>
-                    <input type="number" min="1" max="365" wire:model="taskDaysLimit" placeholder="No deadline (unlimited)" class="w-full bg-surface-container-low border border-slate-200 rounded-xl px-4 py-2.5 text-sm focus:border-primary focus:ring-1 focus:ring-primary outline-none">
-                    @error('taskDaysLimit') <span class="text-xs text-error mt-1 block">{{ $message }}</span> @enderror
                 </div>
             </div>
 
             <div class="flex items-center justify-end gap-2 pt-4 border-t border-outline-variant/10">
                 <button @click="open = false; $wire.closeTaskModal()" type="button" class="bg-slate-100 hover:bg-slate-200 text-slate-800 px-4 py-2 rounded-xl text-xs font-bold transition-all">Cancel</button>
-                <button wire:click="saveTask" type="button" class="bg-primary text-on-primary px-4 py-2 rounded-xl text-xs font-bold hover:opacity-90 transition-opacity">Save Task</button>
+                <button wire:click="saveTask" type="button" wire:loading.attr="disabled" wire:target="saveTask" class="bg-primary text-on-primary px-4 py-2 rounded-xl text-xs font-bold hover:opacity-90 transition-opacity flex items-center justify-center">
+                    <svg wire:loading wire:target="saveTask" class="animate-spin -ml-1 mr-2 h-4 w-4 text-white inline-block" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
+                    <span wire:loading.remove wire:target="saveTask">Save Task</span>
+                    <span wire:loading wire:target="saveTask">Processing...</span>
+                </button>
             </div>
         </div>
     </div>

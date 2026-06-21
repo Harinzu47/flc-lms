@@ -49,7 +49,7 @@ class DatabaseSeeder extends Seeder
             ['name' => 'First Reader'],
             [
                 'description' => 'Membaca modul materi pertama Anda.',
-                'icon' => 'badges/first_reader.png',
+                'icon' => '📖',
                 'criteria_type' => 'materials_read',
                 'target_value' => 1,
             ]
@@ -59,7 +59,7 @@ class DatabaseSeeder extends Seeder
             ['name' => 'Task Master'],
             [
                 'description' => 'Menyelesaikan tugas pertama Anda.',
-                'icon' => 'badges/task_master.png',
+                'icon' => '🏆',
                 'criteria_type' => 'tasks_completed',
                 'target_value' => 1,
             ]

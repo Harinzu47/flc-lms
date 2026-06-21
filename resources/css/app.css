@@ -1,3 +1,10 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* Premium Navigation Transition Bar (wire:navigate) */
+.livewire-progress-bar {
+    height: 4px !important;
+    background-color: #4f46e5 !important;
+    box-shadow: 0 0 15px rgba(79, 70, 229, 0.9) !important;
+}

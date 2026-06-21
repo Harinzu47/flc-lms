@@ -58,7 +58,26 @@ final class EvaluateBadgeUnlocks implements ShouldQueue
                 $user->badges()->syncWithoutDetaching([
                     $badge->id => ['unlocked_at' => now()],
                 ]);
+                $this->dispatch($user->id, 'badge-unlocked', name: $badge->name, description: $badge->description, icon: $badge->icon);
             }
+        }
+    }
+
+    /**
+     * Dispatch event to browser (via database).
+     */
+    private function dispatch(int $userId, string $event, ...$payload): void
+    {
+        if ($event === 'badge-unlocked') {
+            \App\Models\PendingCelebration::create([
+                'user_id' => $userId,
+                'type'    => 'badge-unlocked',
+                'payload' => [
+                    'name'        => $payload['name'] ?? '',
+                    'description' => $payload['description'] ?? '',
+                    'icon'        => $payload['icon'] ?? '',
+                ],
+            ]);
         }
     }
 }

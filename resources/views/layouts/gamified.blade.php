@@ -78,20 +78,14 @@
                         </a>
                         <div class="hidden md:flex gap-6 items-center">
                             <a href="{{ route('dashboard') }}"
-                               class="font-headline font-semibold tracking-tight text-on-surface-variant hover:text-primary transition-colors">
+                               wire:navigate
+                               class="font-headline font-semibold tracking-tight transition-colors {{ request()->routeIs('dashboard') ? 'text-primary border-b-2 border-primary pb-1' : 'text-on-surface-variant hover:text-primary' }}">
                                 Dashboard
                             </a>
-                            <a href="#"
-                               class="font-headline font-semibold tracking-tight text-primary border-b-2 border-primary pb-1">
+                            <a href="{{ route('library') }}"
+                               wire:navigate
+                               class="font-headline font-semibold tracking-tight transition-colors {{ request()->routeIs('library', 'courses.show', 'materials.show', 'tasks.show') ? 'text-primary border-b-2 border-primary pb-1' : 'text-on-surface-variant hover:text-primary' }}">
                                 Courses
-                            </a>
-                            <a href="#"
-                               class="font-headline font-semibold tracking-tight text-on-surface-variant hover:text-primary transition-colors">
-                                Calendar
-                            </a>
-                            <a href="#"
-                               class="font-headline font-semibold tracking-tight text-on-surface-variant hover:text-primary transition-colors">
-                                Resources
                             </a>
                         </div>
                     </div>
@@ -209,6 +203,9 @@
             </div>
         </div>{{-- /toast wrapper --}}
 
+        <x-celebration-hub />
+
         @livewireScripts
+        <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
     </body>
 </html>
