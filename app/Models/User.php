@@ -105,6 +105,21 @@ class User extends Authenticatable
     }
 
     /**
+     * Cache the top leaderboard rankings for 5 minutes.
+     */
+    public static function getCachedLeaderboard(int $limit = 10): \Illuminate\Support\Collection
+    {
+        return cache()->remember('leaderboard.top.' . $limit, now()->addMinutes(5), function () use ($limit) {
+            return self::query()
+                ->where('role', 'member')
+                ->with(['level'])
+                ->orderByDesc('total_xp')
+                ->take($limit)
+                ->get();
+        });
+    }
+
+    /**
      * The highest Level tier the user has reached based on their total XP.
      * Falls back to a synthetic "Novice" object if no levels exist in the DB.
      *
@@ -112,11 +127,7 @@ class User extends Authenticatable
      */
     public function currentLevel(): ?Level
     {
-        $xp = (int) ($this->total_xp ?? 0);
-        return self::allLevels()
-            ->filter(fn (Level $level) => $level->min_xp <= $xp)
-            ->sortByDesc('min_xp')
-            ->first();
+        return $this->determineLevelFromCollection(self::allLevels());
     }
 
     /**
