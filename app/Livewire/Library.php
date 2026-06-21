@@ -23,9 +23,9 @@ class Library extends Component
     {
         $user = auth()->user();
 
-        // 1. Eager load minLevel and prerequisite for courses in the list
+        // 1. Eager load minLevel, prerequisite, and modules with items to check completion in-memory
         $courses = Course::query()
-            ->with(['minLevel', 'prerequisite'])
+            ->with(['minLevel', 'prerequisite', 'modules.materials', 'modules.tasks'])
             ->where('is_published', true)
             ->orderBy('id')
             ->get();
@@ -41,12 +41,8 @@ class Library extends Component
             ->where('status', 'graded')
             ->pluck('task_id');
 
-        // Eager load nested modules structure for all courses to check completion in-memory
-        $allCoursesWithModules = Course::query()
-            ->with(['modules.materials', 'modules.tasks'])
-            ->get();
-
-        $completedCourseIds = $allCoursesWithModules->filter(function (Course $c) use ($user, $readMaterialIds, $gradedTaskIds): bool {
+        // Filter already loaded collection in-memory (prevents double-fetching memory bloat)
+        $completedCourseIds = $courses->filter(function (Course $c) use ($user, $readMaterialIds, $gradedTaskIds): bool {
             return $c->isCompletedByUser($user, $readMaterialIds, $gradedTaskIds);
         })->pluck('id');
 

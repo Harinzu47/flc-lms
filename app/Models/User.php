@@ -26,9 +26,6 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
-        'role',
-        'level_id',
-        'total_xp',
     ];
 
     /**
@@ -97,17 +94,28 @@ class User extends Authenticatable
     // -------------------------------------------------------------------------
 
     /**
+    /**
+     * Cache all levels forever to prevent repetitive database queries.
+     */
+    public static function allLevels(): \Illuminate\Support\Collection
+    {
+        return cache()->rememberForever('levels.all', function () {
+            return Level::orderBy('min_xp')->get();
+        });
+    }
+
+    /**
      * The highest Level tier the user has reached based on their total XP.
      * Falls back to a synthetic "Novice" object if no levels exist in the DB.
      *
-     * Queries the Level table directly so the result always reflects the
-     * current total_xp, not the cached level_id FK value.
+     * Queries the cached Level collection directly to avoid database roundtrips.
      */
     public function currentLevel(): ?Level
     {
-        return Level::query()
-            ->where('min_xp', '<=', (int) ($this->total_xp ?? 0))
-            ->orderByDesc('min_xp')
+        $xp = (int) ($this->total_xp ?? 0);
+        return self::allLevels()
+            ->filter(fn (Level $level) => $level->min_xp <= $xp)
+            ->sortByDesc('min_xp')
             ->first();
     }
 
@@ -130,9 +138,10 @@ class User extends Authenticatable
      */
     public function nextLevel(): ?Level
     {
-        return Level::query()
-            ->where('min_xp', '>', (int) ($this->total_xp ?? 0))
-            ->orderBy('min_xp')
+        $xp = (int) ($this->total_xp ?? 0);
+        return self::allLevels()
+            ->filter(fn (Level $level) => $level->min_xp > $xp)
+            ->sortBy('min_xp')
             ->first();
     }
 

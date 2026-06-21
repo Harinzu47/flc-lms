@@ -220,16 +220,42 @@ class CourseManager extends Component
 
     public function moveModuleUp(Module $module): void
     {
-        if ($module->sort_order > 0) {
-            $module->decrement('sort_order');
-            $this->dispatch('notify', message: 'Module moved up.');
-        }
+        DB::transaction(function () use ($module) {
+            // Find the module in the same course that is immediately above this one
+            $previousModule = Module::query()
+                ->where('course_id', $module->course_id)
+                ->where('sort_order', '<', $module->sort_order)
+                ->orderByDesc('sort_order')
+                ->first();
+
+            if ($previousModule) {
+                // Swap their sort orders
+                $oldOrder = $module->sort_order;
+                $module->update(['sort_order' => $previousModule->sort_order]);
+                $previousModule->update(['sort_order' => $oldOrder]);
+                $this->dispatch('notify', message: 'Module moved up.');
+            }
+        });
     }
 
     public function moveModuleDown(Module $module): void
     {
-        $module->increment('sort_order');
-        $this->dispatch('notify', message: 'Module moved down.');
+        DB::transaction(function () use ($module) {
+            // Find the module in the same course that is immediately below this one
+            $nextModule = Module::query()
+                ->where('course_id', $module->course_id)
+                ->where('sort_order', '>', $module->sort_order)
+                ->orderBy('sort_order')
+                ->first();
+
+            if ($nextModule) {
+                // Swap their sort orders
+                $oldOrder = $module->sort_order;
+                $module->update(['sort_order' => $nextModule->sort_order]);
+                $nextModule->update(['sort_order' => $oldOrder]);
+                $this->dispatch('notify', message: 'Module moved down.');
+            }
+        });
     }
 
     // ── Material CRUD Actions ────────────────────────────────────────────────

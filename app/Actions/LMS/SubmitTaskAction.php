@@ -48,7 +48,7 @@ final class SubmitTaskAction
             if ($file !== null) {
                 // Delete old file if it exists
                 if ($existing->file_url) {
-                    Storage::disk('public')->delete($existing->file_url);
+                    Storage::disk('local')->delete($existing->file_url);
                 }
 
                 $extension = strtolower($file->getClientOriginalExtension());
@@ -58,7 +58,7 @@ final class SubmitTaskAction
                     throw new RuntimeException('Security Validation Failed: Unsupported file extension.');
                 }
 
-                $fileUrl = $file->store('submissions', 'public');
+                $fileUrl = $file->store('submissions', 'local');
             }
 
             // ── Update the existing submission ───────────────────────────────
@@ -83,7 +83,7 @@ final class SubmitTaskAction
                 throw new RuntimeException('Security Validation Failed: Unsupported file extension.');
             }
 
-            $fileUrl = $file->store('submissions', 'public');
+            $fileUrl = $file->store('submissions', 'local');
         }
 
         // ── Create & return the Submission record ─────────────────────────────

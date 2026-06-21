@@ -176,10 +176,7 @@
                                                     <p class="text-xs text-on-surface-variant uppercase tracking-tighter">Submitted File</p>
                                                 </div>
                                             </div>
-                                            <a href="{{ Storage::url($selectedSubmission->file_url) }}"
-                                               target="_blank"
-                                               rel="noopener noreferrer"
-                                               download="{{ $selectedSubmission->friendly_file_name }}"
+                                            <a href="{{ route('submissions.download', $selectedSubmission) }}"
                                                class="px-5 py-2.5 bg-surface-container-highest text-on-primary-fixed-variant rounded-xl font-bold flex items-center gap-2 hover:bg-surface-container-high transition-all text-sm flex-shrink-0"
                                                aria-label="Download {{ $selectedSubmission->friendly_file_name }}">
                                                 <span class="material-symbols-outlined text-lg" aria-hidden="true">download</span>

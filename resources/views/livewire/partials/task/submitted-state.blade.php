@@ -61,10 +61,7 @@
             <p class="text-xs font-label font-bold text-on-surface-variant uppercase tracking-widest mb-3">
                 Submitted File
             </p>
-            <a href="{{ Storage::url($existingSubmission->file_url) }}"
-               target="_blank"
-               rel="noopener noreferrer"
-               download="{{ $existingSubmission->friendly_file_name }}"
+            <a href="{{ route('submissions.download', $existingSubmission) }}"
                class="flex items-center gap-3 text-primary hover:underline font-medium group min-w-0"
                aria-label="Open submitted file: {{ $existingSubmission->friendly_file_name }}">
                 <div class="w-10 h-10 bg-primary/10 rounded-xl flex items-center justify-center group-hover:bg-primary/20 transition-colors flex-shrink-0"

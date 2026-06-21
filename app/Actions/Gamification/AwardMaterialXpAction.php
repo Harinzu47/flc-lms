@@ -31,34 +31,40 @@ final class AwardMaterialXpAction
      */
     public function execute(User $user, Material $material): bool
     {
-        // ── Guard: already claimed? ──────────────────────────────────────────
-        $alreadyClaimed = XpLog::query()
-            ->where('user_id',      $user->id)
-            ->where('action',       self::ACTION)
-            ->where('reference_id', $material->id)
-            ->exists();
+        $xpAwarded = false;
 
-        if ($alreadyClaimed) {
-            return false;
-        }
+        // Wrap both check and update inside a transaction with pessimistic locking
+        DB::transaction(function () use ($user, $material, &$xpAwarded): void {
+            // Lock the user record for update to serialize concurrent XP awards for the same user
+            $lockedUser = User::query()->where('id', $user->id)->lockForUpdate()->first();
 
-        // ── Atomic: log entry + user counter update ──────────────────────────
-        DB::transaction(function () use ($user, $material): void {
-            XpLog::create([
-                'user_id'      => $user->id,
-                'action'       => self::ACTION,
-                'xp_earned'    => self::XP_AMOUNT,
-                'reference_id' => $material->id,
-            ]);
+            if ($lockedUser !== null) {
+                $alreadyClaimed = XpLog::query()
+                    ->where('user_id',      $lockedUser->id)
+                    ->where('action',       self::ACTION)
+                    ->where('reference_id', $material->id)
+                    ->exists();
 
-            // Use increment() for an atomic UPDATE — avoids lost-update race conditions
-            // from read-modify-write cycles (e.g. $user->total_xp += 10; $user->save()).
-            $user->increment('total_xp', self::XP_AMOUNT);
+                if (!$alreadyClaimed) {
+                    XpLog::create([
+                        'user_id'      => $lockedUser->id,
+                        'action'       => self::ACTION,
+                        'xp_earned'    => self::XP_AMOUNT,
+                        'reference_id' => $material->id,
+                    ]);
+
+                    $lockedUser->increment('total_xp', self::XP_AMOUNT);
+                    $xpAwarded = true;
+                }
+            }
         });
 
-        // Dispatch decoupled event for level/badge sync
-        \App\Events\XpEarned::dispatch($user, self::XP_AMOUNT);
+        if ($xpAwarded) {
+            // Dispatch decoupled event for level/badge sync
+            \App\Events\XpEarned::dispatch($user, self::XP_AMOUNT);
+            return true;
+        }
 
-        return true;
+        return false;
     }
 }

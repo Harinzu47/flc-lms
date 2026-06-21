@@ -69,6 +69,14 @@ class Task extends Model
         return $this->hasMany(UserTaskStart::class);
     }
 
+    protected static function booted()
+    {
+        static::deleting(function (Task $task) {
+            XpLog::where('action', 'task_graded')->where('reference_id', $task->id)->delete();
+            $task->submissions()->delete();
+        });
+    }
+
     /**
      * Get the computed personal deadline for a given user.
      */

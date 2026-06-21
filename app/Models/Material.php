@@ -49,6 +49,13 @@ class Material extends Model
         return $this->hasMany(XpLog::class, 'reference_id');
     }
 
+    protected static function booted()
+    {
+        static::deleting(function (Material $material) {
+            XpLog::where('action', 'material_read')->where('reference_id', $material->id)->delete();
+        });
+    }
+
     // -------------------------------------------------------------------------
     // Gamification Helpers
     // -------------------------------------------------------------------------

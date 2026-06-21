@@ -1,58 +1,77 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# FLC UMJ Gamified LMS (flc-lms)
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+FLC UMJ Gamified LMS (`flc-lms`) adalah Learning Management System (LMS) bergamifikasi untuk komunitas belajar kampus FLC Universitas Muhammadiyah Jakarta. Aplikasi ini dirancang menggunakan **TALL Stack** (Tailwind CSS, Alpine.js, Livewire, Laravel) untuk memberikan pengalaman belajar yang dinamis, interaktif, dan premium bagi mahasiswa.
 
-## About Laravel
+---
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+## Fitur Utama
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+### 1. Struktur Kurikulum Terstruktur
+- **Kursus (Course)**: Struktur utama kurikulum yang mencakup satu mata kuliah/kursus.
+- **Modul (Module)**: Pengelompokan materi dan tugas secara sekuensial.
+- **Materi & Tugas (Material & Task)**: Konten pembelajaran berupa bacaan (artikel), dokumen, video, tautan, dan tugas pengumpulan berkas/esai.
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+### 2. Mesin Gamifikasi
+- **XP & Level**: Mahasiswa mendapatkan poin XP secara otomatis setelah menyelesaikan materi membaca (+10 XP) atau setelah tugas mereka dinilai oleh Admin (XP proporsional terhadap skor).
+- **Lencana (Badges)**: Lencana pencapaian yang terbuka secara otomatis berbasis kriteria tertentu (event-driven).
+- **Leaderboard / Hall of Fame**: Halaman peringkat mahasiswa teratas berdasarkan total XP untuk memicu keterlibatan kompetitif yang sehat.
 
-## Learning Laravel
+### 3. Keamanan Tingkat Lanjut (Security Hardening)
+- **Safe Output & XSS Protection**: Seluruh deskripsi materi dan tugas diparsing secara aman melalui Markdown parser dengan HTML escaping.
+- **Secure Submissions Storage**: Berkas tugas mahasiswa disimpan secara privat pada disk lokal dan hanya dapat diunduh oleh pemilik berkas atau admin melalui pengontrol khusus.
+- **Race Condition Prevention**: Mekanisme klaim XP membaca materi diamankan menggunakan *pessimistic database locking* pada record pengguna untuk menghindari eksploitasi perolehan XP ganda secara konkuren.
+- **Mass Assignment Protection**: Atribut penting seperti `role`, `level_id`, dan `total_xp` dilindungi dari kerentanan manipulasi permintaan massal.
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+---
 
-In addition, [Laracasts](https://laracasts.com) contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+## Panduan Instalasi & Setup Lokal
 
-You can also watch bite-sized lessons with real-world projects on [Laravel Learn](https://laravel.com/learn), where you will be guided through building a Laravel application from scratch while learning PHP fundamentals.
+Proyek ini terintegrasi penuh dengan **Laravel Sail** (lingkungan pengembangan berbasis Docker).
 
-## Agentic Development
+### Prasyarat
+- Docker Desktop terinstal dan berjalan di komputer Anda.
+- Git.
 
-Laravel's predictable structure and conventions make it ideal for AI coding agents like Claude Code, Cursor, and GitHub Copilot. Install [Laravel Boost](https://laravel.com/docs/ai) to supercharge your AI workflow:
+### Langkah-langkah Setup
+1. Clone repositori ke mesin lokal Anda:
+   ```bash
+   git clone <repository-url> flc-lms
+   cd flc-lms
+   ```
+2. Copy file `.env.example` menjadi `.env`:
+   ```bash
+   cp .env.example .env
+   ```
+3. Pasang dependensi PHP Composer menggunakan kontainer helper sementara:
+   ```bash
+   docker run --rm \
+       -u "$(id -u):$(id -g)" \
+       -v "$(pwd):/var/www/html" \
+       -w /var/www/html \
+       laravelsail/php8.2-composer:latest \
+       composer install --ignore-platform-reqs
+   ```
+4. Jalankan kontainer Sail di latar belakang:
+   ```bash
+   ./vendor/bin/sail up -d
+   ```
+5. Generate application key:
+   ```bash
+   ./vendor/bin/sail artisan key:generate
+   ```
+6. Jalankan migrasi database beserta seeder data awal:
+   ```bash
+   ./vendor/bin/sail artisan migrate --seed
+   ```
+7. Pasang dependensi JavaScript (NPM) dan jalankan Vite dev server:
+   ```bash
+   ./vendor/bin/sail npm install
+   ./vendor/bin/sail npm run dev
+   ```
+8. Akses aplikasi melalui browser Anda di alamat `http://localhost`.
 
-```bash
-composer require laravel/boost --dev
+---
 
-php artisan boost:install
-```
+## Lisensi
 
-Boost provides your agent 15+ tools and skills that help agents build Laravel applications while following best practices.
-
-## Contributing
-
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
-
-## Code of Conduct
-
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
-
-## Security Vulnerabilities
-
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
-
-## License
-
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+Proyek ini dilisensikan di bawah **[MIT License](LICENSE)**.

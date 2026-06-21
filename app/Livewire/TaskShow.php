@@ -48,8 +48,40 @@ class TaskShow extends Component
     // ─────────────────────────────────────────────────────────────────────────
     public function mount(Task $task): void
     {
+        $user = auth()->user();
+
+        // Prevent N+1 queries by pre-fetching completed course, module, material, and task collections
+        $task->load(['module.course.modules.materials', 'module.course.modules.tasks']);
+
+        $readMaterialIds = \App\Models\XpLog::query()
+            ->where('user_id', $user->id)
+            ->where('action', 'material_read')
+            ->pluck('reference_id');
+
+        $gradedTaskIds = \App\Models\Submission::query()
+            ->where('user_id', $user->id)
+            ->where('status', 'graded')
+            ->pluck('task_id');
+
+        $allCoursesWithModules = \App\Models\Course::query()
+            ->with(['modules.materials', 'modules.tasks'])
+            ->get();
+
+        $completedCourseIds = $allCoursesWithModules->filter(function (\App\Models\Course $c) use ($user, $readMaterialIds, $gradedTaskIds): bool {
+            return $c->isCompletedByUser($user, $readMaterialIds, $gradedTaskIds);
+        })->pluck('id');
+
+        $completedModuleIds = collect();
+        if ($task->module && $task->module->course) {
+            foreach ($task->module->course->modules as $mod) {
+                if ($mod->isCompletedByUser($user, $readMaterialIds, $gradedTaskIds)) {
+                    $completedModuleIds->push($mod->id);
+                }
+            }
+        }
+
         // Secure back-door progression gate: Abort if the task is locked for the authenticated user
-        if ($task->isLockedForUser(auth()->user())) {
+        if ($task->isLockedForUser($user, $completedModuleIds, $completedCourseIds)) {
             abort(403, 'Tugas ini masih terkunci! Selesaikan modul/materi sebelumnya terlebih dahulu.');
         }
 

@@ -182,7 +182,10 @@
                             Instructions
                         </h3>
                         <div class="prose prose-slate max-w-none text-on-surface-variant leading-relaxed font-body">
-                            {!! $task->description !!}
+                            {!! \Illuminate\Support\Str::markdown($task->description ?? '', [
+                                'html_input' => 'escape',
+                                'allow_unsafe_links' => false,
+                            ]) !!}
                         </div>
                     </section>
                 </div>
