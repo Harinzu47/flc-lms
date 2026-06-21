@@ -24,15 +24,39 @@ use Livewire\Component;
  * Uses layouts.base to bypass Breeze's navigation shell — the Stitch
  * design supplies its own top app bar and mobile bottom nav.
  */
-#[Layout('layouts.gamified')]
-#[Title('My Dashboard — FLC LMS')]
 class GamifiedDashboard extends Component
 {
+    public string $activeTab = 'overview';
+
     public function render(): View
     {
         /** @var User $user */
         $user = auth()->user();
+        // TAHAP 1: GARIS PERTAHANAN KONTROLER (Role-Based Forking)
+        if ($user->role === 'admin') {
+            $totalStudents = User::where('role', 'member')->count();
+            $pendingGradingCount = \App\Models\Submission::whereNull('score')
+                ->where('is_flagged', false)
+                ->count();
+            $flaggedCount = \App\Models\Submission::where('is_flagged', true)->count();
+            
+            $topStudents = $this->activeTab === 'leaderboard'
+                ? User::where('role', 'member')->with(['level'])->orderBy('total_xp', 'desc')->take(10)->get()
+                : collect();
 
+            $pendingSubmissions = \App\Models\Submission::whereNull('score')->get();
+
+            return view('livewire.admin.dashboard-analytics', compact(
+                'totalStudents',
+                'pendingGradingCount',
+                'flaggedCount',
+                'topStudents',
+                'pendingSubmissions'
+            ))
+            ->layout('layouts.base')
+            ->title('Admin Analytics Command Center — FLC LMS');
+        }
+        // --- STUDENT (MEMBER) DASHBOARD ---
         // Load badges with pivot data (unlocked_at timestamp for sorting)
         $badges = $user->badges()
             ->orderByPivot('unlocked_at', 'desc')
@@ -50,6 +74,7 @@ class GamifiedDashboard extends Component
             ->orderByDesc('total_xp')
             ->take(5)
             ->get();
+
         // Upcoming tasks with a future deadline (nearest first), max 3
         $upcomingTasks = \App\Models\Task::query()
             ->with(['userStarts' => function ($query) use ($user) {
@@ -90,6 +115,7 @@ class GamifiedDashboard extends Component
                 return $task->deadline;
             })
             ->take(3);
+
         // Fetch all levels sorted by min_xp once to avoid N+1 query loops in the view
         $allLevels = \App\Models\Level::query()
             ->orderBy('min_xp')
@@ -102,6 +128,7 @@ class GamifiedDashboard extends Component
             'leaderboard',
             'upcomingTasks',
             'allLevels',
-        ));
-    }
+        ))
+        ->layout('layouts.gamified')
+        ->title('My Dashboard — FLC LMS');    }
 }

@@ -180,14 +180,44 @@
 
                                         {{-- Badges unlocked --}}
                                         <td class="px-6 py-4">
-                                            <div class="flex items-center gap-1">
+                                            <div class="flex items-center">
                                                 @if($userItem->badges->isNotEmpty())
-                                                    <span class="inline-flex items-center gap-1 bg-amber-100 text-amber-800 border border-amber-200 px-2 py-0.5 rounded-lg text-xs font-black">
-                                                        <span class="material-symbols-outlined text-xs" style="font-variation-settings:'FILL' 1;">military_tech</span>
-                                                        {{ $userItem->badges->count() }} Badges
-                                                    </span>
+                                                    <div class="flex items-center -space-x-1.5">
+                                                        @foreach($userItem->badges->take(3) as $badge)
+                                                            <div class="relative" x-data="{ tooltip: false }">
+                                                                <div 
+                                                                    @mouseenter="tooltip = true" 
+                                                                    @mouseleave="tooltip = false"
+                                                                    class="w-7 h-7 rounded-full bg-gradient-to-br from-amber-100 to-amber-200 border-2 border-white text-amber-800 flex items-center justify-center shadow-sm hover:scale-110 hover:z-10 transition-all duration-150 cursor-pointer"
+                                                                >
+                                                                    <span class="material-symbols-outlined text-[14px]" style="font-variation-settings:'FILL' 1;" aria-hidden="true">military_tech</span>
+                                                                </div>
+                                                                
+                                                                {{-- Tooltip --}}
+                                                                <div 
+                                                                    x-show="tooltip" 
+                                                                    x-cloak 
+                                                                    x-transition:enter="transition ease-out duration-200"
+                                                                    x-transition:enter-start="opacity-0 translate-y-1"
+                                                                    x-transition:enter-end="opacity-100 translate-y-0"
+                                                                    x-transition:leave="transition ease-in duration-150"
+                                                                    x-transition:leave-start="opacity-100 translate-y-0"
+                                                                    x-transition:leave-end="opacity-0 translate-y-1"
+                                                                    class="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-2.5 py-1 bg-slate-900/90 text-white text-[10px] font-bold rounded-lg whitespace-nowrap shadow-md z-50 pointer-events-none"
+                                                                >
+                                                                    {{ $badge->name }}
+                                                                </div>
+                                                            </div>
+                                                        @endforeach
+                                                        
+                                                        @if($userItem->badges->count() > 3)
+                                                            <div class="w-7 h-7 rounded-full bg-slate-100 border-2 border-white flex items-center justify-center text-[10px] font-extrabold text-slate-600 shadow-sm z-0">
+                                                                +{{ $userItem->badges->count() - 3 }}
+                                                            </div>
+                                                        @endif
+                                                    </div>
                                                 @else
-                                                    <span class="text-xs text-on-surface-variant italic">No badges</span>
+                                                    <span class="text-xs text-slate-400 font-medium">Belum ada pencapaian</span>
                                                 @endif
                                             </div>
                                         </td>

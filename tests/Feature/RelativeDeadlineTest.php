@@ -94,7 +94,7 @@ class RelativeDeadlineTest extends TestCase
         $this->actingAs($user);
 
         // Register initial start time in past
-        $originalStart = now()->subDays(2);
+        $originalStart = now()->subDays(2)->startOfSecond();
         UserTaskStart::create([
             'user_id' => $user->id,
             'task_id' => $task->id,
@@ -107,7 +107,7 @@ class RelativeDeadlineTest extends TestCase
 
         // Verify started_at remains the same
         $currentStart = UserTaskStart::where('user_id', $user->id)->where('task_id', $task->id)->first();
-        $this->assertTrue($originalStart->eq($currentStart->started_at));
+        $this->assertEquals($originalStart->toDateTimeString(), $currentStart->started_at->toDateTimeString());
     }
 
     public function test_personal_deadline_calculated_correctly(): void

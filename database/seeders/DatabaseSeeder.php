@@ -49,9 +49,9 @@ class DatabaseSeeder extends Seeder
             ['name' => 'First Reader'],
             [
                 'description' => 'Membaca modul materi pertama Anda.',
-                'icon_url' => 'badges/first_reader.png',
-                'criteria_type' => 'material_read',
-                'criteria_value' => 1,
+                'icon' => 'badges/first_reader.png',
+                'criteria_type' => 'materials_read',
+                'target_value' => 1,
             ]
         );
 
@@ -59,9 +59,9 @@ class DatabaseSeeder extends Seeder
             ['name' => 'Task Master'],
             [
                 'description' => 'Menyelesaikan tugas pertama Anda.',
-                'icon_url' => 'badges/task_master.png',
-                'criteria_type' => 'task_graded',
-                'criteria_value' => 1,
+                'icon' => 'badges/task_master.png',
+                'criteria_type' => 'tasks_completed',
+                'target_value' => 1,
             ]
         );
 
@@ -88,6 +88,15 @@ class DatabaseSeeder extends Seeder
                 'email_verified_at' => now(),
             ]
         );
+
+        $badgeReader = \App\Models\Badge::where('name', 'First Reader')->first();
+        $badgeTask = \App\Models\Badge::where('name', 'Task Master')->first();
+        if ($badgeReader && $badgeTask) {
+            $star->badges()->syncWithoutDetaching([
+                $badgeReader->id => ['unlocked_at' => now()],
+                $badgeTask->id => ['unlocked_at' => now()],
+            ]);
+        }
 
         // Make sure a few random students exist
         $studentsPool = collect();

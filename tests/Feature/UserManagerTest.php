@@ -94,16 +94,16 @@ class UserManagerTest extends TestCase
         $badge1 = Badge::create([
             'name' => 'Badge One',
             'description' => 'Desc 1',
-            'icon_url' => 'badge1.png',
+            'icon' => 'badge1.png',
             'criteria_type' => 'total_xp',
-            'criteria_value' => 100,
+            'target_value' => 100,
         ]);
         $badge2 = Badge::create([
             'name' => 'Badge Two',
             'description' => 'Desc 2',
-            'icon_url' => 'badge2.png',
+            'icon' => 'badge2.png',
             'criteria_type' => 'total_xp',
-            'criteria_value' => 200,
+            'target_value' => 200,
         ]);
 
         // Unlocked 3 days ago

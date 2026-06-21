@@ -377,10 +377,17 @@
 
     {{-- ── DESKTOP FLOATING ACTION (Download PDF) ─────────────────────── --}}
     <div class="hidden md:block fixed bottom-8 right-8 z-40">
-        <button class="flex items-center gap-2 bg-surface-container-lowest text-primary font-headline font-bold px-6 py-4 rounded-full shadow-lg hover:shadow-xl transition-all border border-outline-variant/10">
-            <span class="material-symbols-outlined">description</span>
-            Download PDF Notes
-        </button>
+        @if($material->file_url)
+            <a href="{{ $material->file_url }}" target="_blank" class="flex items-center gap-2 bg-surface-container-lowest text-primary font-headline font-bold px-6 py-4 rounded-full shadow-lg hover:shadow-xl transition-all border border-outline-variant/10">
+                <span class="material-symbols-outlined">description</span>
+                Download PDF Notes
+            </a>
+        @else
+            <button @click="showToast('Materi ini tidak memiliki lampiran berkas PDF.')" class="flex items-center gap-2 bg-surface-container-lowest text-slate-400 font-headline font-bold px-6 py-4 rounded-full shadow-lg hover:shadow-xl transition-all border border-outline-variant/10 cursor-not-allowed">
+                <span class="material-symbols-outlined">description</span>
+                Download PDF Notes
+            </button>
+        @endif
     </div>
 
 </div>{{-- /x-data (Alpine root) --}}

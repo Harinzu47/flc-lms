@@ -22,6 +22,7 @@
         ['key' => 'dashboard', 'label' => 'Dashboard',  'icon' => 'dashboard',      'route' => route('dashboard')],
         ['key' => 'users',     'label' => 'Users',       'icon' => 'group',          'route' => route('admin.users')],
         ['key' => 'courses',   'label' => 'Courses',     'icon' => 'auto_stories',   'route' => route('admin.courses')],
+        ['key' => 'badges',    'label' => 'Badges',      'icon' => 'military_tech',  'route' => route('admin.badges')],
         ['key' => 'grading',   'label' => 'Grading',     'icon' => 'grade',          'route' => route('admin.grading')],
     ];
 @endphp

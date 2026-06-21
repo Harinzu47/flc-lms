@@ -31,15 +31,14 @@
                 <div class="group bg-surface-container-lowest rounded-2xl p-5 shadow-sm hover:shadow-md transition-all border border-outline-variant/10 flex flex-col items-center text-center"
                      role="listitem">
                     {{-- Badge icon: use icon_url if available, otherwise Material Symbol fallback --}}
-                    @if($badge->icon_url)
-                        <img src="{{ $badge->icon_url }}"
+                    @if(str_contains($badge->icon ?? '', '/') || str_contains($badge->icon ?? '', '.'))
+                        <img src="{{ asset($badge->icon) }}"
                              alt="{{ $badge->name }}"
                              class="w-14 h-14 rounded-full object-cover mb-3 border-2 border-secondary-container group-hover:scale-110 transition-transform">
                     @else
-                        <div class="w-14 h-14 rounded-full bg-gradient-to-br from-secondary-container to-secondary-fixed flex items-center justify-center mb-3 group-hover:scale-110 transition-transform shadow-sm"
+                        <div class="w-14 h-14 rounded-full bg-gradient-to-br from-secondary-container to-secondary-fixed flex items-center justify-center mb-3 group-hover:scale-110 transition-transform shadow-sm text-3xl"
                              aria-hidden="true">
-                            <span class="material-symbols-outlined text-on-secondary-container text-2xl"
-                                  style="font-variation-settings:'FILL' 1;">military_tech</span>
+                            <span>{{ $badge->icon ?? '🏅' }}</span>
                         </div>
                     @endif
                     <p class="font-headline font-bold text-sm text-on-surface group-hover:text-primary transition-colors">

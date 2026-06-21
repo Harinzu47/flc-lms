@@ -49,6 +49,7 @@ Route::middleware('auth')->group(function () {
         Route::get('/grading', GradingStation::class)->name('grading');
         Route::get('/courses', CourseManager::class)->name('courses');
         Route::get('/users',   UserManager::class)->name('users');
+        Route::get('/badges',  \App\Livewire\Admin\BadgeManager::class)->name('badges');
     });
 });
 
