@@ -9,25 +9,18 @@
 <div
     x-data="{ showBadgeModal: false, showLevelModal: false, badge: {}, level: {} }"
     x-init="
-        @if(auth()->check())
-            @php
-                $pending = \App\Models\PendingCelebration::where('user_id', auth()->id())->get();
-            @endphp
-            @foreach($pending as $item)
-                @if($item->type === 'badge-unlocked')
-                    badge = { name: '{{ addslashes($item->payload['name'] ?? '') }}', description: '{{ addslashes($item->payload['description'] ?? '') }}', icon: '{{ addslashes($item->payload['icon'] ?? '') }}' };
-                    showBadgeModal = true;
-                    confetti({ particleCount: 150, spread: 70, origin: { y: 0.6 } });
-                @elseif($item->type === 'level-up')
-                    level = { levelName: '{{ addslashes($item->payload['levelName'] ?? '') }}', targetXp: {{ $item->payload['targetXp'] ?? 0 }} };
-                    showLevelModal = true;
-                    confetti({ particleCount: 200, spread: 90 });
-                @endif
-                @php
-                    $item->delete();
-                @endphp
-            @endforeach
-        @endif
+        let celebrations = @js($celebrations);
+        celebrations.forEach(item => {
+            if (item.type === 'badge-unlocked') {
+                badge = { name: item.payload.name || '', description: item.payload.description || '', icon: item.payload.icon || '' };
+                showBadgeModal = true;
+                confetti({ particleCount: 150, spread: 70, origin: { y: 0.6 } });
+            } else if (item.type === 'level-up') {
+                level = { levelName: item.payload.levelName || '', targetXp: item.payload.targetXp || 0 };
+                showLevelModal = true;
+                confetti({ particleCount: 200, spread: 90 });
+            }
+        });
     "
     @badge-unlocked.window="badge = $event.detail; showBadgeModal = true; confetti({ particleCount: 150, spread: 70, origin: { y: 0.6 } });"
     @level-up.window="level = $event.detail; showLevelModal = true; confetti({ particleCount: 200, spread: 90 });"

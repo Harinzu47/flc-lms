@@ -4,7 +4,9 @@
     Design:   Stitch AI · Screen ID: 4674a34a60d7456dbdd5c27972191b11
     Backend:  App\Livewire\GradingStation
     Layout:   layouts.base (bare HTML shell — admin uses its own 3-panel chrome)
-    ────────────────────────────────────────────────────────────────────────────
+    ──────────
+    Toast is provided by the base layout via <x-toast-notification />.
+    Custom scrollbar styles are defined in app.css.
 
     This view is a coordinator only. Partials live in:
       resources/views/livewire/partials/grading/
@@ -14,59 +16,21 @@
     ────────────────────────────────────────────────────────────────────────────
 --}}
 
-@push('styles')
-    <style>
-        .custom-scrollbar::-webkit-scrollbar { width: 6px; }
-        .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
-        .custom-scrollbar::-webkit-scrollbar-thumb { background: #e0e3e5; border-radius: 10px; }
-    </style>
-@endpush
-
-{{-- ── Alpine Root: Toast listener ──────────────────────────────────────────── --}}
-<div
-    x-data="{
-        toastVisible: false,
-        toastMessage: '',
-        showToast(msg) {
-            this.toastMessage = msg;
-            this.toastVisible = true;
-            setTimeout(() => this.toastVisible = false, 4000);
-        }
-    }"
-    @notify.window="showToast($event.detail.message)"
-    class="bg-background text-on-surface font-body min-h-screen flex"
->
-
-    {{-- ── TOAST ────────────────────────────────────────────────────────────── --}}
-    <div
-        x-show="toastVisible"
-        x-cloak
-        x-transition:enter="transition ease-out duration-300"
-        x-transition:enter-start="opacity-0 translate-y-2"
-        x-transition:enter-end="opacity-100 translate-y-0"
-        x-transition:leave="transition ease-in duration-200"
-        x-transition:leave-start="opacity-100"
-        x-transition:leave-end="opacity-0"
-        class="fixed top-6 right-6 z-[9999] flex items-center gap-3 bg-gradient-to-br from-primary to-primary-container text-on-primary px-6 py-4 rounded-2xl shadow-[0_10px_25px_-5px_rgba(43,75,185,0.45)]"
-        role="alert"
-        aria-live="polite"
-    >
-        <span class="material-symbols-outlined" style="font-variation-settings:'FILL' 1;" aria-hidden="true">verified</span>
-        <div>
-            <p class="font-headline font-bold text-base leading-none" x-text="toastMessage"></p>
-            <p class="text-on-primary/75 text-sm mt-0.5">XP has been awarded to the student.</p>
-        </div>
-    </div>
+{{-- ── Alpine Root ──────────────────────────────────────────────────────────── --}}
+<div x-data="{ sidebarOpen: false }" class="bg-background text-on-surface font-body min-h-screen flex">
 
     {{-- ── PANEL 1: Admin Sidebar ───────────────────────────────────────────── --}}
     @include('livewire.partials.admin.sidebar', ['activePage' => 'grading'])
 
     {{-- ── MAIN CONTENT (offset for fixed sidebar) ─────────────────────────── --}}
-    <main class="pl-64 min-h-screen flex flex-col w-full">
+    <main class="md:pl-64 min-h-screen flex flex-col w-full">
 
         {{-- Top App Bar --}}
         <header class="sticky top-0 z-40 flex items-center justify-between px-8 py-3 w-full border-b border-slate-100 bg-white/80 backdrop-blur-md shadow-sm">
-            <div class="flex items-center gap-6">
+            <div class="flex items-center gap-4">
+                <button @click="sidebarOpen = !sidebarOpen" class="p-2 -ml-2 text-on-surface-variant hover:text-primary rounded-lg md:hidden focus:outline-none" aria-label="Toggle admin sidebar">
+                    <span class="material-symbols-outlined block text-2xl">menu</span>
+                </button>
                 <h1 class="text-xl font-bold text-blue-800 font-headline tracking-tight">FLC UMJ</h1>
                 <div class="relative hidden lg:block">
                     <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline"
@@ -233,4 +197,4 @@
         </div>{{-- /flex-1 flex-row --}}
     </main>{{-- /pl-64 --}}
 
-</div>{{-- /x-data Alpine root --}}
+</div>{{-- /root --}}

@@ -60,6 +60,10 @@ final class AwardMaterialXpAction
         });
 
         if ($xpAwarded) {
+            // Refresh the user model so listeners receive the up-to-date total_xp
+            // (the original $user object is stale after the locked increment inside the transaction).
+            $user->refresh();
+
             // Dispatch decoupled event for level/badge sync
             \App\Events\XpEarned::dispatch($user, self::XP_AMOUNT);
             return true;

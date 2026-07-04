@@ -27,7 +27,9 @@
     ];
 @endphp
 
-<aside class="h-screen w-64 fixed left-0 top-0 bg-slate-50 border-r border-slate-200 z-50 flex-shrink-0"
+<aside class="h-screen w-64 fixed left-0 top-0 bg-slate-50 border-r border-slate-200 z-50 flex-shrink-0 transition-transform duration-300 transform md:translate-x-0"
+       :class="sidebarOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'"
+       @click.away="sidebarOpen = false"
        aria-label="Admin navigation">
     <div class="flex flex-col h-full py-6">
 

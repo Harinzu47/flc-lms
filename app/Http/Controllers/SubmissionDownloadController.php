@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Http\Controllers;
 
 use App\Models\Submission;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Storage;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 
@@ -15,9 +16,12 @@ final class SubmissionDownloadController extends Controller
      */
     public function download(Submission $submission): StreamedResponse
     {
-        // Otentikasi & Otorisasi check
-        if (auth()->id() !== $submission->user_id && auth()->user()->role !== 'admin') {
-            abort(403, 'Akses Ditolak: Anda tidak berwenang mengunduh file ini.');
+        // Authorize download using SubmissionPolicy
+        Gate::authorize('view', $submission);
+
+        // Defense-in-depth: Prevent path traversal attacks
+        if (str_contains($submission->file_url, '..')) {
+            abort(400, 'Invalid file path.');
         }
 
         if (!$submission->file_url || !Storage::disk('local')->exists($submission->file_url)) {

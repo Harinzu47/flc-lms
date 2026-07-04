@@ -15,14 +15,8 @@
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
         <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Public+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
         <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
-        <style>
-            .material-symbols-outlined {
-                font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
-            }
-            [x-cloak] { display: none !important; }
-        </style>
 
-        <!-- Per-page styles pushed by child components (Google Fonts, custom CSS) -->
+        <!-- Per-page styles pushed by child components -->
         @stack('styles')
 
         <!-- Livewire styles (required for Livewire 3 full-page components) -->
@@ -36,7 +30,10 @@
     --}}
     <body class="font-sans antialiased bg-background text-on-surface">
 
-        <x-celebration-hub />
+        {{-- Global Toast Notification --}}
+        <x-toast-notification />
+
+        <livewire:celebration-hub />
 
         {{ $slot }}
 

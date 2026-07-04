@@ -32,12 +32,12 @@ final class SyncUserLevel implements ShouldQueue
         // If a valid level matches and it differs from the cached level_id, sync it atomically
         if ($newLevel !== null && $user->level_id !== $newLevel->id) {
             $oldLevelId = $user->level_id;
-            $user->update([
-                'level_id' => $newLevel->id,
-            ]);
+            $user->level_id = $newLevel->id;
+            $user->save();
 
             if ($oldLevelId !== null || $newLevel->min_xp > 0) {
-                $this->dispatch($user->id, 'level-up', levelName: $newLevel->name, targetXp: $newLevel->xp_threshold);
+                // Note: since min_xp is the threshold field, we pass min_xp
+                $this->dispatch($user->id, $newLevel->name, (int) $newLevel->min_xp);
             }
         }
     }
@@ -45,17 +45,15 @@ final class SyncUserLevel implements ShouldQueue
     /**
      * Dispatch event to browser (via database).
      */
-    private function dispatch(int $userId, string $event, ...$payload): void
+    private function dispatch(int $userId, string $levelName, int $targetXp): void
     {
-        if ($event === 'level-up') {
-            \App\Models\PendingCelebration::create([
-                'user_id' => $userId,
-                'type'    => 'level-up',
-                'payload' => [
-                    'levelName' => $payload['levelName'] ?? '',
-                    'targetXp'  => $payload['targetXp'] ?? 0,
-                ],
-            ]);
-        }
+        \App\Models\PendingCelebration::create([
+            'user_id' => $userId,
+            'type'    => 'level-up',
+            'payload' => [
+                'levelName' => $levelName,
+                'targetXp'  => $targetXp,
+            ],
+        ]);
     }
 }

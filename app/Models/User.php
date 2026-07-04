@@ -94,7 +94,6 @@ class User extends Authenticatable
     // -------------------------------------------------------------------------
 
     /**
-    /**
      * Cache all levels forever to prevent repetitive database queries.
      */
     public static function allLevels(): \Illuminate\Support\Collection
