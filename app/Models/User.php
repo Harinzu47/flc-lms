@@ -98,9 +98,11 @@ class User extends Authenticatable
      */
     public static function allLevels(): \Illuminate\Support\Collection
     {
-        return cache()->rememberForever('levels.all', function () {
-            return Level::orderBy('min_xp')->get();
+        $levelsData = cache()->rememberForever('levels.all', function () {
+            return Level::orderBy('min_xp')->get()->toArray();
         });
+
+        return Level::hydrate($levelsData);
     }
 
     /**
@@ -108,14 +110,35 @@ class User extends Authenticatable
      */
     public static function getCachedLeaderboard(int $limit = 10): \Illuminate\Support\Collection
     {
-        return cache()->remember('leaderboard.top.' . $limit, now()->addMinutes(5), function () use ($limit) {
+        $data = cache()->remember('leaderboard.top.' . $limit, now()->addMinutes(5), function () use ($limit) {
             return self::query()
                 ->where('role', 'member')
                 ->with(['level'])
                 ->orderByDesc('total_xp')
                 ->take($limit)
-                ->get();
+                ->get()
+                ->map(function (User $user) {
+                    $arr = $user->attributesToArray();
+                    if ($user->relationLoaded('level') && $user->level) {
+                        $arr['level_relation'] = $user->level->attributesToArray();
+                    }
+                    return $arr;
+                })
+                ->all();
         });
+
+        $users = self::hydrate($data);
+
+        foreach ($users as $index => $user) {
+            $rawAttributes = $data[$index] ?? [];
+            if (isset($rawAttributes['level_relation'])) {
+                $levelModel = new Level($rawAttributes['level_relation']);
+                $levelModel->exists = true;
+                $user->setRelation('level', $levelModel);
+            }
+        }
+
+        return $users;
     }
 
     /**

@@ -27,6 +27,9 @@ class AppServiceProvider extends ServiceProvider
             SyncUserLevel::class
         );
 
+        \App\Models\User::observe(\App\Observers\UserObserver::class);
+        \App\Models\Level::observe(\App\Observers\LevelObserver::class);
+
         Event::listen(
             XpEarned::class,
             \App\Listeners\EvaluateBadgeUnlocks::class

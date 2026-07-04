@@ -51,13 +51,21 @@ class MaterialShow extends Component
             ->where('status', 'graded')
             ->pluck('task_id');
 
-        $allCoursesWithModules = \App\Models\Course::query()
-            ->with(['modules.materials', 'modules.tasks'])
-            ->get();
+        // ⚡ Perf: Only fetch the single prerequisite course for gating — NOT all courses.
+        // The previous implementation loaded every Course row with all nested modules,
+        // materials, and tasks, causing O(total_content) model hydrations. Scoping to
+        // the one prerequisite course reduces this to O(1 course tree).
+        $completedCourseIds = collect();
+        $parentCourse = $this->material->module?->course;
+        if ($parentCourse?->prerequisite_course_id !== null) {
+            $prereq = \App\Models\Course::query()
+                ->with(['modules.materials', 'modules.tasks'])
+                ->find($parentCourse->prerequisite_course_id);
 
-        $completedCourseIds = $allCoursesWithModules->filter(function (\App\Models\Course $c) use ($user, $readMaterialIds, $gradedTaskIds): bool {
-            return $c->isCompletedByUser($user, $readMaterialIds, $gradedTaskIds);
-        })->pluck('id');
+            if ($prereq && $prereq->isCompletedByUser($user, $readMaterialIds, $gradedTaskIds)) {
+                $completedCourseIds->push($prereq->id);
+            }
+        }
 
         $completedModuleIds = collect();
         if ($this->material->module && $this->material->module->course) {
