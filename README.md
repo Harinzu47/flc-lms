@@ -142,6 +142,43 @@ Docker digunakan untuk menjalankan seluruh lingkungan server (PHP, MySQL, Redis)
    ```
    ✅ Kode proyek sudah berhasil diunduh!
 
+5. **⚠️ PENTING — Pindah ke Branch `dev`:**
+
+   Proyek ini memiliki **2 branch** (cabang kode):
+
+   | Branch | Keterangan |
+   |---|---|
+   | `main` | Branch default, tapi **BUKAN yang paling update** |
+   | `dev` | Branch pengembangan, **berisi kode terbaru dan paling lengkap** ✅ |
+
+   Saat kamu clone, Git otomatis menempatkanmu di branch `main`. Kamu **harus pindah ke branch `dev`** untuk mendapatkan kode terbaru:
+
+   ```bash
+   git checkout dev
+   ```
+
+   Outputnya akan seperti ini:
+   ```
+   Switched to branch 'dev'
+   Your branch is up to date with 'origin/dev'.
+   ```
+
+   > 💡 **Apa itu branch?**
+   > Branch itu ibarat "versi paralel" dari kode. `main` adalah versi stabil/rilis, sedangkan `dev` adalah versi pengembangan yang berisi fitur-fitur terbaru. Bayangkan seperti buku draft (`dev`) dan buku cetakan final (`main`).
+
+   Untuk memastikan kamu sudah berada di branch yang benar, ketik:
+   ```bash
+   git branch
+   ```
+   Output:
+   ```
+   * dev
+     main
+   ```
+   Tanda bintang (`*`) menunjukkan kamu sedang berada di branch `dev`.
+
+   ✅ Kamu sekarang berada di branch terbaru!
+
 ---
 
 ### Tahap 3 — Siapkan File Konfigurasi (.env)
