@@ -47,6 +47,7 @@
 @endsection
 
 {{-- ── MAIN CONTENT ─────────────────────────────────────────────────────────── --}}
+<div>
 <div class="max-w-4xl mx-auto">
 
     {{-- Page Hero Header --}}
@@ -110,3 +111,5 @@
 
 {{-- Sticky "Your Rank" footer bar (fixed, outside the max-w container) --}}
 @include('livewire.partials.leaderboard.sticky-rank')
+
+</div>{{-- /single-root-wrapper --}}
