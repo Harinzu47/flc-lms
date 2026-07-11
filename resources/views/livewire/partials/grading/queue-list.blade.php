@@ -1,15 +1,3 @@
-{{--
-    Partial: Submission Queue List (Panel 2 — narrow column)
-    ────────────────────────────────────────────────────────────────────────────
-    Context variables (provided by GradingStation component):
-      $pendingSubmissions — Collection<Submission> (eager-loaded: user, task)
-      $selectedSubmission — ?Submission (for active highlight)
-
-    Livewire bindings owned here:
-      wire:click="selectSubmission(id)" → calls GradingStation::selectSubmission()
-    ────────────────────────────────────────────────────────────────────────────
---}}
-
 <div class="w-full lg:w-80 bg-surface-container-low custom-scrollbar overflow-y-auto flex-shrink-0 border-r border-outline-variant/20"
      aria-label="Submission queue">
     <div class="p-6">

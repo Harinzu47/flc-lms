@@ -1,11 +1,3 @@
-{{--
-    Library / Courses Catalog — FLC UMJ Student Portal
-    ────────────────────────────────────────────────────────────────────────────
-    Displays structured courses instead of flat learning items, matching the CEFR
-    framework difficulty levels and level requirements.
-    ────────────────────────────────────────────────────────────────────────────
---}}
-
 @section('sidebar-title')
     <h2 class="text-blue-800 font-bold font-headline">Library</h2>
     <p class="text-xs text-on-surface-variant mt-0.5">Knowledge Repository</p>

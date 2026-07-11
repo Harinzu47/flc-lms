@@ -1,19 +1,3 @@
-{{--
-    Partial: Admin Portal Sidebar Navigation
-    ────────────────────────────────────────────────────────────────────────────
-    Shared across all Admin-layout pages (layouts.base users).
-
-    Optional context variables:
-      $activePage — string  One of: 'dashboard', 'users', 'materials',
-                                     'tasks', 'grading'
-                            Defaults gracefully to none active if not passed.
-
-      $pendingSubmissions — Collection<Submission>|null
-                            Passed by GradingStation only; used for the badge
-                            count on the Grading link. Other pages pass nothing.
-    ────────────────────────────────────────────────────────────────────────────
---}}
-
 @php
     $activePage ??= '';
     $pendingCount = isset($pendingSubmissions) ? $pendingSubmissions->count() : 0;

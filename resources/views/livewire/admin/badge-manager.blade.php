@@ -1,11 +1,3 @@
-{{--
-    Badge Manager — FLC UMJ Admin Portal
-    ────────────────────────────────────────────────────────────────────────────
-    Backend:  App\Livewire\Admin\BadgeManager
-    Layout:   layouts.base
-    ────────────────────────────────────────────────────────────────────────────
---}}
-
 @push('styles')
     <style>
         .custom-scrollbar::-webkit-scrollbar { width: 6px; }

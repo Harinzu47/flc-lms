@@ -1,43 +1,43 @@
 <!DOCTYPE html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
-    <head>
-        <meta charset="utf-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1">
-        <meta name="csrf-token" content="{{ csrf_token() }}">
 
-        <title>{{ config('app.name', 'FLC LMS') }}</title>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
 
-        <!-- Vite: compiles Tailwind CSS + Alpine.js (via Livewire) -->
-        @vite(['resources/css/app.css', 'resources/js/app.js'])
+    <title>{{ config('app.name', 'FLC LMS') }}</title>
 
-        <!-- Google Fonts: Manrope + Public Sans + Material Symbols -->
-        <link rel="preconnect" href="https://fonts.googleapis.com">
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-        <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Public+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
-        <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
+    <!-- Vite: compiles Tailwind CSS + Alpine.js (via Livewire) -->
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
 
-        <!-- Per-page styles pushed by child components -->
-        @stack('styles')
+    <!-- Google Fonts: Manrope + Public Sans + Material Symbols -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Public+Sans:wght@300;400;500;600&display=swap"
+        rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
+        rel="stylesheet">
 
-        <!-- Livewire styles (required for Livewire 3 full-page components) -->
-        @livewireStyles
-    </head>
+    <!-- Per-page styles pushed by child components -->
+    @stack('styles')
 
-    {{--
-        No Breeze navigation. No wrapper divs.
-        The component's Blade view owns 100% of the viewport.
-        bg-background matches the Stitch "Academic Prestige" design system token.
-    --}}
-    <body class="font-sans antialiased bg-background text-on-surface">
+    <!-- Livewire styles (required for Livewire 3 full-page components) -->
+    @livewireStyles
+</head>
 
-        {{-- Global Toast Notification --}}
-        <x-toast-notification />
+<body class="font-sans antialiased bg-background text-on-surface">
 
-        <livewire:celebration-hub />
+    {{-- Global Toast Notification --}}
+    <x-toast-notification />
 
-        {{ $slot }}
+    <livewire:celebration-hub />
 
-        @livewireScripts
-        <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
-    </body>
+    {{ $slot }}
+
+    @livewireScripts
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
+</body>
+
 </html>

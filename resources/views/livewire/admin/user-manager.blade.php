@@ -1,11 +1,3 @@
-{{--
-    User Manager — FLC UMJ Admin Portal
-    ────────────────────────────────────────────────────────────────────────────
-    Backend:  App\Livewire\Admin\UserManager
-    Layout:   layouts.base (bare HTML shell — admin uses its own chrome)
-    ────────────────────────────────────────────────────────────────────────────
---}}
-
 @push('styles')
     <style>
         .custom-scrollbar::-webkit-scrollbar { width: 6px; }

@@ -1,16 +1,3 @@
-{{--
-    Material Detail — FLC UMJ Gamified LMS
-    ────────────────────────────────────────────────────────────────────────────
-    Design:   Stitch AI · Screen ID: f9abd4b4b4f94fb4bba545431e51589b
-    Spec:     stitch/design/material-detail/DESIGN.md (Academic Prestige Framework)
-    Backend:  App\Livewire\MaterialShow
-    Action:   App\Actions\Gamification\AwardMaterialXpAction
-    ────────────────────────────────────────────────────────────────────────────
-    Toast and navbar are provided by the base layout and shared components.
-    Prose typography is defined in app.css.
-    ────────────────────────────────────────────────────────────────────────────
---}}
-
 <div class="bg-surface-bright font-body text-on-surface antialiased min-h-screen">
 
     {{-- ── TOP APP BAR ─────────────────────────────────────────────────────── --}}
@@ -23,7 +10,8 @@
 
             {{-- Back to Course Pathway --}}
             @if($material->module && $material->module->course)
-                <a href="{{ route('courses.show', $material->module->course) }}" wire:navigate class="inline-flex items-center gap-2 text-sm text-primary hover:text-blue-700 transition-colors font-semibold mb-6">
+                <a href="{{ route('courses.show', $material->module->course) }}" wire:navigate
+                    class="inline-flex items-center gap-2 text-sm text-primary hover:text-blue-700 transition-colors font-semibold mb-6">
                     <span class="material-symbols-outlined text-lg">arrow_back</span>
                     Back to Course Pathway
                 </a>
@@ -31,7 +19,8 @@
 
             {{-- ── Breadcrumb / Meta ───────────────────────────────── --}}
             <div class="flex items-center gap-4 mb-6">
-                <span class="inline-flex items-center px-4 py-1.5 rounded-full bg-secondary-container text-on-secondary-container text-xs font-bold uppercase tracking-wider font-label">
+                <span
+                    class="inline-flex items-center px-4 py-1.5 rounded-full bg-secondary-container text-on-secondary-container text-xs font-bold uppercase tracking-wider font-label">
                     {{ ucfirst($material->type) }}
                 </span>
                 <span class="text-on-surface-variant text-sm font-medium font-label uppercase tracking-widest">
@@ -40,7 +29,8 @@
             </div>
 
             {{-- ── Title ───────────────────────────────────────────── --}}
-            <h1 class="text-4xl md:text-5xl font-extrabold font-headline text-on-surface tracking-tight mb-8 leading-[1.1]">
+            <h1
+                class="text-4xl md:text-5xl font-extrabold font-headline text-on-surface tracking-tight mb-8 leading-[1.1]">
                 {{ $material->title }}
             </h1>
 
@@ -59,14 +49,9 @@
                 <div class="relative w-full aspect-video rounded-2xl overflow-hidden mb-12 shadow-sm bg-black">
                     @if($youtubeId)
                         {{-- YouTube Embed --}}
-                        <iframe
-                            src="https://www.youtube.com/embed/{{ $youtubeId }}"
-                            class="w-full h-full"
-                            frameborder="0"
+                        <iframe src="https://www.youtube.com/embed/{{ $youtubeId }}" class="w-full h-full" frameborder="0"
                             allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                            allowfullscreen
-                            title="{{ $material->title }}"
-                        ></iframe>
+                            allowfullscreen title="{{ $material->title }}"></iframe>
                     @else
                         {{-- Direct video file fallback --}}
                         <video controls class="w-full h-full object-cover">
@@ -77,7 +62,8 @@
                 </div>
             @elseif($material->type !== 'article' && $material->file_url)
                 {{-- Document / Link — show a styled resource card instead of a hero image --}}
-                <div class="relative w-full rounded-2xl overflow-hidden mb-12 p-6 bg-surface-container-low flex items-center gap-4">
+                <div
+                    class="relative w-full rounded-2xl overflow-hidden mb-12 p-6 bg-surface-container-low flex items-center gap-4">
                     <span class="material-symbols-outlined text-5xl text-primary">
                         {{ $material->type === 'link' ? 'link' : 'description' }}
                     </span>
@@ -86,7 +72,7 @@
                             {{ $material->type === 'link' ? 'External Resource' : 'Document' }}
                         </p>
                         <a href="{{ $material->file_url }}" target="_blank" rel="noopener"
-                           class="font-headline font-bold text-primary hover:underline">
+                            class="font-headline font-bold text-primary hover:underline">
                             {{ $material->type === 'link' ? $material->file_url : 'Download / View File' }}
                             <span class="material-symbols-outlined align-middle text-sm">open_in_new</span>
                         </a>
@@ -94,19 +80,23 @@
                 </div>
             @elseif($material->type === 'article')
                 {{-- Markdown Article Editorial Banner --}}
-                <div class="relative w-full h-48 rounded-2xl overflow-hidden mb-8 shadow-sm bg-gradient-to-r from-blue-700 to-indigo-900 flex items-center justify-center p-6 text-center">
+                <div
+                    class="relative w-full h-48 rounded-2xl overflow-hidden mb-8 shadow-sm bg-gradient-to-r from-blue-700 to-indigo-900 flex items-center justify-center p-6 text-center">
                     <div class="relative z-10 space-y-2">
-                        <div class="inline-flex items-center justify-center bg-white/20 backdrop-blur-md rounded-full p-2.5 text-white mb-2">
+                        <div
+                            class="inline-flex items-center justify-center bg-white/20 backdrop-blur-md rounded-full p-2.5 text-white mb-2">
                             <span class="material-symbols-outlined text-2xl">menu_book</span>
                         </div>
                         <p class="text-xs font-bold uppercase tracking-[0.2em] text-blue-100">Hybrid Article Lesson</p>
-                        <p class="text-sm text-blue-200/90 font-medium max-w-md mx-auto">Selesaikan membaca artikel di bawah ini untuk mendapatkan poin XP.</p>
+                        <p class="text-sm text-blue-200/90 font-medium max-w-md mx-auto">Selesaikan membaca artikel di bawah
+                            ini untuk mendapatkan poin XP.</p>
                     </div>
                     <div class="absolute inset-0 bg-black/10"></div>
                 </div>
             @else
                 {{-- Placeholder banner when no file is attached --}}
-                <div class="relative w-full aspect-video rounded-2xl overflow-hidden mb-12 shadow-sm bg-surface-container-low flex items-center justify-center">
+                <div
+                    class="relative w-full aspect-video rounded-2xl overflow-hidden mb-12 shadow-sm bg-surface-container-low flex items-center justify-center">
                     <span class="material-symbols-outlined text-8xl text-outline-variant">article</span>
                     {{-- University Blue overlay (Design spec: 20% overlay on course images) --}}
                     <div class="absolute inset-0 bg-primary/5"></div>
@@ -116,24 +106,27 @@
             {{-- ── Rich Text Content ───────────────────────────────── --}}
             <section class="prose prose-indigo max-w-none">
                 {!! \Illuminate\Support\Str::markdown($material->description ?? '', [
-                    'html_input' => 'escape',
-                    'allow_unsafe_links' => false,
-                ]) !!}
+    'html_input' => 'escape',
+    'allow_unsafe_links' => false,
+]) !!}
             </section>
 
             {{-- ── Bottom Resource Card (Hybrid Lesson attachment) ───────────────── --}}
             @if($material->type === 'article' && !empty($material->file_url))
-                <div class="mt-8 p-6 bg-gradient-to-r from-slate-50 to-indigo-50/30 rounded-2xl border border-indigo-100 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 shadow-sm">
+                <div
+                    class="mt-8 p-6 bg-gradient-to-r from-slate-50 to-indigo-50/30 rounded-2xl border border-indigo-100 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 shadow-sm">
                     <div class="flex items-center gap-4">
                         <div class="w-12 h-12 rounded-xl bg-indigo-100 flex items-center justify-center text-indigo-700">
                             <span class="material-symbols-outlined text-2xl">attachment</span>
                         </div>
                         <div>
                             <h4 class="font-headline font-bold text-slate-800 text-sm">Resource Pendukung Kuliah</h4>
-                            <p class="text-xs text-slate-500 mt-0.5">Unduh atau buka lampiran dokumen pendukung materi ini.</p>
+                            <p class="text-xs text-slate-500 mt-0.5">Unduh atau buka lampiran dokumen pendukung materi ini.
+                            </p>
                         </div>
                     </div>
-                    <a href="{{ $material->file_url }}" target="_blank" rel="noopener" class="inline-flex items-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold px-4 py-2.5 rounded-xl transition-all shadow-sm">
+                    <a href="{{ $material->file_url }}" target="_blank" rel="noopener"
+                        class="inline-flex items-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold px-4 py-2.5 rounded-xl transition-all shadow-sm">
                         <span class="material-symbols-outlined text-sm">download</span>
                         Buka Lampiran
                     </a>
@@ -141,22 +134,19 @@
             @endif
 
             {{-- ── Bottom Action Bar / Gamification ───────────────── --}}
-            {{-- Outer Alpine scope kept for smooth in-page "XP Added" flip     --}}
+            {{-- Outer Alpine scope kept for smooth in-page "XP Added" flip --}}
             <div class="mt-16 pt-12 border-t border-outline-variant/20">
 
                 {{-- ── UNCLAIMED state: Show the CTA button ───────── --}}
-                @if(! $hasRead)
+                @if(!$hasRead)
                     <div class="flex flex-col items-center">
                         <p class="font-label text-xs font-bold text-on-surface-variant tracking-[0.2em] uppercase mb-6">
                             End of Module
                         </p>
 
-                        <button
-                            wire:click="markAsRead"
-                            wire:loading.attr="disabled"
+                        <button wire:click="markAsRead" wire:loading.attr="disabled"
                             wire:loading.class="opacity-60 cursor-not-allowed scale-95"
-                            class="group relative inline-flex items-center gap-3 bg-gradient-to-br from-primary to-primary-container text-on-primary px-10 py-5 rounded-2xl font-headline font-bold text-lg shadow-[0_10px_25px_-5px_rgba(43,75,185,0.4)] hover:scale-[1.02] active:scale-95 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-primary/50"
-                        >
+                            class="group relative inline-flex items-center gap-3 bg-gradient-to-br from-primary to-primary-container text-on-primary px-10 py-5 rounded-2xl font-headline font-bold text-lg shadow-[0_10px_25px_-5px_rgba(43,75,185,0.4)] hover:scale-[1.02] active:scale-95 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-primary/50">
                             {{-- Default (idle) state --}}
                             <span wire:loading.remove wire:target="markAsRead">
                                 <span class="material-symbols-outlined">check_circle</span>
@@ -165,15 +155,17 @@
                                 Mark as Read &amp; Claim +10 XP
                             </span>
                             <span wire:loading.remove wire:target="markAsRead"
-                                  class="material-symbols-outlined text-secondary-fixed opacity-0 group-hover:opacity-100 group-hover:translate-x-1 transition-all">
+                                class="material-symbols-outlined text-secondary-fixed opacity-0 group-hover:opacity-100 group-hover:translate-x-1 transition-all">
                                 auto_awesome
                             </span>
 
                             {{-- Loading state --}}
-                            <svg wire:loading wire:target="markAsRead"
-                                 class="animate-spin h-5 w-5 text-on-primary" fill="none" viewBox="0 0 24 24">
-                                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
+                            <svg wire:loading wire:target="markAsRead" class="animate-spin h-5 w-5 text-on-primary"
+                                fill="none" viewBox="0 0 24 24">
+                                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4">
+                                </circle>
+                                <path class="opacity-75" fill="currentColor"
+                                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
                             </svg>
                             <span wire:loading wire:target="markAsRead" class="font-headline font-bold text-lg">
                                 Saving...
@@ -181,12 +173,13 @@
                         </button>
                     </div>
 
-                {{-- ── CLAIMED state: "XP Added" confirmation card ── --}}
+                    {{-- ── CLAIMED state: "XP Added" confirmation card ── --}}
                 @else
-                    <div class="flex flex-col items-center justify-center p-8 bg-surface-container-lowest rounded-2xl shadow-sm ring-1 ring-secondary/10">
-                        <div class="w-16 h-16 bg-secondary-container text-on-secondary-container rounded-full flex items-center justify-center mb-4">
-                            <span class="material-symbols-outlined text-4xl"
-                                  style="font-variation-settings: 'FILL' 1;">
+                    <div
+                        class="flex flex-col items-center justify-center p-8 bg-surface-container-lowest rounded-2xl shadow-sm ring-1 ring-secondary/10">
+                        <div
+                            class="w-16 h-16 bg-secondary-container text-on-secondary-container rounded-full flex items-center justify-center mb-4">
+                            <span class="material-symbols-outlined text-4xl" style="font-variation-settings: 'FILL' 1;">
                                 check_circle
                             </span>
                         </div>
@@ -205,20 +198,25 @@
     </main>
 
     {{-- ── MOBILE BOTTOM NAV ────────────────────────────────────────────── --}}
-    <nav class="md:hidden fixed bottom-0 left-0 w-full flex justify-around items-center p-3 bg-surface-container-lowest border-t border-surface-container shadow-[0_-4px_20px_rgba(0,0,0,0.05)] z-50 rounded-t-2xl">
-        <a href="#" class="flex flex-col items-center justify-center bg-primary/5 text-primary rounded-xl px-4 py-2 transition-all active:scale-90 duration-200">
+    <nav
+        class="md:hidden fixed bottom-0 left-0 w-full flex justify-around items-center p-3 bg-surface-container-lowest border-t border-surface-container shadow-[0_-4px_20px_rgba(0,0,0,0.05)] z-50 rounded-t-2xl">
+        <a href="#"
+            class="flex flex-col items-center justify-center bg-primary/5 text-primary rounded-xl px-4 py-2 transition-all active:scale-90 duration-200">
             <span class="material-symbols-outlined">menu_book</span>
             <span class="font-label text-[10px] uppercase tracking-wider font-bold">Read</span>
         </a>
-        <a href="#" class="flex flex-col items-center justify-center text-on-surface-variant px-4 py-2 hover:text-primary transition-all">
+        <a href="#"
+            class="flex flex-col items-center justify-center text-on-surface-variant px-4 py-2 hover:text-primary transition-all">
             <span class="material-symbols-outlined">dictionary</span>
             <span class="font-label text-[10px] uppercase tracking-wider font-bold">Glossary</span>
         </a>
-        <a href="#" class="flex flex-col items-center justify-center text-on-surface-variant px-4 py-2 hover:text-primary transition-all">
+        <a href="#"
+            class="flex flex-col items-center justify-center text-on-surface-variant px-4 py-2 hover:text-primary transition-all">
             <span class="material-symbols-outlined">edit_note</span>
             <span class="font-label text-[10px] uppercase tracking-wider font-bold">Notes</span>
         </a>
-        <a href="#" class="flex flex-col items-center justify-center text-on-surface-variant px-4 py-2 hover:text-primary transition-all">
+        <a href="#"
+            class="flex flex-col items-center justify-center text-on-surface-variant px-4 py-2 hover:text-primary transition-all">
             <span class="material-symbols-outlined">arrow_forward</span>
             <span class="font-label text-[10px] uppercase tracking-wider font-bold">Next</span>
         </a>
@@ -227,12 +225,14 @@
     {{-- ── DESKTOP FLOATING ACTION (Download PDF) ─────────────────────── --}}
     <div class="hidden md:block fixed bottom-8 right-8 z-40">
         @if($material->file_url)
-            <a href="{{ $material->file_url }}" target="_blank" class="flex items-center gap-2 bg-surface-container-lowest text-primary font-headline font-bold px-6 py-4 rounded-full shadow-lg hover:shadow-xl transition-all border border-outline-variant/10">
+            <a href="{{ $material->file_url }}" target="_blank"
+                class="flex items-center gap-2 bg-surface-container-lowest text-primary font-headline font-bold px-6 py-4 rounded-full shadow-lg hover:shadow-xl transition-all border border-outline-variant/10">
                 <span class="material-symbols-outlined">description</span>
                 Download PDF Notes
             </a>
         @else
-            <button @click="$dispatch('notify', { message: 'Materi ini tidak memiliki lampiran berkas PDF.' })" class="flex items-center gap-2 bg-surface-container-lowest text-slate-400 font-headline font-bold px-6 py-4 rounded-full shadow-lg hover:shadow-xl transition-all border border-outline-variant/10 cursor-not-allowed">
+            <button @click="$dispatch('notify', { message: 'Materi ini tidak memiliki lampiran berkas PDF.' })"
+                class="flex items-center gap-2 bg-surface-container-lowest text-slate-400 font-headline font-bold px-6 py-4 rounded-full shadow-lg hover:shadow-xl transition-all border border-outline-variant/10 cursor-not-allowed">
                 <span class="material-symbols-outlined">description</span>
                 Download PDF Notes
             </button>

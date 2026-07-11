@@ -1,19 +1,3 @@
-{{--
-    Gamified Dashboard — FLC UMJ Student Portal
-    ────────────────────────────────────────────────────────────────────────────
-    Design:   Stitch AI · Gamified Dashboard
-    Backend:  App\Livewire\GamifiedDashboard
-    Layout:   layouts.gamified (owns the Top App Bar, Sidebar chrome, and Toast)
-    ────────────────────────────────────────────────────────────────────────────
-
-    This view is a coordinator only. Partials live in:
-      resources/views/livewire/partials/dashboard/
-
-    All partials share this component's variable scope via @include.
-    ────────────────────────────────────────────────────────────────────────────
---}}
-
-{{-- ── Sidebar sections for the gamified layout ────────────────────────────── --}}
 @section('sidebar-title')
     <h2 class="text-blue-800 font-bold font-headline">My Dashboard</h2>
     <p class="text-xs text-on-surface-variant mt-0.5">
@@ -22,16 +6,14 @@
 @endsection
 
 @section('sidebar-nav')
-    <a href="{{ route('dashboard') }}"
-       wire:navigate
-       class="flex items-center gap-3 bg-surface-container-lowest text-primary rounded-xl px-4 py-3 shadow-sm font-medium"
-       aria-current="page">
+    <a href="{{ route('dashboard') }}" wire:navigate
+        class="flex items-center gap-3 bg-surface-container-lowest text-primary rounded-xl px-4 py-3 shadow-sm font-medium"
+        aria-current="page">
         <span class="material-symbols-outlined" style="font-variation-settings:'FILL' 1;" aria-hidden="true">school</span>
         <span>Academy</span>
     </a>
-    <a href="{{ route('library') }}"
-       wire:navigate
-       class="flex items-center gap-3 text-on-surface-variant px-4 py-3 hover:bg-blue-50/50 rounded-xl transition-all">
+    <a href="{{ route('library') }}" wire:navigate
+        class="flex items-center gap-3 text-on-surface-variant px-4 py-3 hover:bg-blue-50/50 rounded-xl transition-all">
         <span class="material-symbols-outlined" aria-hidden="true">menu_book</span>
         <span>Library</span>
     </a>
@@ -61,12 +43,10 @@
 
                 {{-- Mini Leaderboard — Global Arena --}}
                 <section class="bg-surface-container-low rounded-2xl p-6 border border-outline-variant/10"
-                         aria-labelledby="leaderboard-heading">
-                    <h2 id="leaderboard-heading"
-                        class="text-xl font-bold mb-6 flex items-center gap-2 font-headline">
-                        <span class="material-symbols-outlined text-tertiary"
-                              style="font-variation-settings:'FILL' 1;"
-                              aria-hidden="true">leaderboard</span>
+                    aria-labelledby="leaderboard-heading">
+                    <h2 id="leaderboard-heading" class="text-xl font-bold mb-6 flex items-center gap-2 font-headline">
+                        <span class="material-symbols-outlined text-tertiary" style="font-variation-settings:'FILL' 1;"
+                            aria-hidden="true">leaderboard</span>
                         Global Arena
                     </h2>
                     <div class="space-y-3">
@@ -77,16 +57,17 @@
                         @foreach($leaderboard as $rank => $student)
                             @php $isMe = $student->id === $user->id; @endphp
                             <div class="flex items-center justify-between p-3 rounded-xl shadow-sm
-                                {{ $isMe ? 'bg-primary/5 border border-primary/10' : 'bg-surface-container-lowest' }}
-                                {{ isset($medalColors[$rank]) ? 'border-l-4 ' . explode(' ', $medalColors[$rank])[1] : ($isMe ? '' : 'border-l-4 border-transparent') }}"
-                                 aria-label="{{ $isMe ? 'You' : $student->name }}, rank {{ $rank + 1 }}, {{ number_format($student->total_xp) }} XP">
+                                    {{ $isMe ? 'bg-primary/5 border border-primary/10' : 'bg-surface-container-lowest' }}
+                                    {{ isset($medalColors[$rank]) ? 'border-l-4 ' . explode(' ', $medalColors[$rank])[1] : ($isMe ? '' : 'border-l-4 border-transparent') }}"
+                                aria-label="{{ $isMe ? 'You' : $student->name }}, rank {{ $rank + 1 }}, {{ number_format($student->total_xp) }} XP">
                                 <div class="flex items-center gap-3">
-                                    <span class="font-black w-5 text-sm {{ isset($medalColors[$rank]) ? explode(' ', $medalColors[$rank])[0] : ($isMe ? 'text-primary' : 'text-on-surface-variant') }}"
-                                          aria-hidden="true">
+                                    <span
+                                        class="font-black w-5 text-sm {{ isset($medalColors[$rank]) ? explode(' ', $medalColors[$rank])[0] : ($isMe ? 'text-primary' : 'text-on-surface-variant') }}"
+                                        aria-hidden="true">
                                         {{ $rank + 1 }}
                                     </span>
                                     <div class="w-9 h-9 rounded-full bg-gradient-to-br {{ $isMe ? 'from-primary to-primary-container' : 'from-surface-container-high to-surface-container' }} flex items-center justify-center text-{{ $isMe ? 'on-primary' : 'on-surface-variant' }} font-bold text-xs flex-shrink-0"
-                                         aria-hidden="true">
+                                        aria-hidden="true">
                                         {{ strtoupper(substr($student->name, 0, 2)) }}
                                     </div>
                                     <div>
@@ -107,11 +88,12 @@
                         @if($leaderboard->doesntContain('id', $user->id))
                             {{-- Current user is outside top 5 — show them separately --}}
                             <div class="pt-3 mt-1" style="border-top: 1px solid rgba(195,198,215,0.3);">
-                                <div class="flex items-center justify-between p-3 bg-primary/5 rounded-xl border border-primary/10">
+                                <div
+                                    class="flex items-center justify-between p-3 bg-primary/5 rounded-xl border border-primary/10">
                                     <div class="flex items-center gap-3">
                                         <span class="font-black text-primary w-5 text-sm" aria-hidden="true">…</span>
                                         <div class="w-9 h-9 rounded-full bg-gradient-to-br from-primary to-primary-container flex items-center justify-center text-on-primary font-bold text-xs"
-                                             aria-hidden="true">
+                                            aria-hidden="true">
                                             {{ strtoupper(substr($user->name, 0, 2)) }}
                                         </div>
                                         <div>
@@ -132,7 +114,7 @@
 
                 {{-- Critical Tasks (upcoming deadlines) --}}
                 <section class="bg-surface-container-low rounded-2xl p-6 border border-outline-variant/10"
-                         aria-labelledby="critical-tasks-heading">
+                    aria-labelledby="critical-tasks-heading">
                     <h2 id="critical-tasks-heading"
                         class="text-xl font-bold mb-6 flex items-center gap-2 font-headline">
                         <span class="material-symbols-outlined text-error" aria-hidden="true">event_upcoming</span>
@@ -141,24 +123,26 @@
 
                     @if($upcomingTasks->isEmpty())
                         <div class="text-center py-8">
-                            <span class="material-symbols-outlined text-4xl text-outline-variant" aria-hidden="true">task_alt</span>
+                            <span class="material-symbols-outlined text-4xl text-outline-variant"
+                                aria-hidden="true">task_alt</span>
                             <p class="text-on-surface-variant mt-2 text-sm">No upcoming deadlines. Nice work!</p>
                         </div>
                     @else
                         <div class="space-y-4">
                             @foreach($upcomingTasks as $task)
                                 @php
-                                    $isToday    = $task->deadline->isToday();
+                                    $isToday = $task->deadline->isToday();
                                     $isTomorrow = $task->deadline->isTomorrow();
-                                    $urgencyBg  = $isToday ? 'border-error' : 'border-tertiary';
-                                    $badgeBg    = $isToday ? 'bg-error/10 text-error' : 'bg-tertiary/10 text-tertiary';
-                                    $badgeText  = $isToday ? 'Today' : ($isTomorrow ? 'Tomorrow' : $task->deadline->format('d M'));
+                                    $urgencyBg = $isToday ? 'border-error' : 'border-tertiary';
+                                    $badgeBg = $isToday ? 'bg-error/10 text-error' : 'bg-tertiary/10 text-tertiary';
+                                    $badgeText = $isToday ? 'Today' : ($isTomorrow ? 'Tomorrow' : $task->deadline->format('d M'));
                                 @endphp
                                 <div class="bg-surface-container-lowest p-4 rounded-xl shadow-sm border-r-4 {{ $urgencyBg }}"
-                                     aria-label="{{ $task->title }}, due {{ $badgeText }}">
+                                    aria-label="{{ $task->title }}, due {{ $badgeText }}">
                                     <div class="flex justify-between items-start mb-2">
                                         <h4 class="font-bold text-sm text-on-surface">{{ $task->title }}</h4>
-                                        <span class="{{ $badgeBg }} px-2 py-0.5 rounded text-[10px] font-black uppercase flex-shrink-0 ml-2">
+                                        <span
+                                            class="{{ $badgeBg }} px-2 py-0.5 rounded text-[10px] font-black uppercase flex-shrink-0 ml-2">
                                             {{ $badgeText }}
                                         </span>
                                     </div>
@@ -167,7 +151,7 @@
                                     </p>
                                     <div class="flex items-center justify-end">
                                         <a href="{{ route('tasks.show', $task) }}"
-                                           class="{{ $isToday ? 'bg-error text-on-error hover:opacity-90' : 'bg-surface-container-high text-on-surface hover:bg-surface-dim' }} px-3 py-1.5 rounded-lg text-[10px] font-bold transition-all">
+                                            class="{{ $isToday ? 'bg-error text-on-error hover:opacity-90' : 'bg-surface-container-high text-on-surface hover:bg-surface-dim' }} px-3 py-1.5 rounded-lg text-[10px] font-bold transition-all">
                                             {{ $isToday ? 'Submit Now' : 'View Task' }}
                                         </a>
                                     </div>
@@ -184,12 +168,10 @@
 
     {{-- ── Mobile Bottom Nav ───────────────────────────────────────────────────── --}}
     <div class="md:hidden fixed bottom-0 left-0 w-full bg-surface-container-lowest border-t border-outline-variant/10 px-4 py-2 flex justify-around items-center z-50"
-         role="navigation"
-         aria-label="Mobile navigation">
-        <a href="{{ route('dashboard') }}"
-           class="flex flex-col items-center p-2 text-primary"
-           aria-current="page">
-            <span class="material-symbols-outlined" style="font-variation-settings:'FILL' 1;" aria-hidden="true">school</span>
+        role="navigation" aria-label="Mobile navigation">
+        <a href="{{ route('dashboard') }}" class="flex flex-col items-center p-2 text-primary" aria-current="page">
+            <span class="material-symbols-outlined" style="font-variation-settings:'FILL' 1;"
+                aria-hidden="true">school</span>
             <span class="text-[10px] font-bold uppercase tracking-tighter">Academy</span>
         </a>
         <a href="{{ route('library') }}" class="flex flex-col items-center p-2 text-on-surface-variant">
