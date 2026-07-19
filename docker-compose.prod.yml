@@ -10,10 +10,12 @@ services:
     restart: unless-stopped
     ports:
       - "80:80"
+      - "443:443"
     volumes:
       - storage-data:/var/www/html/storage:ro
+      - /etc/letsencrypt:/etc/letsencrypt:ro
     healthcheck:
-      test: ["CMD", "wget", "--spider", "-q", "http://127.0.0.1"]
+      test: [ "CMD", "wget", "--spider", "-q", "http://127.0.0.1" ]
       interval: 30s
       timeout: 5s
       retries: 3
@@ -38,7 +40,7 @@ services:
     volumes:
       - storage-data:/var/www/html/storage
     healthcheck:
-      test: ["CMD","php","artisan","--version"]
+      test: [ "CMD", "php", "artisan", "--version" ]
       interval: 30s
       retries: 3
     networks:
@@ -90,7 +92,7 @@ services:
     volumes:
       - mysql-data:/var/lib/mysql
     healthcheck:
-      test: ["CMD","mysqladmin","ping","-h","localhost","-uroot","-p$$MYSQL_ROOT_PASSWORD"]
+      test: [ "CMD", "mysqladmin", "ping", "-h", "localhost", "-uroot", "-p$$MYSQL_ROOT_PASSWORD" ]
       interval: 10s
       retries: 10
     networks:
@@ -106,7 +108,7 @@ services:
     volumes:
       - redis-data:/data
     healthcheck:
-      test: ["CMD","redis-cli","ping"]
+      test: [ "CMD", "redis-cli", "ping" ]
       interval: 10s
       timeout: 5s
       retries: 5
