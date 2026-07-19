@@ -12,8 +12,24 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('xp_logs', function (Blueprint $table) {
-            // Add composite index for performance optimization on progress checks
-            $table->index(['user_id', 'action', 'reference_id'], 'xp_logs_user_action_ref_index');
+            /*
+             |--------------------------------------------------------------------------
+             | Prevent duplicate XP awards
+             |--------------------------------------------------------------------------
+             |
+             | One user can only receive XP once for the same action and
+             | reference_id combination.
+             |
+             | SQLite, MySQL and MariaDB all allow multiple NULL values
+             | inside UNIQUE indexes, so actions without reference_id
+             | remain valid.
+             |
+             */
+
+            $table->unique(
+                ['user_id', 'action', 'reference_id'],
+                'xp_logs_user_action_ref_unique'
+            );
         });
     }
 
@@ -23,7 +39,11 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('xp_logs', function (Blueprint $table) {
-            $table->dropIndex('xp_logs_user_action_ref_index');
+
+            $table->dropUnique(
+                'xp_logs_user_action_ref_unique'
+            );
+
         });
     }
 };

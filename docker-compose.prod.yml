@@ -1,54 +1,120 @@
 services:
-  web:
+  nginx:
+    build:
+      context: .
+      dockerfile: docker/nginx/Dockerfile
+    container_name: flc-nginx
+    depends_on:
+      app:
+        condition: service_healthy
+    restart: unless-stopped
+    ports:
+      - "80:80"
+    volumes:
+      - storage-data:/var/www/html/storage:ro
+    healthcheck:
+      test: ["CMD", "wget", "--spider", "-q", "http://127.0.0.1"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+    networks:
+      - flc
+  app:
     build:
       context: .
       dockerfile: Dockerfile
-    image: flc-lms-prod:latest
-    container_name: flc-lms-web
+    image: flc-lms:latest
+    container_name: flc-app
     restart: unless-stopped
-    ports:
-      - "8080:8080"
     env_file:
       - .env
+    expose:
+      - "9000"
     depends_on:
-      - redis
+      mysql:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
     volumes:
       - storage-data:/var/www/html/storage
-
+    healthcheck:
+      test: ["CMD","php","artisan","--version"]
+      interval: 30s
+      retries: 3
+    networks:
+      - flc
   worker:
-    image: flc-lms-prod:latest
-    container_name: flc-lms-worker
-    restart: unless-stopped
-    command: php artisan queue:work --verbose --tries=3 --timeout=90
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: flc-lms:latest
+    container_name: flc-worker
+    command: php artisan queue:work --tries=3 --timeout=90
     env_file:
       - .env
+    restart: unless-stopped
     depends_on:
-      - redis
-      - web
+      mysql:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
     volumes:
       - storage-data:/var/www/html/storage
-
+    networks:
+      - flc
   scheduler:
-    image: flc-lms-prod:latest
-    container_name: flc-lms-scheduler
-    restart: unless-stopped
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: flc-lms:latest
+    container_name: flc-scheduler
     command: php artisan schedule:work
     env_file:
       - .env
+    restart: unless-stopped
     depends_on:
-      - redis
-      - web
+      mysql:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
     volumes:
       - storage-data:/var/www/html/storage
-
-  redis:
-    image: redis:alpine
-    container_name: flc-lms-redis
+    networks:
+      - flc
+  mysql:
+    image: mysql:8.4
+    container_name: flc-mysql
+    env_file:
+      - .env
     restart: unless-stopped
-    command: redis-server --appendonly yes
+    volumes:
+      - mysql-data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD","mysqladmin","ping","-h","localhost","-uroot","-p$$MYSQL_ROOT_PASSWORD"]
+      interval: 10s
+      retries: 10
+    networks:
+      - flc
+  redis:
+    image: redis:7-alpine
+    container_name: flc-redis
+    restart: unless-stopped
+    command:
+      - redis-server
+      - --appendonly
+      - yes
     volumes:
       - redis-data:/data
-
+    healthcheck:
+      test: ["CMD","redis-cli","ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - flc
+networks:
+  flc:
 volumes:
-  storage-data:
+  mysql-data:
   redis-data:
+  storage-data:
