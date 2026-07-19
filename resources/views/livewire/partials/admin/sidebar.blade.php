@@ -1,19 +1,3 @@
-{{--
-    Partial: Admin Portal Sidebar Navigation
-    ────────────────────────────────────────────────────────────────────────────
-    Shared across all Admin-layout pages (layouts.base users).
-
-    Optional context variables:
-      $activePage — string  One of: 'dashboard', 'users', 'materials',
-                                     'tasks', 'grading'
-                            Defaults gracefully to none active if not passed.
-
-      $pendingSubmissions — Collection<Submission>|null
-                            Passed by GradingStation only; used for the badge
-                            count on the Grading link. Other pages pass nothing.
-    ────────────────────────────────────────────────────────────────────────────
---}}
-
 @php
     $activePage ??= '';
     $pendingCount = isset($pendingSubmissions) ? $pendingSubmissions->count() : 0;
@@ -22,11 +6,14 @@
         ['key' => 'dashboard', 'label' => 'Dashboard',  'icon' => 'dashboard',      'route' => route('dashboard')],
         ['key' => 'users',     'label' => 'Users',       'icon' => 'group',          'route' => route('admin.users')],
         ['key' => 'courses',   'label' => 'Courses',     'icon' => 'auto_stories',   'route' => route('admin.courses')],
+        ['key' => 'badges',    'label' => 'Badges',      'icon' => 'military_tech',  'route' => route('admin.badges')],
         ['key' => 'grading',   'label' => 'Grading',     'icon' => 'grade',          'route' => route('admin.grading')],
     ];
 @endphp
 
-<aside class="h-screen w-64 fixed left-0 top-0 bg-slate-50 border-r border-slate-200 z-50 flex-shrink-0"
+<aside class="h-screen w-64 fixed left-0 top-0 bg-slate-50 border-r border-slate-200 z-50 flex-shrink-0 transition-transform duration-300 transform md:translate-x-0"
+       :class="sidebarOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'"
+       @click.away="sidebarOpen = false"
        aria-label="Admin navigation">
     <div class="flex flex-col h-full py-6">
 

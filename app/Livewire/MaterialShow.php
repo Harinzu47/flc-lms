@@ -36,9 +36,48 @@ class MaterialShow extends Component
     public function mount(Material $material): void
     {
         $this->material = $material;
+        $user = auth()->user();
+
+        // Prevent N+1 queries by pre-fetching completed course, module, material, and task collections
+        $this->material->load(['module.course.modules.materials', 'module.course.modules.tasks']);
+
+        $readMaterialIds = \App\Models\XpLog::query()
+            ->where('user_id', $user->id)
+            ->where('action', 'material_read')
+            ->pluck('reference_id');
+
+        $gradedTaskIds = \App\Models\Submission::query()
+            ->where('user_id', $user->id)
+            ->where('status', 'graded')
+            ->pluck('task_id');
+
+        // ⚡ Perf: Only fetch the single prerequisite course for gating — NOT all courses.
+        // The previous implementation loaded every Course row with all nested modules,
+        // materials, and tasks, causing O(total_content) model hydrations. Scoping to
+        // the one prerequisite course reduces this to O(1 course tree).
+        $completedCourseIds = collect();
+        $parentCourse = $this->material->module?->course;
+        if ($parentCourse?->prerequisite_course_id !== null) {
+            $prereq = \App\Models\Course::query()
+                ->with(['modules.materials', 'modules.tasks'])
+                ->find($parentCourse->prerequisite_course_id);
+
+            if ($prereq && $prereq->isCompletedByUser($user, $readMaterialIds, $gradedTaskIds)) {
+                $completedCourseIds->push($prereq->id);
+            }
+        }
+
+        $completedModuleIds = collect();
+        if ($this->material->module && $this->material->module->course) {
+            foreach ($this->material->module->course->modules as $mod) {
+                if ($mod->isCompletedByUser($user, $readMaterialIds, $gradedTaskIds)) {
+                    $completedModuleIds->push($mod->id);
+                }
+            }
+        }
 
         // Secure back-door progression gate: Abort if the material is locked for the authenticated user
-        if ($material->isLockedForUser(auth()->user())) {
+        if ($material->isLockedForUser($user, $completedModuleIds, $completedCourseIds)) {
             abort(403, 'Materi ini masih terkunci! Tingkatkan level Anda terlebih dahulu.');
         }
 

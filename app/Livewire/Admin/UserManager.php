@@ -101,7 +101,6 @@ class UserManager extends Component
         $data = [
             'name'  => $this->name,
             'email' => $this->email,
-            'role'  => $this->role,
         ];
 
         if ($this->password !== '') {
@@ -109,11 +108,17 @@ class UserManager extends Component
         }
 
         if ($this->userId !== null) {
-            User::findOrFail($this->userId)->update($data);
+            $user = User::findOrFail($this->userId);
+            $user->fill($data);
+            $user->role = $this->role;
+            $user->save();
             $message = 'User account updated successfully.';
         } else {
-            $data['total_xp'] = 0; // Default XP baru
-            User::create($data);
+            $user = new User();
+            $user->fill($data);
+            $user->role = $this->role;
+            $user->total_xp = 0;
+            $user->save();
             $message = 'User account created successfully.';
         }
 

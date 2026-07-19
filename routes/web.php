@@ -44,12 +44,10 @@ Route::middleware('auth')->group(function () {
     // ── Leaderboard ───────────────────────────────────────────────────────
     Route::get('/leaderboard', HallOfFame::class)->name('leaderboard');
 
-    // ── Admin Portal ───────────────────────────────────────────────────────
-    Route::middleware('admin')->prefix('admin')->name('admin.')->group(function () {
-        Route::get('/grading', GradingStation::class)->name('grading');
-        Route::get('/courses', CourseManager::class)->name('courses');
-        Route::get('/users',   UserManager::class)->name('users');
-    });
+    // ── Secure Submission Downloads ────────────────────────────────────────
+    Route::get('/submissions/{submission}/download', [\App\Http\Controllers\SubmissionDownloadController::class, 'download'])
+        ->name('submissions.download');
 });
 
 require __DIR__.'/auth.php';
+require __DIR__.'/admin.php';

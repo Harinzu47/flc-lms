@@ -34,6 +34,13 @@ class Course extends Model
         return $this->hasMany(Module::class)->orderBy('sort_order');
     }
 
+    protected static function booted()
+    {
+        static::deleting(function (Course $course) {
+            $course->modules->each(fn ($m) => $m->delete());
+        });
+    }
+
     public function minLevel(): BelongsTo
     {
         return $this->belongsTo(Level::class, 'min_level_required');

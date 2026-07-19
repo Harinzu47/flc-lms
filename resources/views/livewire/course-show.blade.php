@@ -1,11 +1,3 @@
-{{--
-    Course Overview / Modules Timeline — FLC UMJ Student Portal
-    ────────────────────────────────────────────────────────────────────────────
-    Displays the course curriculum hierarchy and enforces sequential module locking
-    and checks completed materials/tasks in-memory.
-    ────────────────────────────────────────────────────────────────────────────
---}}
-
 @section('sidebar-title')
     <h2 class="text-blue-800 font-bold font-headline">Course Path</h2>
     <p class="text-xs text-on-surface-variant mt-0.5">Learning Progress</p>

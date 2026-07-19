@@ -50,6 +50,7 @@ class GradingStation extends Component
 
     public function mount(): void
     {
+        \Illuminate\Support\Facades\Gate::authorize('grade', Submission::class);
         $this->loadPendingSubmissions();
     }
 

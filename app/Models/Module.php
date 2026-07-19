@@ -38,6 +38,14 @@ class Module extends Model
         return $this->hasMany(Task::class);
     }
 
+    protected static function booted()
+    {
+        static::deleting(function (Module $module) {
+            $module->materials->each(fn ($m) => $m->delete());
+            $module->tasks->each(fn ($t) => $t->delete());
+        });
+    }
+
     // ── Gating & Progression Helpers ──────────────────────────────────────────
 
     /**

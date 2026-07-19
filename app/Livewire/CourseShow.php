@@ -42,11 +42,7 @@ class CourseShow extends Component
     {
         $user = auth()->user();
 
-        // 1. Fetch completed course IDs to verify prerequisites
-        $allCoursesWithModules = Course::query()
-            ->with(['modules.materials', 'modules.tasks'])
-            ->get();
-
+        // 1. Mitigate N+1 queries by fetching student reads and grades in single queries
         $this->readMaterialIds = XpLog::query()
             ->where('user_id', $user->id)
             ->where('action', 'material_read')
@@ -57,9 +53,17 @@ class CourseShow extends Component
             ->where('status', 'graded')
             ->pluck('task_id');
 
-        $this->completedCourseIds = $allCoursesWithModules->filter(function (Course $c) use ($user): bool {
-            return $c->isCompletedByUser($user, $this->readMaterialIds, $this->gradedTaskIds);
-        })->pluck('id');
+        // 2. Fetch completed course IDs ONLY for the prerequisite course if it exists (prevents massive memory bloat)
+        $this->completedCourseIds = collect();
+        if ($course->prerequisite_course_id !== null) {
+            $prereq = Course::query()
+                ->with(['modules.materials', 'modules.tasks'])
+                ->find($course->prerequisite_course_id);
+
+            if ($prereq && $prereq->isCompletedByUser($user, $this->readMaterialIds, $this->gradedTaskIds)) {
+                $this->completedCourseIds->push($prereq->id);
+            }
+        }
 
         // 2. Perform security gate check
         if ($course->isLockedForUser($user, $this->completedCourseIds)) {

@@ -25,42 +25,57 @@ final class EvaluateBadgeUnlocks implements ShouldQueue
     {
         $user = $event->user;
 
-        // Fetch only badges that this specific user has not unlocked yet to avoid wasteful queries
-        $lockedBadges = Badge::whereDoesntHave('users', function ($query) use ($user): void {
+        // 1. Pre-calculate metrics to avoid N+1 query locks inside the loop
+        $userXp = $user->total_xp;
+        $totalRead = \App\Models\XpLog::where('user_id', $user->id)->where('action', 'material_read')->count();
+        $totalTasks = \App\Models\Submission::where('user_id', $user->id)->where('status', 'graded')->count();
+
+        // 2. Fetch available locked badges
+        $availableBadges = Badge::whereDoesntHave('users', function ($query) use ($user): void {
             $query->where('user_id', $user->id);
         })->get();
 
-        foreach ($lockedBadges as $badge) {
+        // 3. Loop and evaluate conditions using pre-calculated variables
+        foreach ($availableBadges as $badge) {
             $shouldUnlock = false;
 
             switch ($badge->criteria_type) {
                 case 'total_xp':
-                    $shouldUnlock = $user->total_xp >= $badge->criteria_value;
+                    $shouldUnlock = ($userXp >= $badge->target_value);
                     break;
 
                 case 'materials_read':
-                    $readCount = XpLog::query()
-                        ->where('user_id', $user->id)
-                        ->where('action', AwardMaterialXpAction::ACTION)
-                        ->count();
-                    $shouldUnlock = $readCount >= $badge->criteria_value;
+                    $shouldUnlock = ($totalRead >= $badge->target_value);
                     break;
 
                 case 'tasks_completed':
-                    $completedCount = Submission::query()
-                        ->where('user_id', $user->id)
-                        ->where('status', 'graded')
-                        ->count();
-                    $shouldUnlock = $completedCount >= $badge->criteria_value;
+                    $shouldUnlock = ($totalTasks >= $badge->target_value);
                     break;
             }
 
+            // 4. Safely attach unlocked badge
             if ($shouldUnlock) {
-                // Attach badge to user pivot relationship
                 $user->badges()->syncWithoutDetaching([
                     $badge->id => ['unlocked_at' => now()],
                 ]);
+                $this->dispatch($user->id, $badge->name, $badge->description ?? '', $badge->icon);
             }
         }
+    }
+
+    /**
+     * Dispatch event to browser (via database).
+     */
+    private function dispatch(int $userId, string $name, string $description, string $icon): void
+    {
+        \App\Models\PendingCelebration::create([
+            'user_id' => $userId,
+            'type'    => 'badge-unlocked',
+            'payload' => [
+                'name'        => $name,
+                'description' => $description,
+                'icon'        => $icon,
+            ],
+        ]);
     }
 }
