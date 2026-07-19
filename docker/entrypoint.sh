@@ -1,28 +1,40 @@
 #!/bin/sh
+
 set -e
 
-# Cache configuration, routes, and views for production performance
-echo "Warming up application cache..."
-php artisan config:cache
-php artisan route:cache
-php artisan view:cache
-php artisan event:cache
+echo "========================================"
+echo "Starting Laravel Production Container"
+echo "========================================"
 
-# Run migrations if this is the web server container (default or supervisord)
-if [ "$1" = "/usr/bin/supervisord" ] || [ "$1" = "supervisord" ] || [ -z "$1" ]; then
-    echo "Running database migrations..."
+mkdir -p storage bootstrap/cache
+
+chmod -R ug+rwx storage bootstrap/cache
+
+# Hanya jalankan cache-build & migration di container "app" (php-fpm).
+# Container worker & scheduler pakai image yang sama tapi command berbeda,
+# jadi tanpa guard ini ketiganya akan migrate bareng-bareng (race condition).
+if [ "$1" = "php-fpm" ]; then
+
+    echo "-> Running app bootstrap (cache + migrate)..."
+
+    php artisan optimize:clear
+
+    php artisan config:cache
+
+    php artisan route:cache || true
+
+    php artisan event:cache || true
+
+    php artisan view:cache
+
     php artisan migrate --force
-fi
 
-# Set proper permissions for Laravel writeable directories
-echo "Ensuring file permissions..."
-chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache
+    echo "Laravel Ready."
 
-# Execute the requested command
-if [ $# -eq 0 ]; then
-    echo "Starting Supervisor..."
-    exec /usr/bin/supervisord -c /etc/supervisor/conf.d/supervisord.conf
 else
-    echo "Executing command: $@"
-    exec "$@"
+
+    echo "-> Skipping bootstrap for command: $*"
+
 fi
+
+exec "$@"
