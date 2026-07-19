@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::table('submissions', function (Blueprint $table) {
             if (!Schema::hasColumn('submissions', 'is_flagged')) {
-                $table->boolean('is_flagged')->default(false)->index();
+                $table->boolean('is_flagged')->default(false)->index('submissions_is_flagged_index');
             }
             if (!Schema::hasColumn('submissions', 'review_comment')) {
                 $table->text('review_comment')->nullable()->after('is_flagged');
@@ -29,7 +29,7 @@ return new class extends Migration
         Schema::table('submissions', function (Blueprint $table) {
             $columns = [];
             if (Schema::hasColumn('submissions', 'is_flagged')) {
-                $table->dropIndex(['is_flagged']);
+                $table->dropIndex(['submissions_is_flagged_index']);
                 $columns[] = 'is_flagged';
             }
             if (Schema::hasColumn('submissions', 'review_comment')) {

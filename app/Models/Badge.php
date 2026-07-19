@@ -20,9 +20,9 @@ class Badge extends Model
     protected $fillable = [
         'name',
         'description',
-        'icon_url',
+        'icon',
         'criteria_type',
-        'criteria_value',
+        'target_value',
     ];
 
     // -------------------------------------------------------------------------

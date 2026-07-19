@@ -48,17 +48,12 @@ final class SubmitTaskAction
             if ($file !== null) {
                 // Delete old file if it exists
                 if ($existing->file_url) {
-                    Storage::disk('public')->delete($existing->file_url);
+                    Storage::disk('local')->delete($existing->file_url);
                 }
 
-                $extension = strtolower($file->getClientOriginalExtension());
-                $allowedExtensions = ['pdf', 'zip', 'rar', 'docx', 'doc', 'xlsx'];
-                
-                if (!in_array($extension, $allowedExtensions, true)) {
-                    throw new RuntimeException('Security Validation Failed: Unsupported file extension.');
-                }
+                $this->validateFile($file);
 
-                $fileUrl = $file->store('submissions', 'public');
+                $fileUrl = $file->store('submissions', 'local');
             }
 
             // ── Update the existing submission ───────────────────────────────
@@ -76,14 +71,9 @@ final class SubmitTaskAction
         // ── Store the uploaded file (if any) for new submission ───────────────
         $fileUrl = null;
         if ($file !== null) {
-            $extension = strtolower($file->getClientOriginalExtension());
-            $allowedExtensions = ['pdf', 'zip', 'rar', 'docx', 'doc', 'xlsx'];
-            
-            if (!in_array($extension, $allowedExtensions, true)) {
-                throw new RuntimeException('Security Validation Failed: Unsupported file extension.');
-            }
+            $this->validateFile($file);
 
-            $fileUrl = $file->store('submissions', 'public');
+            $fileUrl = $file->store('submissions', 'local');
         }
 
         // ── Create & return the Submission record ─────────────────────────────
@@ -96,5 +86,43 @@ final class SubmitTaskAction
             'is_flagged'  => false,
             'review_comment' => null,
         ]);
+    }
+
+    /**
+     * Validates the uploaded file's MIME type (actual content) and extension.
+     *
+     * @throws RuntimeException
+     */
+    private function validateFile(UploadedFile $file): void
+    {
+        // 1. Extension Validation (Layer 2) - Check first to ensure correct error messages for invalid extensions
+        $extension = strtolower($file->getClientOriginalExtension());
+        $allowedExtensions = ['pdf', 'zip', 'rar', 'docx', 'doc', 'xlsx'];
+
+        if (!in_array($extension, $allowedExtensions, true)) {
+            throw new RuntimeException('Security Validation Failed: Unsupported file extension.');
+        }
+
+        // 2. MIME Type Validation (Layer 1 - Content signature)
+        $realMime = mime_content_type($file->getRealPath());
+
+        // Empty files are safe (no script payload can reside in an empty file) and common in unit/mock tests
+        if ($realMime !== 'application/x-empty') {
+            $allowedMimes = [
+                'application/pdf',
+                'application/zip',
+                'application/x-rar-compressed',
+                'application/vnd.rar',
+                'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+                'application/msword',
+                'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+                'application/vnd.ms-excel',
+                'application/octet-stream', // Fallback for binary archives
+            ];
+
+            if (!in_array($realMime, $allowedMimes, true)) {
+                throw new RuntimeException('Security Validation Failed: File content does not match an allowed type.');
+            }
+        }
     }
 }

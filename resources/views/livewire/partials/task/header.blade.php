@@ -1,14 +1,6 @@
-{{--
-    Partial: Task Header
-    ────────────────────────────────────────────────────────────────────────────
-    Context variables (provided by TaskShow component):
-      $task  — App\Models\Task (with type, title, base_xp, deadline)
-    ────────────────────────────────────────────────────────────────────────────
---}}
-
-{{-- Back to Course Pathway --}}
 @if($task->module && $task->module->course)
-    <a href="{{ route('courses.show', $task->module->course) }}" wire:navigate class="inline-flex items-center gap-2 text-sm text-primary hover:text-blue-700 transition-colors font-semibold mb-4">
+    <a href="{{ route('courses.show', $task->module->course) }}" wire:navigate
+        class="inline-flex items-center gap-2 text-sm text-primary hover:text-blue-700 transition-colors font-semibold mb-4">
         <span class="material-symbols-outlined text-lg">arrow_back</span>
         Back to Course Pathway
     </a>
@@ -16,8 +8,7 @@
 
 {{-- ── Breadcrumbs ──────────────────────────────────────────────────────────── --}}
 <nav class="flex items-center gap-2 text-sm text-on-surface-variant mb-6 font-label tracking-wide uppercase"
-     id="task-overview"
-     aria-label="Breadcrumb">
+    id="task-overview" aria-label="Breadcrumb">
     <a href="{{ route('dashboard') }}" class="hover:text-primary cursor-pointer transition-colors">Courses</a>
     <span class="material-symbols-outlined" style="font-size:14px;" aria-hidden="true">chevron_right</span>
     <span class="hover:text-primary cursor-pointer transition-colors">{{ ucfirst($task->type) }}</span>
@@ -30,12 +21,12 @@
     <div class="flex items-start gap-4 mb-4">
         <div class="bg-primary/10 p-3 rounded-2xl flex-shrink-0" aria-hidden="true">
             <span class="material-symbols-outlined text-primary text-3xl">
-                {{ match($task->type) {
-                    'essay'       => 'history_edu',
-                    'file_upload' => 'upload_file',
-                    'quiz'        => 'quiz',
-                    default       => 'assignment'
-                } }}
+                {{ match ($task->type) {
+    'essay' => 'history_edu',
+    'file_upload' => 'upload_file',
+    'quiz' => 'quiz',
+    default => 'assignment'
+} }}
             </span>
         </div>
         <div>
@@ -52,10 +43,9 @@
     {{-- XP & Meta Badges ──────────────────────────────────────────────────────── --}}
     <div class="flex flex-wrap gap-4 mt-6" role="list" aria-label="Task metadata">
         <div class="flex items-center gap-2 bg-secondary-container px-4 py-2 rounded-full border border-secondary/10"
-             role="listitem">
+            role="listitem">
             <span class="material-symbols-outlined text-on-secondary-container text-sm"
-                  style="font-variation-settings:'FILL' 1;"
-                  aria-hidden="true">stars</span>
+                style="font-variation-settings:'FILL' 1;" aria-hidden="true">stars</span>
             <span class="text-sm font-bold text-on-secondary-container font-label uppercase">
                 +{{ $task->base_xp }} XP Reward
             </span>
@@ -63,7 +53,7 @@
 
         @if($task->deadline)
             <div class="flex items-center gap-2 bg-tertiary-container/10 px-4 py-2 rounded-full border border-tertiary/10"
-                 role="listitem">
+                role="listitem">
                 <span class="material-symbols-outlined text-tertiary text-sm" aria-hidden="true">schedule</span>
                 <span class="text-sm font-bold text-tertiary font-label uppercase">
                     Due {{ $task->deadline->format('d M Y, H:i') }}

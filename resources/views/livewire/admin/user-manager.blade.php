@@ -1,11 +1,3 @@
-{{--
-    User Manager — FLC UMJ Admin Portal
-    ────────────────────────────────────────────────────────────────────────────
-    Backend:  App\Livewire\Admin\UserManager
-    Layout:   layouts.base (bare HTML shell — admin uses its own chrome)
-    ────────────────────────────────────────────────────────────────────────────
---}}
-
 @push('styles')
     <style>
         .custom-scrollbar::-webkit-scrollbar { width: 6px; }
@@ -21,6 +13,7 @@
         toastVisible: false,
         toastMessage: '',
         activeTab: 'profile', // profile, xp, badges
+        sidebarOpen: false,
         showToast(msg) {
             this.toastMessage = msg;
             this.toastVisible = true;
@@ -53,11 +46,14 @@
     @include('livewire.partials.admin.sidebar', ['activePage' => 'users'])
 
     {{-- ── MAIN CONTENT ─────────────────────────────────────────────────────── --}}
-    <main class="pl-64 min-h-screen flex flex-col w-full">
+    <main class="md:pl-64 min-h-screen flex flex-col w-full">
 
         {{-- Top App Bar --}}
         <header class="sticky top-0 z-40 flex items-center justify-between px-8 py-3 w-full border-b border-slate-100 bg-white/80 backdrop-blur-md shadow-sm">
-            <div class="flex items-center gap-6">
+            <div class="flex items-center gap-4">
+                <button @click="sidebarOpen = !sidebarOpen" class="p-2 -ml-2 text-on-surface-variant hover:text-primary rounded-lg md:hidden focus:outline-none" aria-label="Toggle admin sidebar">
+                    <span class="material-symbols-outlined block text-2xl">menu</span>
+                </button>
                 <h1 class="text-xl font-bold text-blue-800 font-headline tracking-tight">FLC UMJ</h1>
                 <div class="relative hidden lg:block">
                     <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline"
@@ -180,14 +176,44 @@
 
                                         {{-- Badges unlocked --}}
                                         <td class="px-6 py-4">
-                                            <div class="flex items-center gap-1">
+                                            <div class="flex items-center">
                                                 @if($userItem->badges->isNotEmpty())
-                                                    <span class="inline-flex items-center gap-1 bg-amber-100 text-amber-800 border border-amber-200 px-2 py-0.5 rounded-lg text-xs font-black">
-                                                        <span class="material-symbols-outlined text-xs" style="font-variation-settings:'FILL' 1;">military_tech</span>
-                                                        {{ $userItem->badges->count() }} Badges
-                                                    </span>
+                                                    <div class="flex items-center -space-x-1.5">
+                                                        @foreach($userItem->badges->take(3) as $badge)
+                                                            <div class="relative" x-data="{ tooltip: false }">
+                                                                <div 
+                                                                    @mouseenter="tooltip = true" 
+                                                                    @mouseleave="tooltip = false"
+                                                                    class="w-7 h-7 rounded-full bg-gradient-to-br from-amber-100 to-amber-200 border-2 border-white text-amber-800 flex items-center justify-center shadow-sm hover:scale-110 hover:z-10 transition-all duration-150 cursor-pointer"
+                                                                >
+                                                                    <span class="material-symbols-outlined text-[14px]" style="font-variation-settings:'FILL' 1;" aria-hidden="true">military_tech</span>
+                                                                </div>
+                                                                
+                                                                {{-- Tooltip --}}
+                                                                <div 
+                                                                    x-show="tooltip" 
+                                                                    x-cloak 
+                                                                    x-transition:enter="transition ease-out duration-200"
+                                                                    x-transition:enter-start="opacity-0 translate-y-1"
+                                                                    x-transition:enter-end="opacity-100 translate-y-0"
+                                                                    x-transition:leave="transition ease-in duration-150"
+                                                                    x-transition:leave-start="opacity-100 translate-y-0"
+                                                                    x-transition:leave-end="opacity-0 translate-y-1"
+                                                                    class="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-2.5 py-1 bg-slate-900/90 text-white text-[10px] font-bold rounded-lg whitespace-nowrap shadow-md z-50 pointer-events-none"
+                                                                >
+                                                                    {{ $badge->name }}
+                                                                </div>
+                                                            </div>
+                                                        @endforeach
+                                                        
+                                                        @if($userItem->badges->count() > 3)
+                                                            <div class="w-7 h-7 rounded-full bg-slate-100 border-2 border-white flex items-center justify-center text-[10px] font-extrabold text-slate-600 shadow-sm z-0">
+                                                                +{{ $userItem->badges->count() - 3 }}
+                                                            </div>
+                                                        @endif
+                                                    </div>
                                                 @else
-                                                    <span class="text-xs text-on-surface-variant italic">No badges</span>
+                                                    <span class="text-xs text-slate-400 font-medium">Belum ada pencapaian</span>
                                                 @endif
                                             </div>
                                         </td>
@@ -328,7 +354,8 @@
             {{-- Modal Body (Scrollable) --}}
             <div class="flex-1 overflow-y-auto p-8 custom-scrollbar">
 
-                {{-- ── TAB 1: Profile CRUD ── --}}
+                <div wire:loading.remove wire:target="create, edit">
+                    {{-- ── TAB 1: Profile CRUD ── --}}
                 <div x-show="!$wire.userId || activeTab === 'profile'" class="space-y-6">
                     <form wire:submit.prevent="save" class="space-y-6">
                         
@@ -401,9 +428,15 @@
                             </button>
                             <button
                                 type="submit"
-                                class="bg-primary hover:bg-primary-container text-on-primary px-6 py-2.5 rounded-xl text-xs font-bold shadow-md hover:scale-[1.02] active:scale-[0.98] transition-all"
+                                wire:loading.attr="disabled"
+                                class="bg-primary hover:bg-primary-container text-on-primary px-6 py-2.5 rounded-xl text-xs font-bold shadow-md hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center justify-center gap-2"
                             >
-                                Save Changes
+                                <svg wire:loading wire:target="save" class="animate-spin -ml-1 mr-2 h-4 w-4 text-white inline-block" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                </svg>
+                                <span wire:loading.remove wire:target="save">Save Changes</span>
+                                <span wire:loading wire:target="save">Processing...</span>
                             </button>
                         </div>
 
@@ -462,9 +495,15 @@
                                 </button>
                                 <button
                                     type="submit"
-                                    class="bg-secondary text-on-secondary px-6 py-2.5 rounded-xl text-xs font-bold shadow-md hover:scale-[1.02] active:scale-[0.98] transition-all"
+                                    wire:loading.attr="disabled"
+                                    class="bg-secondary text-on-secondary px-6 py-2.5 rounded-xl text-xs font-bold shadow-md hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center justify-center gap-2"
                                 >
-                                    Adjust XP Points
+                                    <svg wire:loading wire:target="adjustXp" class="animate-spin -ml-1 mr-2 h-4 w-4 text-white inline-block" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                    </svg>
+                                    <span wire:loading.remove wire:target="adjustXp">Adjust XP Points</span>
+                                    <span wire:loading wire:target="adjustXp">Processing...</span>
                                 </button>
                             </div>
 
@@ -522,15 +561,42 @@
                                 </button>
                                 <button
                                     type="submit"
-                                    class="bg-primary hover:bg-primary-container text-on-primary px-6 py-2.5 rounded-xl text-xs font-bold shadow-md hover:scale-[1.02] active:scale-[0.98] transition-all"
+                                    wire:loading.attr="disabled"
+                                    class="bg-primary hover:bg-primary-container text-on-primary px-6 py-2.5 rounded-xl text-xs font-bold shadow-md hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center justify-center gap-2"
                                 >
-                                    Sync Achievements
+                                    <svg wire:loading wire:target="syncBadges" class="animate-spin -ml-1 mr-2 h-4 w-4 text-white inline-block" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                    </svg>
+                                    <span wire:loading.remove wire:target="syncBadges">Sync Achievements</span>
+                                    <span wire:loading wire:target="syncBadges">Processing...</span>
                                 </button>
                             </div>
 
                         </form>
                     </div>
                 @endif
+                </div>
+
+                {{-- Skeleton Loader --}}
+                <div wire:loading wire:target="create, edit" class="animate-pulse space-y-6">
+                    <div class="space-y-2">
+                        <div class="bg-slate-200 h-4 w-24 rounded"></div>
+                        <div class="bg-slate-200 h-11 w-full rounded-xl"></div>
+                    </div>
+                    <div class="space-y-2">
+                        <div class="bg-slate-200 h-4 w-32 rounded"></div>
+                        <div class="bg-slate-200 h-11 w-full rounded-xl"></div>
+                    </div>
+                    <div class="space-y-2">
+                        <div class="bg-slate-200 h-4 w-28 rounded"></div>
+                        <div class="bg-slate-200 h-11 w-full rounded-xl"></div>
+                    </div>
+                    <div class="space-y-2">
+                        <div class="bg-slate-200 h-4 w-20 rounded"></div>
+                        <div class="bg-slate-200 h-11 w-full rounded-xl"></div>
+                    </div>
+                </div>
 
             </div>
         </div>

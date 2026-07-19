@@ -24,16 +24,36 @@ final class SyncUserLevel implements ShouldQueue
         $user = $event->user;
 
         // Query the highest level this user qualifies for based on their current total_xp
-        $matchedLevel = Level::query()
+        $newLevel = Level::query()
             ->where('min_xp', '<=', $user->total_xp)
             ->orderByDesc('min_xp')
             ->first();
 
         // If a valid level matches and it differs from the cached level_id, sync it atomically
-        if ($matchedLevel !== null && $user->level_id !== $matchedLevel->id) {
-            $user->update([
-                'level_id' => $matchedLevel->id,
-            ]);
+        if ($newLevel !== null && $user->level_id !== $newLevel->id) {
+            $oldLevelId = $user->level_id;
+            $user->level_id = $newLevel->id;
+            $user->save();
+
+            if ($oldLevelId !== null || $newLevel->min_xp > 0) {
+                // Note: since min_xp is the threshold field, we pass min_xp
+                $this->dispatch($user->id, $newLevel->name, (int) $newLevel->min_xp);
+            }
         }
+    }
+
+    /**
+     * Dispatch event to browser (via database).
+     */
+    private function dispatch(int $userId, string $levelName, int $targetXp): void
+    {
+        \App\Models\PendingCelebration::create([
+            'user_id' => $userId,
+            'type'    => 'level-up',
+            'payload' => [
+                'levelName' => $levelName,
+                'targetXp'  => $targetXp,
+            ],
+        ]);
     }
 }

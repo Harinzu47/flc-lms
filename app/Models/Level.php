@@ -23,6 +23,14 @@ class Level extends Model
         'icon_url',
     ];
 
+    /**
+     * Get the virtual xp_threshold attribute (alias of min_xp).
+     */
+    public function getXpThresholdAttribute(): int
+    {
+        return $this->min_xp;
+    }
+
     // -------------------------------------------------------------------------
     // Relationships
     // -------------------------------------------------------------------------

@@ -7,6 +7,8 @@ namespace App\Actions\Gamification;
 use App\Models\Material;
 use App\Models\User;
 use App\Models\XpLog;
+use Illuminate\Database\QueryException;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 
 /**
@@ -14,6 +16,11 @@ use Illuminate\Support\Facades\DB;
  *
  * Idempotent — calling this multiple times for the same user+material is safe;
  * subsequent calls after the first are silently ignored and return false.
+ *
+ * Defense-in-depth (3 layers):
+ *   1. Cache::lock()       — distributed lock prevents concurrent execution.
+ *   2. lockForUpdate()     — pessimistic DB lock serializes within a transaction.
+ *   3. Unique constraint   — DB-level unique(user_id, action, reference_id) as final fallback.
  *
  * Design: Single-responsibility Action class, keeping the Livewire component
  * thin and this logic independently testable.
@@ -31,34 +38,72 @@ final class AwardMaterialXpAction
      */
     public function execute(User $user, Material $material): bool
     {
-        // ── Guard: already claimed? ──────────────────────────────────────────
-        $alreadyClaimed = XpLog::query()
-            ->where('user_id',      $user->id)
-            ->where('action',       self::ACTION)
-            ->where('reference_id', $material->id)
-            ->exists();
+        // Layer 1: Distributed lock — prevents concurrent requests from racing
+        $lock = Cache::lock("xp-award:material:{$user->id}:{$material->id}", 5);
 
-        if ($alreadyClaimed) {
+        if (! $lock->get()) {
             return false;
         }
 
-        // ── Atomic: log entry + user counter update ──────────────────────────
-        DB::transaction(function () use ($user, $material): void {
-            XpLog::create([
-                'user_id'      => $user->id,
-                'action'       => self::ACTION,
-                'xp_earned'    => self::XP_AMOUNT,
-                'reference_id' => $material->id,
-            ]);
+        try {
+            return $this->awardXp($user, $material);
+        } finally {
+            $lock->release();
+        }
+    }
 
-            // Use increment() for an atomic UPDATE — avoids lost-update race conditions
-            // from read-modify-write cycles (e.g. $user->total_xp += 10; $user->save()).
-            $user->increment('total_xp', self::XP_AMOUNT);
-        });
+    /**
+     * Core XP award logic wrapped in a transaction with pessimistic locking.
+     */
+    private function awardXp(User $user, Material $material): bool
+    {
+        $xpAwarded = false;
 
-        // Dispatch decoupled event for level/badge sync
-        \App\Events\XpEarned::dispatch($user, self::XP_AMOUNT);
+        try {
+            // Layer 2: Pessimistic lock + transaction
+            DB::transaction(function () use ($user, $material, &$xpAwarded): void {
+                // Lock the user record for update to serialize concurrent XP awards for the same user
+                $lockedUser = User::query()->where('id', $user->id)->lockForUpdate()->first();
 
-        return true;
+                if ($lockedUser !== null) {
+                    $alreadyClaimed = XpLog::query()
+                        ->where('user_id',      $lockedUser->id)
+                        ->where('action',       self::ACTION)
+                        ->where('reference_id', $material->id)
+                        ->exists();
+
+                    if (!$alreadyClaimed) {
+                        XpLog::create([
+                            'user_id'      => $lockedUser->id,
+                            'action'       => self::ACTION,
+                            'xp_earned'    => self::XP_AMOUNT,
+                            'reference_id' => $material->id,
+                        ]);
+
+                        $lockedUser->increment('total_xp', self::XP_AMOUNT);
+                        $xpAwarded = true;
+                    }
+                }
+            });
+        } catch (QueryException $e) {
+            // Layer 3: Unique constraint violation (SQLSTATE 23000) — already awarded
+            if ($e->getCode() === '23000') {
+                return false;
+            }
+
+            throw $e;
+        }
+
+        if ($xpAwarded) {
+            // Refresh the user model so listeners receive the up-to-date total_xp
+            // (the original $user object is stale after the locked increment inside the transaction).
+            $user->refresh();
+
+            // Dispatch decoupled event for level/badge sync
+            \App\Events\XpEarned::dispatch($user, self::XP_AMOUNT);
+            return true;
+        }
+
+        return false;
     }
 }

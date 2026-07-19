@@ -69,6 +69,14 @@ class Task extends Model
         return $this->hasMany(UserTaskStart::class);
     }
 
+    protected static function booted()
+    {
+        static::deleting(function (Task $task) {
+            XpLog::where('action', 'task_graded')->where('reference_id', $task->id)->delete();
+            $task->submissions()->delete();
+        });
+    }
+
     /**
      * Get the computed personal deadline for a given user.
      */
@@ -80,6 +88,53 @@ class Task extends Model
         $start = $this->userStarts->where('user_id', $user->id)->first();
         return $start ? $start->started_at->copy()->addDays($this->days_limit) : null;
     }
+
+    /**
+     * Get upcoming tasks with a future deadline for a given user.
+     */
+    public static function getUpcomingForUser(User $user, int $limit = 3): Collection
+    {
+        return self::query()
+            ->with(['userStarts' => function ($query) use ($user) {
+                $query->where('user_id', $user->id);
+            }, 'submissions' => function ($query) use ($user) {
+                $query->where('user_id', $user->id);
+            }])
+            ->get()
+            ->filter(function (Task $task) use ($user) {
+                // Check if an associated submission exists
+                $submission = $task->submissions->where('user_id', $user->id)->first();
+
+                // Exclude tasks where a submission exists, UNLESS that submission is flagged (revisi)
+                if ($submission && !$submission->is_flagged) {
+                    return false;
+                }
+
+                // Check if days_limit is set
+                if ($task->days_limit === null) {
+                    return false;
+                }
+
+                // Check if a start record exists
+                $deadline = $task->getPersonalDeadlineFor($user);
+                if (!$deadline) {
+                    return false;
+                }
+
+                // Keep only if computed personal deadline is in the future (> now())
+                return $deadline->isFuture();
+            })
+            ->map(function (Task $task) use ($user) {
+                // Dynamically assign legacy 'deadline' property as a Carbon instance for view compatibility
+                $task->deadline = $task->getPersonalDeadlineFor($user);
+                return $task;
+            })
+            ->sortBy(function (Task $task) use ($user) {
+                return $task->deadline;
+            })
+            ->take($limit);
+    }
+
     // Gamification Helpers
     // -------------------------------------------------------------------------
 
