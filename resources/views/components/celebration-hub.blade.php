@@ -9,6 +9,12 @@
                 level = { levelName: item.payload.levelName || '', targetXp: item.payload.targetXp || 0 };
                 showLevelModal = true;
                 confetti({ particleCount: 200, spread: 90 });
+            } else if (item.type === 'rank_progress') {
+                $dispatch('notify', {
+                    message: 'Kamu butuh ' + (item.payload.xp_gap || 0) + ' XP lagi untuk naik ke peringkat #' + (item.payload.target_rank || '?') + '!',
+                    subtitle: 'Terus semangat belajar! 🔥',
+                    icon: 'trending_up'
+                });
             }
         });
     "

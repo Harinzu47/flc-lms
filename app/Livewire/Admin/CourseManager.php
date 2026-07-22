@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Livewire\Admin;
 
 use App\Models\Course;
-use App\Models\Level;
+use App\Models\User;
 use App\Livewire\Admin\Concerns\ManagesCourses;
 use App\Livewire\Admin\Concerns\ManagesModules;
 use App\Livewire\Admin\Concerns\ManagesMaterialsAndTasks;
@@ -86,7 +86,7 @@ class CourseManager extends Component
 
             return view('livewire.admin.course-manager', [
                 'course' => $course,
-                'levels' => Level::orderBy('min_xp')->get(),
+                'levels' => User::allLevels(),
                 'coursesList' => Course::where('id', '!=', $this->selectedCourseId)->orderBy('title')->get(),
             ]);
         }
@@ -99,7 +99,7 @@ class CourseManager extends Component
 
         return view('livewire.admin.course-manager', [
             'courses' => $courses,
-            'levels' => Level::orderBy('min_xp')->get(),
+            'levels' => User::allLevels(),
             'coursesList' => Course::orderBy('title')->get(),
         ]);
     }
