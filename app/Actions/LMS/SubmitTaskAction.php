@@ -7,7 +7,9 @@ namespace App\Actions\LMS;
 use App\Models\Submission;
 use App\Models\Task;
 use App\Models\User;
+use Illuminate\Database\QueryException;
 use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Storage;
 use RuntimeException;
 
@@ -16,6 +18,10 @@ use RuntimeException;
  *
  * Single-responsibility Action — stores the file (if any) and creates
  * the Submission record in one place, independently testable.
+ *
+ * Defense-in-depth (2 layers):
+ *   1. Cache::lock()       — distributed lock prevents concurrent submission by the same user+task.
+ *   2. Unique constraint   — DB-level unique(user_id, task_id) as final fallback.
  */
 final class SubmitTaskAction
 {
@@ -26,6 +32,29 @@ final class SubmitTaskAction
      * @return Submission        The newly created submission record.
      */
     public function execute(
+        User          $user,
+        Task          $task,
+        ?string       $answerText,
+        ?UploadedFile $file
+    ): Submission {
+        // Layer 1: Distributed lock — prevents concurrent submissions for the same user+task
+        $lock = Cache::lock("submission:{$user->id}:{$task->id}", 10);
+
+        if (! $lock->get()) {
+            throw new RuntimeException('Your submission is being processed. Please wait.');
+        }
+
+        try {
+            return $this->processSubmission($user, $task, $answerText, $file);
+        } finally {
+            $lock->release();
+        }
+    }
+
+    /**
+     * Core submission logic, protected by the distributed lock.
+     */
+    private function processSubmission(
         User          $user,
         Task          $task,
         ?string       $answerText,
@@ -77,15 +106,24 @@ final class SubmitTaskAction
         }
 
         // ── Create & return the Submission record ─────────────────────────────
-        return Submission::create([
-            'user_id'     => $user->id,
-            'task_id'     => $task->id,
-            'answer_text' => $answerText,
-            'file_url'    => $fileUrl,
-            'status'      => 'pending',
-            'is_flagged'  => false,
-            'review_comment' => null,
-        ]);
+        try {
+            return Submission::create([
+                'user_id'     => $user->id,
+                'task_id'     => $task->id,
+                'answer_text' => $answerText,
+                'file_url'    => $fileUrl,
+                'status'      => 'pending',
+                'is_flagged'  => false,
+                'review_comment' => null,
+            ]);
+        } catch (QueryException $e) {
+            // Layer 2: Unique constraint violation (SQLSTATE 23000) — already submitted
+            if ($e->getCode() === '23000') {
+                throw new RuntimeException('You have already submitted this task.');
+            }
+
+            throw $e;
+        }
     }
 
     /**

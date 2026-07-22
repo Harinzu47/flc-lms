@@ -91,10 +91,16 @@ class Task extends Model
 
     /**
      * Get upcoming tasks with a future deadline for a given user.
+     *
+     * ⚡ Perf: Pushes filtering into SQL to avoid loading all tasks into memory.
+     * Only fetches tasks with a days_limit, that the user has started, and that
+     * don't have a non-flagged submission.
      */
     public static function getUpcomingForUser(User $user, int $limit = 3): Collection
     {
         return self::query()
+            ->whereNotNull('days_limit')
+            ->whereHas('userStarts', fn ($q) => $q->where('user_id', $user->id))
             ->with(['userStarts' => function ($query) use ($user) {
                 $query->where('user_id', $user->id);
             }, 'submissions' => function ($query) use ($user) {
@@ -110,12 +116,7 @@ class Task extends Model
                     return false;
                 }
 
-                // Check if days_limit is set
-                if ($task->days_limit === null) {
-                    return false;
-                }
-
-                // Check if a start record exists
+                // Check if a start record exists and deadline is in the future
                 $deadline = $task->getPersonalDeadlineFor($user);
                 if (!$deadline) {
                     return false;

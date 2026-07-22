@@ -35,6 +35,11 @@ class AppServiceProvider extends ServiceProvider
             \App\Listeners\EvaluateBadgeUnlocks::class
         );
 
+        Event::listen(
+            XpEarned::class,
+            \App\Listeners\NotifyRankProximity::class
+        );
+
         \Livewire\Livewire::listen('component.dehydrate', function ($component, $context) {
             if (auth()->check()) {
                 static $pending = null;

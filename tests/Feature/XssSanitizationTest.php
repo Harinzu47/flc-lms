@@ -38,13 +38,13 @@ final class XssSanitizationTest extends TestCase
     private function createUnlockedModule(): Module
     {
         $course = Course::factory()->create([
-            'min_level_required'     => null,
+            'min_level_required' => null,
             'prerequisite_course_id' => null,
-            'is_published'           => true,
+            'is_published' => true,
         ]);
 
         return Module::factory()->create([
-            'course_id'  => $course->id,
+            'course_id' => $course->id,
             'sort_order' => 1,
         ]);
     }
@@ -58,7 +58,7 @@ final class XssSanitizationTest extends TestCase
         $malicious = '<script>alert("xss")</script>';
 
         $output = Str::markdown($malicious, [
-            'html_input'         => 'escape',
+            'html_input' => 'escape',
             'allow_unsafe_links' => false,
         ]);
 
@@ -73,7 +73,7 @@ final class XssSanitizationTest extends TestCase
         $malicious = '<img src=x onerror=alert("xss")>';
 
         $output = Str::markdown($malicious, [
-            'html_input'         => 'escape',
+            'html_input' => 'escape',
             'allow_unsafe_links' => false,
         ]);
 
@@ -86,7 +86,7 @@ final class XssSanitizationTest extends TestCase
         $malicious = '[Click me](javascript:alert("xss"))';
 
         $output = Str::markdown($malicious, [
-            'html_input'         => 'escape',
+            'html_input' => 'escape',
             'allow_unsafe_links' => false,
         ]);
 
@@ -98,7 +98,7 @@ final class XssSanitizationTest extends TestCase
         $markdown = "# Hello World\n\nThis is **bold** and *italic*.";
 
         $output = Str::markdown($markdown, [
-            'html_input'         => 'escape',
+            'html_input' => 'escape',
             'allow_unsafe_links' => false,
         ]);
 
@@ -113,12 +113,12 @@ final class XssSanitizationTest extends TestCase
 
     public function test_task_show_escapes_script_in_description(): void
     {
-        $user   = User::factory()->create(['total_xp' => 9999]);
+        $user = User::factory()->create(['total_xp' => 9999]);
         $module = $this->createUnlockedModule();
-        $task   = Task::factory()->create([
-            'module_id'   => $module->id,
+        $task = Task::factory()->create([
+            'module_id' => $module->id,
             'description' => '<script>alert("xss")</script>',
-            'days_limit'  => null,
+            'days_limit' => null,
         ]);
 
         $this->actingAs($user);
@@ -134,10 +134,10 @@ final class XssSanitizationTest extends TestCase
 
     public function test_material_show_escapes_script_in_description(): void
     {
-        $user   = User::factory()->create(['total_xp' => 9999]);
+        $user = User::factory()->create(['total_xp' => 9999]);
         $module = $this->createUnlockedModule();
         $material = Material::factory()->create([
-            'module_id'   => $module->id,
+            'module_id' => $module->id,
             'description' => '<script>alert("xss")</script>',
         ]);
 
@@ -155,11 +155,23 @@ final class XssSanitizationTest extends TestCase
     public function test_str_markdown_handles_empty_description(): void
     {
         $output = Str::markdown('', [
-            'html_input'         => 'escape',
+            'html_input' => 'escape',
             'allow_unsafe_links' => false,
         ]);
 
         // Should produce empty or whitespace-only output, no errors
         $this->assertNotNull($output);
+    }
+
+    public function test_material_modal_preview_escapes_script_in_description(): void
+    {
+        $admin = User::factory()->create(['role' => 'admin']);
+
+        Livewire::actingAs($admin)
+            ->test(\App\Livewire\Admin\CourseManager::class)
+            ->set('materialType', 'article')
+            ->set('materialDescription', '<script>alert("xss")</script>')
+            ->assertDontSeeHtml('<script>alert("xss")</script>')
+            ->assertSeeHtml('&lt;script&gt;');
     }
 }

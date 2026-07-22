@@ -44,16 +44,37 @@ final class SyncUserLevel implements ShouldQueue
 
     /**
      * Dispatch event to browser (via database).
+     * Guards against duplicate celebrations for the same level.
      */
     private function dispatch(int $userId, string $levelName, int $targetXp): void
     {
-        \App\Models\PendingCelebration::create([
-            'user_id' => $userId,
-            'type'    => 'level-up',
-            'payload' => [
-                'levelName' => $levelName,
-                'targetXp'  => $targetXp,
-            ],
-        ]);
+        // Primary: exists() check handles the normal (non-concurrent) duplicate case.
+        $alreadyPending = \App\Models\PendingCelebration::query()
+            ->where('user_id', $userId)
+            ->where('type', 'level-up')
+            ->whereJsonContains('payload->levelName', $levelName)
+            ->exists();
+
+        if ($alreadyPending) {
+            return;
+        }
+
+        // Secondary: try/catch handles the concurrent TOCTOU edge case where two
+        // queue workers both pass the exists() check simultaneously.
+        try {
+            \App\Models\PendingCelebration::create([
+                'user_id' => $userId,
+                'type'    => 'level-up',
+                'payload' => [
+                    'levelName' => $levelName,
+                    'targetXp'  => $targetXp,
+                ],
+            ]);
+        } catch (\Illuminate\Database\QueryException $e) {
+            // Duplicate insert from concurrent worker — safe to ignore.
+            if ($e->getCode() !== '23000') {
+                throw $e;
+            }
+        }
     }
 }

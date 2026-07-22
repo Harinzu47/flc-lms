@@ -82,6 +82,7 @@ class BadgeManager extends Component
         });
 
         $this->closeModal();
+        cache()->forget('badges.all_ordered');
         $this->dispatch('notify', message: $this->selectedBadgeId ? 'Badge updated successfully.' : 'Badge created successfully.');
     }
 
@@ -95,6 +96,7 @@ class BadgeManager extends Component
             $badge->delete();
         });
 
+        cache()->forget('badges.all_ordered');
         $this->dispatch('notify', message: 'Badge deleted successfully.');
     }
 

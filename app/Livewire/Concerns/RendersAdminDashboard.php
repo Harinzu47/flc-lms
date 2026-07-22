@@ -26,7 +26,9 @@ trait RendersAdminDashboard
             ? User::getCachedLeaderboard(10)
             : collect();
 
-        $pendingSubmissions = Submission::whereNull('score')->get();
+        $pendingSubmissions = Submission::whereNull('score')
+            ->with(['user', 'task'])
+            ->get();
 
         return view('livewire.admin.dashboard-analytics', compact(
             'totalStudents',
