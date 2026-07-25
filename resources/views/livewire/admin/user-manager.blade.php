@@ -13,7 +13,6 @@
         toastVisible: false,
         toastMessage: '',
         activeTab: 'profile', // profile, xp, badges
-        sidebarOpen: false,
         showToast(msg) {
             this.toastMessage = msg;
             this.toastVisible = true;
@@ -51,7 +50,7 @@
         {{-- Top App Bar --}}
         <header class="sticky top-0 z-40 flex items-center justify-between px-8 py-3 w-full border-b border-slate-100 bg-white/80 backdrop-blur-md shadow-sm">
             <div class="flex items-center gap-4">
-                <button @click="sidebarOpen = !sidebarOpen" class="p-2 -ml-2 text-on-surface-variant hover:text-primary rounded-lg md:hidden focus:outline-none" aria-label="Toggle admin sidebar">
+                <button @click="$dispatch('toggle-sidebar')" class="p-2 -ml-2 text-on-surface-variant hover:text-primary rounded-lg md:hidden focus:outline-none" aria-label="Toggle admin sidebar">
                     <span class="material-symbols-outlined block text-2xl">menu</span>
                 </button>
                 <h1 class="text-xl font-bold text-blue-800 font-headline tracking-tight">FLC UMJ</h1>

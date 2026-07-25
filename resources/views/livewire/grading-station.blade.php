@@ -1,4 +1,4 @@
-<div x-data="{ sidebarOpen: false }" class="bg-background text-on-surface font-body min-h-screen flex">
+<div class="bg-background text-on-surface font-body min-h-screen flex">
 
     {{-- ── PANEL 1: Admin Sidebar ───────────────────────────────────────────── --}}
     @include('livewire.partials.admin.sidebar', ['activePage' => 'grading'])
@@ -10,7 +10,7 @@
         <header
             class="sticky top-0 z-40 flex items-center justify-between px-8 py-3 w-full border-b border-slate-100 bg-white/80 backdrop-blur-md shadow-sm">
             <div class="flex items-center gap-4">
-                <button @click="sidebarOpen = !sidebarOpen"
+                <button @click="$dispatch('toggle-sidebar')"
                     class="p-2 -ml-2 text-on-surface-variant hover:text-primary rounded-lg md:hidden focus:outline-none"
                     aria-label="Toggle admin sidebar">
                     <span class="material-symbols-outlined block text-2xl">menu</span>
