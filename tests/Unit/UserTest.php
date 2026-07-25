@@ -45,7 +45,7 @@ final class UserTest extends TestCase
         // Arrange
         $level1 = Level::factory()->create(['min_xp' => 0]);
         $level2 = Level::factory()->create(['min_xp' => 200]);
-        
+
         $user = User::factory()->create(['total_xp' => 250]);
 
         // Act & Assert

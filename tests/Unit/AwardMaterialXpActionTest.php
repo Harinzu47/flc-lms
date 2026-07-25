@@ -8,6 +8,7 @@ use App\Actions\Gamification\AwardMaterialXpAction;
 use App\Events\XpEarned;
 use App\Models\Material;
 use App\Models\User;
+use App\Models\XpLog;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Event;
 use Tests\TestCase;
@@ -21,7 +22,7 @@ final class AwardMaterialXpActionTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        $this->action = new AwardMaterialXpAction();
+        $this->action = new AwardMaterialXpAction;
     }
 
     public function test_awards_xp_and_dispatches_event_on_first_read(): void
@@ -35,7 +36,7 @@ final class AwardMaterialXpActionTest extends TestCase
 
         $this->assertTrue($result);
         $this->assertEquals(AwardMaterialXpAction::XP_AMOUNT, $user->fresh()->total_xp);
-        
+
         $this->assertDatabaseHas('xp_logs', [
             'user_id' => $user->id,
             'action' => AwardMaterialXpAction::ACTION,
@@ -56,7 +57,7 @@ final class AwardMaterialXpActionTest extends TestCase
         $material = Material::factory()->create();
 
         // Simulate first read
-        \App\Models\XpLog::create([
+        XpLog::create([
             'user_id' => $user->id,
             'action' => AwardMaterialXpAction::ACTION,
             'xp_earned' => AwardMaterialXpAction::XP_AMOUNT,
@@ -67,7 +68,7 @@ final class AwardMaterialXpActionTest extends TestCase
 
         $this->assertFalse($result);
         $this->assertEquals(10, $user->fresh()->total_xp); // Unchanged
-        
+
         // Assert no new event was dispatched
         Event::assertNotDispatched(XpEarned::class);
     }

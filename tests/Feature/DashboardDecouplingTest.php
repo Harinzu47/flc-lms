@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Tests\Feature;
 
+use App\Livewire\GamifiedDashboard;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Livewire\Livewire;
@@ -20,14 +21,14 @@ class DashboardDecouplingTest extends TestCase
         $this->actingAs($admin);
 
         // Access the dashboard and verify we see admin analytics view parameters
-        Livewire::test(\App\Livewire\GamifiedDashboard::class)
+        Livewire::test(GamifiedDashboard::class)
             ->assertStatus(200)
             ->assertViewHas('totalStudents')
             ->assertViewHas('pendingGradingCount')
             ->assertViewHas('flaggedCount');
-            
+
         // Test tab switching
-        Livewire::test(\App\Livewire\GamifiedDashboard::class)
+        Livewire::test(GamifiedDashboard::class)
             ->assertSet('activeTab', 'overview')
             ->set('activeTab', 'leaderboard')
             ->assertSet('activeTab', 'leaderboard')
@@ -41,7 +42,7 @@ class DashboardDecouplingTest extends TestCase
         $this->actingAs($student);
 
         // Access the dashboard and verify we see student dashboard parameters
-        Livewire::test(\App\Livewire\GamifiedDashboard::class)
+        Livewire::test(GamifiedDashboard::class)
             ->assertStatus(200)
             ->assertViewHas('user')
             ->assertViewHas('badges')

@@ -16,7 +16,6 @@ use Illuminate\View\View;
 use Livewire\Attributes\Layout;
 use Livewire\Attributes\Title;
 use Livewire\Attributes\Url;
-use Livewire\Attributes\Validate;
 use Livewire\Component;
 use Livewire\WithPagination;
 
@@ -28,6 +27,7 @@ class UserManager extends Component
 
     // ── UI & Search States ───────────────────────────────────────────────────
     public bool $isModalOpen = false;
+
     public ?int $userId = null;
 
     #[Url(history: true)]
@@ -35,13 +35,18 @@ class UserManager extends Component
 
     // ── Standard CRUD Form Fields ────────────────────────────────────────────
     public string $name = '';
+
     public string $email = '';
+
     public string $password = ''; // Diperlukan untuk Create, opsional untuk Edit
+
     public string $role = 'member';
 
     // ── Gamification Adjustment Fields ───────────────────────────────────────
     public int $xpDelta = 0;
+
     public string $xpReason = '';
+
     public array $selectedBadges = []; // Menyimpan array ID lencana terpilih
 
     // ── Lifecycle ─────────────────────────────────────────────────────────────
@@ -58,8 +63,8 @@ class UserManager extends Component
             ->where('id', '!=', auth()->id()) // Proteksi diri: Jangan tampilkan admin yang sedang login
             ->when($this->search !== '', function (Builder $query) {
                 $query->where(function (Builder $subQuery) {
-                    $subQuery->where('name', 'like', '%' . $this->search . '%')
-                             ->orWhere('email', 'like', '%' . $this->search . '%');
+                    $subQuery->where('name', 'like', '%'.$this->search.'%')
+                        ->orWhere('email', 'like', '%'.$this->search.'%');
                 });
             })
             ->latest()
@@ -82,26 +87,26 @@ class UserManager extends Component
     public function edit(User $user): void
     {
         $this->resetForm();
-        $this->userId         = $user->id;
-        $this->name           = $user->name;
-        $this->email          = $user->email;
-        $this->role           = $user->role;
-        $this->selectedBadges = $user->badges()->pluck('badge_id')->map(fn($id) => (string)$id)->toArray();
-        $this->isModalOpen    = true;
+        $this->userId = $user->id;
+        $this->name = $user->name;
+        $this->email = $user->email;
+        $this->role = $user->role;
+        $this->selectedBadges = $user->badges()->pluck('badge_id')->map(fn ($id) => (string) $id)->toArray();
+        $this->isModalOpen = true;
     }
 
     public function save(): void
     {
         // Jalankan aturan validasi defensif dinamis berbasis kondisi edit/create
         $this->validate([
-            'name'  => ['required', 'string', 'max:255'],
+            'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'email', 'max:255', Rule::unique('users', 'email')->ignore($this->userId)],
-            'role'  => ['required', 'in:admin,member'],
+            'role' => ['required', 'in:admin,member'],
             'password' => [$this->userId ? 'nullable' : 'required', 'string', 'min:8'],
         ]);
 
         $data = [
-            'name'  => $this->name,
+            'name' => $this->name,
             'email' => $this->email,
         ];
 
@@ -116,7 +121,7 @@ class UserManager extends Component
             $user->save();
             $message = 'User account updated successfully.';
         } else {
-            $user = new User();
+            $user = new User;
             $user->fill($data);
             $user->role = $this->role;
             $user->total_xp = 0;
@@ -129,14 +134,14 @@ class UserManager extends Component
     }
 
     // ── Advanced Gamification Management Actions ─────────────────────────────
-    
+
     /**
      * Menyesuaikan XP User secara transaksional dan memicu Event Asinkron.
      */
     public function adjustXp(): void
     {
         $this->validate([
-            'xpDelta'  => ['required', 'integer', 'not_in:0'],
+            'xpDelta' => ['required', 'integer', 'not_in:0'],
             'xpReason' => ['required', 'string', 'min:5', 'max:255'],
         ]);
 
@@ -146,9 +151,9 @@ class UserManager extends Component
         DB::transaction(function () use ($user) {
             // 1. Catat transaksi audit ke tabel xp_logs
             XpLog::create([
-                'user_id'      => $user->id,
-                'action'       => 'Manual Correction: ' . $this->xpReason,
-                'xp_earned'    => $this->xpDelta,
+                'user_id' => $user->id,
+                'action' => 'Manual Correction: '.$this->xpReason,
+                'xp_earned' => $this->xpDelta,
                 'reference_id' => auth()->id(), // Mencatat ID Admin yang melakukan manipulasi
             ]);
 
@@ -178,12 +183,12 @@ class UserManager extends Component
 
         // Ambil data timestamp unlocked_at lama milik user agar tidak terhapus
         $existingBadges = $user->badges()->pluck('unlocked_at', 'badge_id')->toArray();
-        
+
         $syncData = [];
         foreach ($this->selectedBadges as $badgeId) {
             $id = (int) $badgeId;
             $syncData[$id] = [
-                'unlocked_at' => $existingBadges[$id] ?? now() // Gunakan waktu lama, atau set sekarang jika baru
+                'unlocked_at' => $existingBadges[$id] ?? now(), // Gunakan waktu lama, atau set sekarang jika baru
             ];
         }
 
@@ -209,13 +214,13 @@ class UserManager extends Component
 
     private function resetForm(): void
     {
-        $this->userId         = null;
-        $this->name           = '';
-        $this->email          = '';
-        $this->password       = '';
-        $this->role           = 'member';
-        $this->xpDelta        = 0;
-        $this->xpReason       = '';
+        $this->userId = null;
+        $this->name = '';
+        $this->email = '';
+        $this->password = '';
+        $this->role = 'member';
+        $this->xpDelta = 0;
+        $this->xpReason = '';
         $this->selectedBadges = [];
         $this->resetValidation();
     }

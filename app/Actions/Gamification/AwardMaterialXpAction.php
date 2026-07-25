@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Actions\Gamification;
 
+use App\Events\XpEarned;
 use App\Models\Material;
 use App\Models\User;
 use App\Models\XpLog;
@@ -28,13 +29,14 @@ use Illuminate\Support\Facades\DB;
 final class AwardMaterialXpAction
 {
     public const XP_AMOUNT = 10;
-    public const ACTION    = 'material_read';
+
+    public const ACTION = 'material_read';
 
     /**
      * Execute the action.
      *
-     * @return bool  true  → XP was awarded (first time reading this material)
-     *               false → XP was NOT awarded (already claimed, idempotent guard)
+     * @return bool true  → XP was awarded (first time reading this material)
+     *              false → XP was NOT awarded (already claimed, idempotent guard)
      */
     public function execute(User $user, Material $material): bool
     {
@@ -67,16 +69,16 @@ final class AwardMaterialXpAction
 
                 if ($lockedUser !== null) {
                     $alreadyClaimed = XpLog::query()
-                        ->where('user_id',      $lockedUser->id)
-                        ->where('action',       self::ACTION)
+                        ->where('user_id', $lockedUser->id)
+                        ->where('action', self::ACTION)
                         ->where('reference_id', $material->id)
                         ->exists();
 
-                    if (!$alreadyClaimed) {
+                    if (! $alreadyClaimed) {
                         XpLog::create([
-                            'user_id'      => $lockedUser->id,
-                            'action'       => self::ACTION,
-                            'xp_earned'    => self::XP_AMOUNT,
+                            'user_id' => $lockedUser->id,
+                            'action' => self::ACTION,
+                            'xp_earned' => self::XP_AMOUNT,
                             'reference_id' => $material->id,
                         ]);
 
@@ -100,7 +102,8 @@ final class AwardMaterialXpAction
             $user->refresh();
 
             // Dispatch decoupled event for level/badge sync
-            \App\Events\XpEarned::dispatch($user, self::XP_AMOUNT);
+            XpEarned::dispatch($user, self::XP_AMOUNT);
+
             return true;
         }
 

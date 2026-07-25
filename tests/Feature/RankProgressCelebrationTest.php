@@ -23,7 +23,7 @@ final class RankProgressCelebrationTest extends TestCase
 
         PendingCelebration::create([
             'user_id' => $user->id,
-            'type'    => 'rank_progress',
+            'type' => 'rank_progress',
             'payload' => ['xp_gap' => 15, 'target_rank' => 4],
         ]);
 
@@ -49,13 +49,13 @@ final class RankProgressCelebrationTest extends TestCase
 
         PendingCelebration::create([
             'user_id' => $user->id,
-            'type'    => 'rank_progress',
+            'type' => 'rank_progress',
             'payload' => ['xp_gap' => 15, 'target_rank' => 4],
         ]);
 
         $this->assertDatabaseHas('pending_celebrations', [
             'user_id' => $user->id,
-            'type'    => 'rank_progress',
+            'type' => 'rank_progress',
         ]);
 
         Livewire::actingAs($user)->test(CelebrationHub::class);
@@ -63,7 +63,7 @@ final class RankProgressCelebrationTest extends TestCase
         // After CelebrationHub::mount() the record should be consumed
         $this->assertDatabaseMissing('pending_celebrations', [
             'user_id' => $user->id,
-            'type'    => 'rank_progress',
+            'type' => 'rank_progress',
         ]);
     }
 
@@ -72,17 +72,17 @@ final class RankProgressCelebrationTest extends TestCase
     public function test_no_user_identity_appears_in_celebration_hub_output(): void
     {
         $otherUser = User::factory()->create([
-            'role'     => 'member',
+            'role' => 'member',
             'total_xp' => 200,
-            'name'     => 'TopSecretStudent',
-            'email'    => 'topsecret@example.com',
+            'name' => 'TopSecretStudent',
+            'email' => 'topsecret@example.com',
         ]);
 
         $user = User::factory()->create(['role' => 'member', 'total_xp' => 185]);
 
         PendingCelebration::create([
             'user_id' => $user->id,
-            'type'    => 'rank_progress',
+            'type' => 'rank_progress',
             'payload' => ['xp_gap' => 15, 'target_rank' => 1],
         ]);
 
@@ -102,7 +102,7 @@ final class RankProgressCelebrationTest extends TestCase
 
         PendingCelebration::create([
             'user_id' => $user->id,
-            'type'    => 'rank_progress',
+            'type' => 'rank_progress',
             'payload' => ['xp_gap' => 25, 'target_rank' => 3],
         ]);
 

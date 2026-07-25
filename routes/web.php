@@ -1,15 +1,13 @@
 <?php
 
 use App\Http\Controllers\ProfileController;
-use App\Livewire\Admin\CourseManager;
-use App\Livewire\Admin\UserManager;
+use App\Http\Controllers\SubmissionDownloadController;
+use App\Livewire\CourseShow;
 use App\Livewire\GamifiedDashboard;
-use App\Livewire\GradingStation;
 use App\Livewire\HallOfFame;
 use App\Livewire\Library;
 use App\Livewire\MaterialShow;
 use App\Livewire\TaskShow;
-use App\Livewire\CourseShow;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -45,7 +43,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/leaderboard', HallOfFame::class)->name('leaderboard');
 
     // ── Secure Submission Downloads ────────────────────────────────────────
-    Route::get('/submissions/{submission}/download', [\App\Http\Controllers\SubmissionDownloadController::class, 'download'])
+    Route::get('/submissions/{submission}/download', [SubmissionDownloadController::class, 'download'])
         ->name('submissions.download');
 });
 

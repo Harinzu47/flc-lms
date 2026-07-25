@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Livewire;
 
 use App\Models\PendingCelebration;
-use Livewire\Attributes\Layout;
+use Illuminate\Contracts\View\View;
 use Livewire\Component;
 
 /**
@@ -36,7 +36,7 @@ final class CelebrationHub extends Component
 
         foreach ($pending as $item) {
             $this->celebrations[] = [
-                'type'    => $item->type,
+                'type' => $item->type,
                 'payload' => $item->payload,
             ];
 
@@ -44,7 +44,7 @@ final class CelebrationHub extends Component
         }
     }
 
-    public function render(): \Illuminate\Contracts\View\View
+    public function render(): View
     {
         return view('components.celebration-hub');
     }

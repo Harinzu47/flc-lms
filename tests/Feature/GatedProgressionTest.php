@@ -6,10 +6,8 @@ namespace Tests\Feature;
 
 use App\Models\Course;
 use App\Models\Level;
-use App\Models\Module;
 use App\Models\Material;
-use App\Models\Task;
-use App\Models\Submission;
+use App\Models\Module;
 use App\Models\User;
 use App\Models\XpLog;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -22,7 +20,7 @@ class GatedProgressionTest extends TestCase
     public function test_courses_without_prerequisites_are_always_unlocked(): void
     {
         $user = User::factory()->create(['total_xp' => 100]);
-        
+
         $course = Course::create([
             'title' => 'Basic English',
             'difficulty_level' => 'beginner',
@@ -42,7 +40,7 @@ class GatedProgressionTest extends TestCase
         ]);
 
         $user = User::factory()->create(['total_xp' => 499]);
-        
+
         $course = Course::create([
             'title' => 'Intermediate English',
             'difficulty_level' => 'intermediate',
@@ -62,7 +60,7 @@ class GatedProgressionTest extends TestCase
         ]);
 
         $user = User::factory()->create(['total_xp' => 500]);
-        
+
         $course = Course::create([
             'title' => 'Intermediate English',
             'difficulty_level' => 'intermediate',

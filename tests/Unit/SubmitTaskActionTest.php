@@ -23,7 +23,7 @@ final class SubmitTaskActionTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        $this->action = new SubmitTaskAction();
+        $this->action = new SubmitTaskAction;
         Storage::fake('local');
     }
 
@@ -50,7 +50,7 @@ final class SubmitTaskActionTest extends TestCase
     {
         $user = User::factory()->create();
         $task = Task::factory()->create();
-        
+
         // Existing clean submission
         Submission::factory()->create([
             'user_id' => $user->id,
@@ -68,7 +68,7 @@ final class SubmitTaskActionTest extends TestCase
     {
         $user = User::factory()->create();
         $task = Task::factory()->create();
-        
+
         // Old file
         $oldFileUrl = 'submissions/old.pdf';
         Storage::disk('local')->put($oldFileUrl, 'old content');

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Livewire\Admin;
 
 use App\Models\Badge;
+use Illuminate\Support\Facades\DB;
 use Illuminate\View\View;
 use Livewire\Attributes\Layout;
 use Livewire\Attributes\Title;
@@ -20,6 +21,7 @@ class BadgeManager extends Component
 
     // ── UI & Modal States ────────────────────────────────────────────────────
     public bool $isModalOpen = false;
+
     public ?int $selectedBadgeId = null;
 
     // ── Form fields with validation rules ────────────────────────────────────
@@ -42,6 +44,7 @@ class BadgeManager extends Component
     public function render(): View
     {
         $badges = Badge::orderBy('created_at', 'desc')->paginate(10);
+
         return view('livewire.admin.badge-manager', compact('badges'));
     }
 
@@ -56,11 +59,11 @@ class BadgeManager extends Component
     {
         $this->resetForm();
         $this->selectedBadgeId = $badge->id;
-        $this->name            = $badge->name;
-        $this->description     = $badge->description;
-        $this->icon            = $badge->icon;
-        $this->criteriaType    = $badge->criteria_type;
-        $this->targetValue     = (int) $badge->target_value;
+        $this->name = $badge->name;
+        $this->description = $badge->description;
+        $this->icon = $badge->icon;
+        $this->criteriaType = $badge->criteria_type;
+        $this->targetValue = (int) $badge->target_value;
         $this->openModal();
     }
 
@@ -68,15 +71,15 @@ class BadgeManager extends Component
     {
         $validated = $this->validate();
 
-        \Illuminate\Support\Facades\DB::transaction(function () use ($validated): void {
+        DB::transaction(function () use ($validated): void {
             Badge::updateOrCreate(
                 ['id' => $this->selectedBadgeId],
                 [
-                    'name'          => $validated['name'],
-                    'description'   => $validated['description'],
-                    'icon'          => $validated['icon'],
+                    'name' => $validated['name'],
+                    'description' => $validated['description'],
+                    'icon' => $validated['icon'],
                     'criteria_type' => $validated['criteriaType'],
-                    'target_value'  => $validated['targetValue'],
+                    'target_value' => $validated['targetValue'],
                 ]
             );
         });
@@ -90,7 +93,7 @@ class BadgeManager extends Component
     {
         $badge = Badge::findOrFail($id);
 
-        \Illuminate\Support\Facades\DB::transaction(function () use ($badge): void {
+        DB::transaction(function () use ($badge): void {
             // Detach users first to satisfy cascade safety
             $badge->users()->detach();
             $badge->delete();
@@ -116,11 +119,11 @@ class BadgeManager extends Component
     private function resetForm(): void
     {
         $this->selectedBadgeId = null;
-        $this->name            = '';
-        $this->description     = '';
-        $this->icon            = '🏅';
-        $this->criteriaType    = 'total_xp';
-        $this->targetValue     = 1;
+        $this->name = '';
+        $this->description = '';
+        $this->icon = '🏅';
+        $this->criteriaType = 'total_xp';
+        $this->targetValue = 1;
         $this->resetValidation();
     }
 }

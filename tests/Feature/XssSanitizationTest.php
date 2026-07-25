@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Tests\Feature;
 
+use App\Livewire\Admin\CourseManager;
 use App\Livewire\MaterialShow;
 use App\Livewire\TaskShow;
 use App\Models\Course;
@@ -168,7 +169,7 @@ final class XssSanitizationTest extends TestCase
         $admin = User::factory()->create(['role' => 'admin']);
 
         Livewire::actingAs($admin)
-            ->test(\App\Livewire\Admin\CourseManager::class)
+            ->test(CourseManager::class)
             ->set('materialType', 'article')
             ->set('materialDescription', '<script>alert("xss")</script>')
             ->assertDontSeeHtml('<script>alert("xss")</script>')

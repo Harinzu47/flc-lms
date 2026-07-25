@@ -20,7 +20,7 @@ final class SyncUserLevelTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        $this->listener = new SyncUserLevel();
+        $this->listener = new SyncUserLevel;
     }
 
     public function test_syncs_user_level_up_when_xp_threshold_is_met(): void

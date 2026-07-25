@@ -7,8 +7,8 @@ namespace Database\Seeders;
 use App\Models\Badge;
 use App\Models\Course;
 use App\Models\Level;
-use App\Models\Module;
 use App\Models\Material;
+use App\Models\Module;
 use App\Models\Submission;
 use App\Models\Task;
 use App\Models\User;
@@ -89,8 +89,8 @@ class DatabaseSeeder extends Seeder
             ]
         );
 
-        $badgeReader = \App\Models\Badge::where('name', 'First Reader')->first();
-        $badgeTask = \App\Models\Badge::where('name', 'Task Master')->first();
+        $badgeReader = Badge::where('name', 'First Reader')->first();
+        $badgeTask = Badge::where('name', 'Task Master')->first();
         if ($badgeReader && $badgeTask) {
             $star->badges()->syncWithoutDetaching([
                 $badgeReader->id => ['unlocked_at' => now()],
@@ -118,7 +118,7 @@ class DatabaseSeeder extends Seeder
         $allStudents = $studentsPool->prepend($star);
 
         // ── Step 4: Courses, Modules, Materials, and Tasks ─────────────────────
-        
+
         // Course 1: Beginner
         $course1 = Course::updateOrCreate(
             ['title' => 'Basic English Grammar'],
@@ -247,7 +247,7 @@ class DatabaseSeeder extends Seeder
         );
 
         // ── Step 5: Seeding Submissions & XP Logs (For Demo) ───────────────────
-        
+
         // Let's seed a completed/graded task for Mahasiswa Berprestasi on task1_1_2
         $submission = Submission::updateOrCreate(
             [

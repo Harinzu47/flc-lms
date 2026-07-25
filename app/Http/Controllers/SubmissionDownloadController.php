@@ -24,7 +24,7 @@ final class SubmissionDownloadController extends Controller
             abort(400, 'Invalid file path.');
         }
 
-        if (!$submission->file_url || !Storage::disk('local')->exists($submission->file_url)) {
+        if (! $submission->file_url || ! Storage::disk('local')->exists($submission->file_url)) {
             abort(404, 'File tidak ditemukan.');
         }
 

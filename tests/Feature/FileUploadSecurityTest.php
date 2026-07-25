@@ -32,7 +32,7 @@ final class FileUploadSecurityTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        $this->action = new SubmitTaskAction();
+        $this->action = new SubmitTaskAction;
         Storage::fake('local');
     }
 
@@ -42,9 +42,9 @@ final class FileUploadSecurityTest extends TestCase
     private function createUnlockedTask(string $type = 'file_upload'): Task
     {
         $course = Course::factory()->create([
-            'min_level_required'     => null,
+            'min_level_required' => null,
             'prerequisite_course_id' => null,
-            'is_published'           => true,
+            'is_published' => true,
         ]);
 
         $module = Module::factory()->create([
@@ -52,8 +52,8 @@ final class FileUploadSecurityTest extends TestCase
         ]);
 
         return Task::factory()->create([
-            'module_id'  => $module->id,
-            'type'       => $type,
+            'module_id' => $module->id,
+            'type' => $type,
             'days_limit' => null,
         ]);
     }
@@ -141,7 +141,7 @@ final class FileUploadSecurityTest extends TestCase
         $this->assertDatabaseHas('submissions', [
             'user_id' => $user->id,
             'task_id' => $task->id,
-            'status'  => 'pending',
+            'status' => 'pending',
         ]);
     }
 }

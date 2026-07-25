@@ -22,13 +22,13 @@ final class EvaluateBadgeUnlocksTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        $this->listener = new EvaluateBadgeUnlocks();
+        $this->listener = new EvaluateBadgeUnlocks;
     }
 
     public function test_unlocks_total_xp_badge_when_threshold_is_met(): void
     {
         $user = User::factory()->create(['total_xp' => 500]);
-        
+
         $badge = Badge::factory()->create([
             'criteria_type' => 'total_xp',
             'target_value' => 500,

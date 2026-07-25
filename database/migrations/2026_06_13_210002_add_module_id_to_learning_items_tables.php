@@ -13,10 +13,10 @@ return new class extends Migration
     {
         Schema::table('materials', function (Blueprint $table) {
             $table->foreignId('module_id')
-                  ->nullable()
-                  ->after('id')
-                  ->constrained('modules')
-                  ->cascadeOnDelete();
+                ->nullable()
+                ->after('id')
+                ->constrained('modules')
+                ->cascadeOnDelete();
 
             // Drop old gating columns as they are now course-level gates
             if (Schema::hasColumn('materials', 'min_level_required')) {
@@ -31,10 +31,10 @@ return new class extends Migration
 
         Schema::table('tasks', function (Blueprint $table) {
             $table->foreignId('module_id')
-                  ->nullable()
-                  ->after('id')
-                  ->constrained('modules')
-                  ->cascadeOnDelete();
+                ->nullable()
+                ->after('id')
+                ->constrained('modules')
+                ->cascadeOnDelete();
         });
     }
 
@@ -51,14 +51,14 @@ return new class extends Migration
 
             // Restore the old gating columns
             $table->enum('difficulty_level', ['beginner', 'intermediate', 'advanced'])
-                  ->default('beginner')
-                  ->after('type');
+                ->default('beginner')
+                ->after('type');
 
             $table->foreignId('min_level_required')
-                  ->nullable()
-                  ->after('difficulty_level')
-                  ->constrained('levels')
-                  ->nullOnDelete();
+                ->nullable()
+                ->after('difficulty_level')
+                ->constrained('levels')
+                ->nullOnDelete();
         });
 
         Schema::table('tasks', function (Blueprint $table) {

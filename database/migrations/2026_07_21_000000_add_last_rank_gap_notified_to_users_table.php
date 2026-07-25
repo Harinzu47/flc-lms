@@ -17,8 +17,8 @@ return new class extends Migration
         Schema::table('users', function (Blueprint $table) {
             if (! Schema::hasColumn('users', 'last_rank_gap_notified')) {
                 $table->unsignedInteger('last_rank_gap_notified')
-                      ->nullable()
-                      ->after('total_xp');
+                    ->nullable()
+                    ->after('total_xp');
             }
         });
     }

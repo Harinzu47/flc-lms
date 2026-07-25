@@ -51,9 +51,7 @@ class Module extends Model
     /**
      * Determine if this module is locked for the user (depends on prior modules being completed).
      *
-     * @param User $user
-     * @param Collection<int>|null $completedModuleIds
-     * @return bool
+     * @param  Collection<int>|null  $completedModuleIds
      */
     public function isLockedForUser(User $user, ?Collection $completedModuleIds = null): bool
     {
@@ -66,11 +64,11 @@ class Module extends Model
 
         foreach ($priorModules as $pm) {
             if ($completedModuleIds !== null) {
-                if (!$completedModuleIds->contains($pm->id)) {
+                if (! $completedModuleIds->contains($pm->id)) {
                     return true;
                 }
             } else {
-                if (!$pm->isCompletedByUser($user)) {
+                if (! $pm->isCompletedByUser($user)) {
                     return true;
                 }
             }
@@ -82,10 +80,8 @@ class Module extends Model
     /**
      * Determine if the user has completed all materials and tasks in this module.
      *
-     * @param User $user
-     * @param Collection<int>|null $readMaterialIds
-     * @param Collection<int>|null $gradedTaskIds
-     * @return bool
+     * @param  Collection<int>|null  $readMaterialIds
+     * @param  Collection<int>|null  $gradedTaskIds
      */
     public function isCompletedByUser(User $user, ?Collection $readMaterialIds = null, ?Collection $gradedTaskIds = null): bool
     {
@@ -93,7 +89,7 @@ class Module extends Model
         $materials = $this->materials;
         foreach ($materials as $material) {
             if ($readMaterialIds !== null) {
-                if (!$readMaterialIds->contains($material->id)) {
+                if (! $readMaterialIds->contains($material->id)) {
                     return false;
                 }
             } else {
@@ -103,7 +99,7 @@ class Module extends Model
                     ->where('reference_id', $material->id)
                     ->exists();
 
-                if (!$hasRead) {
+                if (! $hasRead) {
                     return false;
                 }
             }
@@ -113,7 +109,7 @@ class Module extends Model
         $tasks = $this->tasks;
         foreach ($tasks as $task) {
             if ($gradedTaskIds !== null) {
-                if (!$gradedTaskIds->contains($task->id)) {
+                if (! $gradedTaskIds->contains($task->id)) {
                     return false;
                 }
             } else {
@@ -123,7 +119,7 @@ class Module extends Model
                     ->where('status', 'graded')
                     ->exists();
 
-                if (!$isGraded) {
+                if (! $isGraded) {
                     return false;
                 }
             }

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Models;
 
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -37,7 +38,7 @@ class Task extends Model
     {
         return [
             'days_limit' => 'integer',
-            'base_xp'  => 'integer',
+            'base_xp' => 'integer',
         ];
     }
 
@@ -80,12 +81,13 @@ class Task extends Model
     /**
      * Get the computed personal deadline for a given user.
      */
-    public function getPersonalDeadlineFor(User $user): ?\Carbon\Carbon
+    public function getPersonalDeadlineFor(User $user): ?Carbon
     {
         if ($this->days_limit === null) {
             return null;
         }
         $start = $this->userStarts->where('user_id', $user->id)->first();
+
         return $start ? $start->started_at->copy()->addDays($this->days_limit) : null;
     }
 
@@ -112,13 +114,13 @@ class Task extends Model
                 $submission = $task->submissions->where('user_id', $user->id)->first();
 
                 // Exclude tasks where a submission exists, UNLESS that submission is flagged (revisi)
-                if ($submission && !$submission->is_flagged) {
+                if ($submission && ! $submission->is_flagged) {
                     return false;
                 }
 
                 // Check if a start record exists and deadline is in the future
                 $deadline = $task->getPersonalDeadlineFor($user);
-                if (!$deadline) {
+                if (! $deadline) {
                     return false;
                 }
 
@@ -128,9 +130,10 @@ class Task extends Model
             ->map(function (Task $task) use ($user) {
                 // Dynamically assign legacy 'deadline' property as a Carbon instance for view compatibility
                 $task->deadline = $task->getPersonalDeadlineFor($user);
+
                 return $task;
             })
-            ->sortBy(function (Task $task) use ($user) {
+            ->sortBy(function (Task $task) {
                 return $task->deadline;
             })
             ->take($limit);

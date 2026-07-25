@@ -6,7 +6,9 @@ namespace App\Listeners;
 
 use App\Events\XpEarned;
 use App\Models\Level;
+use App\Models\PendingCelebration;
 use Illuminate\Contracts\Queue\ShouldQueue;
+use Illuminate\Database\QueryException;
 
 /**
  * Listener to automatically synchronize the user's current level in the database.
@@ -49,7 +51,7 @@ final class SyncUserLevel implements ShouldQueue
     private function dispatch(int $userId, string $levelName, int $targetXp): void
     {
         // Primary: exists() check handles the normal (non-concurrent) duplicate case.
-        $alreadyPending = \App\Models\PendingCelebration::query()
+        $alreadyPending = PendingCelebration::query()
             ->where('user_id', $userId)
             ->where('type', 'level-up')
             ->whereJsonContains('payload->levelName', $levelName)
@@ -62,15 +64,15 @@ final class SyncUserLevel implements ShouldQueue
         // Secondary: try/catch handles the concurrent TOCTOU edge case where two
         // queue workers both pass the exists() check simultaneously.
         try {
-            \App\Models\PendingCelebration::create([
+            PendingCelebration::create([
                 'user_id' => $userId,
-                'type'    => 'level-up',
+                'type' => 'level-up',
                 'payload' => [
                     'levelName' => $levelName,
-                    'targetXp'  => $targetXp,
+                    'targetXp' => $targetXp,
                 ],
             ]);
-        } catch (\Illuminate\Database\QueryException $e) {
+        } catch (QueryException $e) {
             // Duplicate insert from concurrent worker — safe to ignore.
             if ($e->getCode() !== '23000') {
                 throw $e;

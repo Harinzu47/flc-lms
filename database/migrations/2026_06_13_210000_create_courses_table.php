@@ -16,16 +16,16 @@ return new class extends Migration
             $table->string('title');
             $table->text('description')->nullable();
             $table->enum('difficulty_level', ['beginner', 'intermediate', 'advanced'])->default('beginner');
-            
+
             $table->foreignId('min_level_required')
-                  ->nullable()
-                  ->constrained('levels')
-                  ->nullOnDelete();
-                  
+                ->nullable()
+                ->constrained('levels')
+                ->nullOnDelete();
+
             $table->foreignId('prerequisite_course_id')
-                  ->nullable()
-                  ->constrained('courses')
-                  ->nullOnDelete();
+                ->nullable()
+                ->constrained('courses')
+                ->nullOnDelete();
 
             $table->boolean('is_published')->default(false);
             $table->timestamps();

@@ -22,11 +22,11 @@ final class XpEarned
     /**
      * Create a new event instance.
      *
-     * @param User $user     The user who earned the XP.
-     * @param int  $xpEarned The amount of XP earned in this transaction.
+     * @param  User  $user  The user who earned the XP.
+     * @param  int  $xpEarned  The amount of XP earned in this transaction.
      */
     public function __construct(
         public readonly User $user,
-        public readonly int  $xpEarned
+        public readonly int $xpEarned
     ) {}
 }

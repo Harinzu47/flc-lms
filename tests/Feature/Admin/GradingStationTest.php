@@ -5,11 +5,12 @@ declare(strict_types=1);
 namespace Tests\Feature\Admin;
 
 use App\Events\XpEarned;
+use App\Livewire\GradingStation;
 use App\Models\Course;
 use App\Models\Module;
+use App\Models\Submission;
 use App\Models\Task;
 use App\Models\User;
-use App\Models\Submission;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Event;
 use Livewire\Livewire;
@@ -43,7 +44,7 @@ final class GradingStationTest extends TestCase
 
         $admin = User::factory()->create(['role' => 'admin']);
         $student = User::factory()->create(['role' => 'member', 'total_xp' => 100]);
-        
+
         $course = Course::create(['title' => 'Test Course', 'difficulty_level' => 'beginner']);
         $module = Module::create(['course_id' => $course->id, 'title' => 'Module 1', 'sort_order' => 1]);
         $task = Task::create([
@@ -63,7 +64,7 @@ final class GradingStationTest extends TestCase
 
         // Score: 85 -> XP earned = round((85 / 100) * 200) = 170 XP
         Livewire::actingAs($admin)
-            ->test(\App\Livewire\GradingStation::class)
+            ->test(GradingStation::class)
             ->call('selectSubmission', $submission->id)
             ->set("scoreForm.{$submission->id}", '85')
             ->call('submitGrade')
@@ -71,7 +72,7 @@ final class GradingStationTest extends TestCase
             ->assertDispatched('notify');
 
         $this->assertEquals(270, $student->fresh()->total_xp);
-        
+
         $this->assertDatabaseHas('submissions', [
             'id' => $submission->id,
             'score' => 85,
@@ -94,7 +95,7 @@ final class GradingStationTest extends TestCase
     {
         $admin = User::factory()->create(['role' => 'admin']);
         $student = User::factory()->create(['role' => 'member']);
-        
+
         $course = Course::create(['title' => 'Test Course', 'difficulty_level' => 'beginner']);
         $module = Module::create(['course_id' => $course->id, 'title' => 'Module 1', 'sort_order' => 1]);
         $task = Task::create([
@@ -113,7 +114,7 @@ final class GradingStationTest extends TestCase
         ]);
 
         Livewire::actingAs($admin)
-            ->test(\App\Livewire\GradingStation::class)
+            ->test(GradingStation::class)
             ->call('selectSubmission', $submission->id)
             ->set('reviewComment', 'Harap perbaiki tata bahasa Anda.')
             ->call('toggleFlag', $submission->id)

@@ -13,14 +13,14 @@ return new class extends Migration
     {
         Schema::table('materials', function (Blueprint $table) {
             $table->enum('difficulty_level', ['beginner', 'intermediate', 'advanced'])
-                  ->default('beginner')
-                  ->after('type');
+                ->default('beginner')
+                ->after('type');
 
             $table->foreignId('min_level_required')
-                  ->nullable()
-                  ->after('difficulty_level')
-                  ->constrained('levels')
-                  ->nullOnDelete();
+                ->nullable()
+                ->after('difficulty_level')
+                ->constrained('levels')
+                ->nullOnDelete();
         });
     }
 

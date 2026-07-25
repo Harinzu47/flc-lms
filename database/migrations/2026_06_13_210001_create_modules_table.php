@@ -14,8 +14,8 @@ return new class extends Migration
         Schema::create('modules', function (Blueprint $table) {
             $table->id();
             $table->foreignId('course_id')
-                  ->constrained('courses')
-                  ->cascadeOnDelete();
+                ->constrained('courses')
+                ->cascadeOnDelete();
             $table->string('title');
             $table->text('description')->nullable();
             $table->unsignedInteger('sort_order')->default(0);
