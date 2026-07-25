@@ -20,7 +20,7 @@ final class NotifyRankProximityTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        $this->listener = new NotifyRankProximity();
+        $this->listener = new NotifyRankProximity;
     }
 
     // ─── 1. Gap ≤ threshold → celebration created ──────────────────────────
@@ -28,18 +28,18 @@ final class NotifyRankProximityTest extends TestCase
     public function test_creates_celebration_when_gap_is_within_threshold(): void
     {
         config([
-            'gamification.rank_proximity_threshold'      => 50,
-            'gamification.rank_proximity_min_gap_change'  => 10,
+            'gamification.rank_proximity_threshold' => 50,
+            'gamification.rank_proximity_min_gap_change' => 10,
         ]);
 
         $aboveUser = User::factory()->create(['role' => 'member', 'total_xp' => 120]);
-        $user      = User::factory()->create(['role' => 'member', 'total_xp' => 100]);
+        $user = User::factory()->create(['role' => 'member', 'total_xp' => 100]);
 
         $this->listener->handle(new XpEarned($user, 10));
 
         $this->assertDatabaseHas('pending_celebrations', [
             'user_id' => $user->id,
-            'type'    => 'rank_progress',
+            'type' => 'rank_progress',
         ]);
 
         $celebration = PendingCelebration::where('user_id', $user->id)
@@ -68,7 +68,7 @@ final class NotifyRankProximityTest extends TestCase
 
         $this->assertDatabaseMissing('pending_celebrations', [
             'user_id' => $user->id,
-            'type'    => 'rank_progress',
+            'type' => 'rank_progress',
         ]);
     }
 
@@ -85,7 +85,7 @@ final class NotifyRankProximityTest extends TestCase
 
         $this->assertDatabaseMissing('pending_celebrations', [
             'user_id' => $user->id,
-            'type'    => 'rank_progress',
+            'type' => 'rank_progress',
         ]);
     }
 
@@ -94,15 +94,15 @@ final class NotifyRankProximityTest extends TestCase
     public function test_anti_spam_blocks_notification_when_gap_change_is_insufficient(): void
     {
         config([
-            'gamification.rank_proximity_threshold'      => 50,
-            'gamification.rank_proximity_min_gap_change'  => 10,
+            'gamification.rank_proximity_threshold' => 50,
+            'gamification.rank_proximity_min_gap_change' => 10,
         ]);
 
         User::factory()->create(['role' => 'member', 'total_xp' => 130]);
         $user = User::factory()->create([
-            'role'                    => 'member',
-            'total_xp'               => 100,
-            'last_rank_gap_notified'  => 35, // Was notified when gap was 35
+            'role' => 'member',
+            'total_xp' => 100,
+            'last_rank_gap_notified' => 35, // Was notified when gap was 35
         ]);
 
         // Current gap = 30, improvement = 35 - 30 = 5, which is < 10
@@ -110,7 +110,7 @@ final class NotifyRankProximityTest extends TestCase
 
         $this->assertDatabaseMissing('pending_celebrations', [
             'user_id' => $user->id,
-            'type'    => 'rank_progress',
+            'type' => 'rank_progress',
         ]);
     }
 
@@ -119,15 +119,15 @@ final class NotifyRankProximityTest extends TestCase
     public function test_creates_celebration_when_gap_drops_significantly(): void
     {
         config([
-            'gamification.rank_proximity_threshold'      => 50,
-            'gamification.rank_proximity_min_gap_change'  => 10,
+            'gamification.rank_proximity_threshold' => 50,
+            'gamification.rank_proximity_min_gap_change' => 10,
         ]);
 
         User::factory()->create(['role' => 'member', 'total_xp' => 130]);
         $user = User::factory()->create([
-            'role'                    => 'member',
-            'total_xp'               => 110,
-            'last_rank_gap_notified'  => 35, // Was notified when gap was 35
+            'role' => 'member',
+            'total_xp' => 110,
+            'last_rank_gap_notified' => 35, // Was notified when gap was 35
         ]);
 
         // Current gap = 20, improvement = 35 - 20 = 15, which is ≥ 10
@@ -135,7 +135,7 @@ final class NotifyRankProximityTest extends TestCase
 
         $this->assertDatabaseHas('pending_celebrations', [
             'user_id' => $user->id,
-            'type'    => 'rank_progress',
+            'type' => 'rank_progress',
         ]);
 
         $this->assertEquals(20, $user->fresh()->last_rank_gap_notified);
@@ -149,9 +149,9 @@ final class NotifyRankProximityTest extends TestCase
 
         User::factory()->create(['role' => 'member', 'total_xp' => 200]);
         $user = User::factory()->create([
-            'role'                    => 'member',
-            'total_xp'               => 100,
-            'last_rank_gap_notified'  => 40,
+            'role' => 'member',
+            'total_xp' => 100,
+            'last_rank_gap_notified' => 40,
         ]);
 
         // Gap = 100, which exceeds threshold of 50
@@ -161,7 +161,7 @@ final class NotifyRankProximityTest extends TestCase
 
         $this->assertDatabaseMissing('pending_celebrations', [
             'user_id' => $user->id,
-            'type'    => 'rank_progress',
+            'type' => 'rank_progress',
         ]);
     }
 
@@ -179,7 +179,7 @@ final class NotifyRankProximityTest extends TestCase
 
         $this->assertDatabaseMissing('pending_celebrations', [
             'user_id' => $user->id,
-            'type'    => 'rank_progress',
+            'type' => 'rank_progress',
         ]);
     }
 
@@ -196,7 +196,7 @@ final class NotifyRankProximityTest extends TestCase
 
         $this->assertDatabaseMissing('pending_celebrations', [
             'user_id' => $admin->id,
-            'type'    => 'rank_progress',
+            'type' => 'rank_progress',
         ]);
     }
 
@@ -205,8 +205,8 @@ final class NotifyRankProximityTest extends TestCase
     public function test_does_not_create_duplicate_pending_celebration(): void
     {
         config([
-            'gamification.rank_proximity_threshold'      => 50,
-            'gamification.rank_proximity_min_gap_change'  => 10,
+            'gamification.rank_proximity_threshold' => 50,
+            'gamification.rank_proximity_min_gap_change' => 10,
         ]);
 
         User::factory()->create(['role' => 'member', 'total_xp' => 120]);
@@ -215,7 +215,7 @@ final class NotifyRankProximityTest extends TestCase
         // Pre-existing pending celebration for this user
         PendingCelebration::create([
             'user_id' => $user->id,
-            'type'    => 'rank_progress',
+            'type' => 'rank_progress',
             'payload' => ['xp_gap' => 30, 'target_rank' => 1],
         ]);
 
@@ -235,15 +235,15 @@ final class NotifyRankProximityTest extends TestCase
     public function test_payload_does_not_contain_user_identity(): void
     {
         config([
-            'gamification.rank_proximity_threshold'      => 50,
-            'gamification.rank_proximity_min_gap_change'  => 10,
+            'gamification.rank_proximity_threshold' => 50,
+            'gamification.rank_proximity_min_gap_change' => 10,
         ]);
 
         $aboveUser = User::factory()->create([
-            'role'     => 'member',
+            'role' => 'member',
             'total_xp' => 120,
-            'name'     => 'Secret Person',
-            'email'    => 'secret@example.com',
+            'name' => 'Secret Person',
+            'email' => 'secret@example.com',
         ]);
         $user = User::factory()->create(['role' => 'member', 'total_xp' => 100]);
 

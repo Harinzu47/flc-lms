@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Actions\LMS;
 
+use App\Events\XpEarned;
 use App\Models\Submission;
 use App\Models\XpLog;
 use Illuminate\Database\QueryException;
@@ -26,9 +27,9 @@ final class GradeSubmissionAction
     /**
      * Execute the grading.
      *
-     * @param  Submission $submission The submission to grade (must be loaded with 'task' and 'user').
-     * @param  int        $score      A score between 0 and 100.
-     * @return int                    The XP amount awarded to the student (0 if already graded).
+     * @param  Submission  $submission  The submission to grade (must be loaded with 'task' and 'user').
+     * @param  int  $score  A score between 0 and 100.
+     * @return int The XP amount awarded to the student (0 if already graded).
      */
     public function execute(Submission $submission, int $score): int
     {
@@ -71,23 +72,23 @@ final class GradeSubmissionAction
 
                 // 1. Update the submission record
                 $lockedSubmission->update([
-                    'score'  => $score,
+                    'score' => $score,
                     'status' => 'graded',
                 ]);
 
                 // Idempotency guard: skip XP award if already granted for this task
                 $alreadyAwarded = XpLog::query()
-                    ->where('user_id',      $submission->user_id)
-                    ->where('action',       'task_graded')
+                    ->where('user_id', $submission->user_id)
+                    ->where('action', 'task_graded')
                     ->where('reference_id', $submission->task_id)
                     ->exists();
 
-                if (!$alreadyAwarded) {
+                if (! $alreadyAwarded) {
                     // 2. Write an XP log entry for the student (append-only audit trail)
                     XpLog::create([
-                        'user_id'      => $submission->user_id,
-                        'action'       => 'task_graded',
-                        'xp_earned'    => $earnedXp,
+                        'user_id' => $submission->user_id,
+                        'action' => 'task_graded',
+                        'xp_earned' => $earnedXp,
                         'reference_id' => $submission->task_id,
                     ]);
 
@@ -101,7 +102,7 @@ final class GradeSubmissionAction
             if ($e->getCode() === '23000') {
                 // Still update the submission score/status even on constraint violation
                 $submission->update([
-                    'score'  => $score,
+                    'score' => $score,
                     'status' => 'graded',
                 ]);
 
@@ -113,7 +114,7 @@ final class GradeSubmissionAction
 
         if ($xpAwarded > 0) {
             // Dispatch decoupled event for level/badge sync for the graded student
-            \App\Events\XpEarned::dispatch($submission->user, $xpAwarded);
+            XpEarned::dispatch($submission->user, $xpAwarded);
         }
 
         return $xpAwarded;

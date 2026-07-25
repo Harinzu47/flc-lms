@@ -11,7 +11,6 @@ use App\Models\Material;
 use App\Models\Submission;
 use App\Models\Task;
 use App\Models\User;
-use App\Models\XpLog;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Event;
 use Tests\TestCase;
@@ -38,8 +37,8 @@ final class XpIdempotencyTest extends TestCase
     {
         Event::fake();
 
-        $action   = new AwardMaterialXpAction();
-        $user     = User::factory()->create(['total_xp' => 0]);
+        $action = new AwardMaterialXpAction;
+        $user = User::factory()->create(['total_xp' => 0]);
         $material = Material::factory()->create();
 
         // First call → should award XP
@@ -53,9 +52,9 @@ final class XpIdempotencyTest extends TestCase
         // Verify: exactly 1 xp_log row
         $this->assertDatabaseCount('xp_logs', 1);
         $this->assertDatabaseHas('xp_logs', [
-            'user_id'      => $user->id,
-            'action'       => AwardMaterialXpAction::ACTION,
-            'xp_earned'    => AwardMaterialXpAction::XP_AMOUNT,
+            'user_id' => $user->id,
+            'action' => AwardMaterialXpAction::ACTION,
+            'xp_earned' => AwardMaterialXpAction::XP_AMOUNT,
             'reference_id' => $material->id,
         ]);
 
@@ -70,8 +69,8 @@ final class XpIdempotencyTest extends TestCase
     {
         Event::fake();
 
-        $action   = new AwardMaterialXpAction();
-        $user     = User::factory()->create(['total_xp' => 50]);
+        $action = new AwardMaterialXpAction;
+        $user = User::factory()->create(['total_xp' => 50]);
         $material = Material::factory()->create();
 
         $result = $action->execute($user, $material);
@@ -88,8 +87,8 @@ final class XpIdempotencyTest extends TestCase
     {
         Event::fake();
 
-        $action    = new AwardMaterialXpAction();
-        $user      = User::factory()->create(['total_xp' => 0]);
+        $action = new AwardMaterialXpAction;
+        $user = User::factory()->create(['total_xp' => 0]);
         $material1 = Material::factory()->create();
         $material2 = Material::factory()->create();
 
@@ -109,14 +108,14 @@ final class XpIdempotencyTest extends TestCase
     {
         Event::fake();
 
-        $action  = new GradeSubmissionAction();
+        $action = new GradeSubmissionAction;
         $student = User::factory()->create(['total_xp' => 10]);
-        $task    = Task::factory()->create(['base_xp' => 100]);
+        $task = Task::factory()->create(['base_xp' => 100]);
         $submission = Submission::factory()->create([
             'user_id' => $student->id,
             'task_id' => $task->id,
-            'score'   => null,
-            'status'  => 'pending',
+            'score' => null,
+            'status' => 'pending',
         ]);
 
         // First grading → should award XP
@@ -143,14 +142,14 @@ final class XpIdempotencyTest extends TestCase
     {
         Event::fake();
 
-        $action  = new GradeSubmissionAction();
+        $action = new GradeSubmissionAction;
         $student = User::factory()->create(['total_xp' => 0]);
-        $task    = Task::factory()->create(['base_xp' => 200]);
+        $task = Task::factory()->create(['base_xp' => 200]);
         $submission = Submission::factory()->create([
             'user_id' => $student->id,
             'task_id' => $task->id,
-            'score'   => null,
-            'status'  => 'pending',
+            'score' => null,
+            'status' => 'pending',
         ]);
 
         $result = $action->execute($submission, 75);
@@ -161,9 +160,9 @@ final class XpIdempotencyTest extends TestCase
         $this->assertEquals('graded', $submission->fresh()->status);
 
         $this->assertDatabaseHas('xp_logs', [
-            'user_id'      => $student->id,
-            'action'       => 'task_graded',
-            'xp_earned'    => 150,
+            'user_id' => $student->id,
+            'action' => 'task_graded',
+            'xp_earned' => 150,
             'reference_id' => $task->id,
         ]);
 
@@ -174,14 +173,14 @@ final class XpIdempotencyTest extends TestCase
     {
         Event::fake();
 
-        $action  = new GradeSubmissionAction();
+        $action = new GradeSubmissionAction;
         $student = User::factory()->create(['total_xp' => 0]);
-        $task    = Task::factory()->create(['base_xp' => 100]);
+        $task = Task::factory()->create(['base_xp' => 100]);
         $submission = Submission::factory()->create([
             'user_id' => $student->id,
             'task_id' => $task->id,
-            'score'   => null,
-            'status'  => 'pending',
+            'score' => null,
+            'status' => 'pending',
         ]);
 
         // First grade

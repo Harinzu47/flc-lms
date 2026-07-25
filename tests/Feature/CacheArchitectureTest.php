@@ -50,7 +50,7 @@ final class CacheArchitectureTest extends TestCase
     public function test_all_levels_cache_invalidates_when_level_is_saved_or_deleted(): void
     {
         $level1 = Level::factory()->create(['min_xp' => 0, 'name' => 'Beginner']);
-        
+
         // Warm up cache
         User::allLevels();
         $this->assertTrue(cache()->has('levels.all'));

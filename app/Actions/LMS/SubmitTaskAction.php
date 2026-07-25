@@ -28,13 +28,14 @@ final class SubmitTaskAction
     /**
      * Execute the submission.
      *
-     * @throws RuntimeException  If the user has already submitted this task.
-     * @return Submission        The newly created submission record.
+     * @return Submission The newly created submission record.
+     *
+     * @throws RuntimeException If the user has already submitted this task.
      */
     public function execute(
-        User          $user,
-        Task          $task,
-        ?string       $answerText,
+        User $user,
+        Task $task,
+        ?string $answerText,
         ?UploadedFile $file
     ): Submission {
         // Layer 1: Distributed lock — prevents concurrent submissions for the same user+task
@@ -55,9 +56,9 @@ final class SubmitTaskAction
      * Core submission logic, protected by the distributed lock.
      */
     private function processSubmission(
-        User          $user,
-        Task          $task,
-        ?string       $answerText,
+        User $user,
+        Task $task,
+        ?string $answerText,
         ?UploadedFile $file
     ): Submission {
         // Find existing submission first
@@ -68,7 +69,7 @@ final class SubmitTaskAction
 
         if ($existing) {
             // Guard: block resubmission if not flagged for review/revision
-            if (!$existing->is_flagged) {
+            if (! $existing->is_flagged) {
                 throw new RuntimeException('You have already submitted this task.');
             }
 
@@ -88,9 +89,9 @@ final class SubmitTaskAction
             // ── Update the existing submission ───────────────────────────────
             $existing->update([
                 'answer_text' => $answerText,
-                'file_url'    => $fileUrl,
-                'status'      => 'pending',
-                'is_flagged'  => false,
+                'file_url' => $fileUrl,
+                'status' => 'pending',
+                'is_flagged' => false,
                 'review_comment' => null,
             ]);
 
@@ -108,12 +109,12 @@ final class SubmitTaskAction
         // ── Create & return the Submission record ─────────────────────────────
         try {
             return Submission::create([
-                'user_id'     => $user->id,
-                'task_id'     => $task->id,
+                'user_id' => $user->id,
+                'task_id' => $task->id,
                 'answer_text' => $answerText,
-                'file_url'    => $fileUrl,
-                'status'      => 'pending',
-                'is_flagged'  => false,
+                'file_url' => $fileUrl,
+                'status' => 'pending',
+                'is_flagged' => false,
                 'review_comment' => null,
             ]);
         } catch (QueryException $e) {
@@ -137,7 +138,7 @@ final class SubmitTaskAction
         $extension = strtolower($file->getClientOriginalExtension());
         $allowedExtensions = ['pdf', 'zip', 'rar', 'docx', 'doc', 'xlsx'];
 
-        if (!in_array($extension, $allowedExtensions, true)) {
+        if (! in_array($extension, $allowedExtensions, true)) {
             throw new RuntimeException('Security Validation Failed: Unsupported file extension.');
         }
 
@@ -158,7 +159,7 @@ final class SubmitTaskAction
                 'application/octet-stream', // Fallback for binary archives
             ];
 
-            if (!in_array($realMime, $allowedMimes, true)) {
+            if (! in_array($realMime, $allowedMimes, true)) {
                 throw new RuntimeException('Security Validation Failed: File content does not match an allowed type.');
             }
         }

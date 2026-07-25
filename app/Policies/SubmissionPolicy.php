@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Policies;
 
-use App\Models\User;
 use App\Models\Submission;
+use App\Models\User;
 use Illuminate\Auth\Access\HandlesAuthorization;
 
 final class SubmissionPolicy
@@ -20,6 +20,7 @@ final class SubmissionPolicy
         if ($submission === null) {
             return $user->role === 'admin';
         }
+
         return $user->id === $submission->user_id || $user->role === 'admin';
     }
 

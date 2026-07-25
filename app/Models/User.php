@@ -11,6 +11,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Collection;
 
 class User extends Authenticatable
 {
@@ -47,9 +48,9 @@ class User extends Authenticatable
     {
         return [
             'email_verified_at' => 'datetime',
-            'password'          => 'hashed',
-            'total_xp'                => 'integer',
-            'last_rank_gap_notified'  => 'integer',
+            'password' => 'hashed',
+            'total_xp' => 'integer',
+            'last_rank_gap_notified' => 'integer',
         ];
     }
 
@@ -97,7 +98,7 @@ class User extends Authenticatable
     /**
      * Cache all levels forever to prevent repetitive database queries.
      */
-    public static function allLevels(): \Illuminate\Support\Collection
+    public static function allLevels(): Collection
     {
         $levelsData = cache()->rememberForever('levels.all', function () {
             return Level::orderBy('min_xp')->get()->toArray();
@@ -109,9 +110,9 @@ class User extends Authenticatable
     /**
      * Cache the top leaderboard rankings for 5 minutes.
      */
-    public static function getCachedLeaderboard(int $limit = 10): \Illuminate\Support\Collection
+    public static function getCachedLeaderboard(int $limit = 10): Collection
     {
-        $data = cache()->remember('leaderboard.top.' . $limit, now()->addMinutes(5), function () use ($limit) {
+        $data = cache()->remember('leaderboard.top.'.$limit, now()->addMinutes(5), function () use ($limit) {
             return self::query()
                 ->where('role', 'member')
                 ->with(['level'])
@@ -123,6 +124,7 @@ class User extends Authenticatable
                     if ($user->relationLoaded('level') && $user->level) {
                         $arr['level_relation'] = $user->level->attributesToArray();
                     }
+
                     return $arr;
                 })
                 ->all();
@@ -157,9 +159,10 @@ class User extends Authenticatable
      * Determine the user's level tier from a pre-loaded in-memory collection of Level models,
      * completely bypassing database queries to prevent N+1 query patterns.
      */
-    public function determineLevelFromCollection(\Illuminate\Support\Collection $levelsCollection): ?Level
+    public function determineLevelFromCollection(Collection $levelsCollection): ?Level
     {
         $xp = (int) ($this->total_xp ?? 0);
+
         return $levelsCollection
             ->filter(fn (Level $level) => $level->min_xp <= $xp)
             ->sortByDesc('min_xp')
@@ -173,6 +176,7 @@ class User extends Authenticatable
     public function nextLevel(): ?Level
     {
         $xp = (int) ($this->total_xp ?? 0);
+
         return self::allLevels()
             ->filter(fn (Level $level) => $level->min_xp > $xp)
             ->sortBy('min_xp')
@@ -187,8 +191,8 @@ class User extends Authenticatable
     public function progressPercentage(): int
     {
         $current = $this->currentLevel();
-        $next    = $this->nextLevel();
-        $xp      = (int) ($this->total_xp ?? 0);
+        $next = $this->nextLevel();
+        $xp = (int) ($this->total_xp ?? 0);
 
         // Max level reached — bar is full
         if ($current !== null && $next === null) {
@@ -203,6 +207,7 @@ class User extends Authenticatable
 
             // Progress from 0 toward first level
             $percentage = ($xp / $next->min_xp) * 100;
+
             return (int) min(100, max(0, round($percentage)));
         }
 
@@ -212,7 +217,7 @@ class User extends Authenticatable
             return 100;
         }
 
-        $earned     = $xp - $current->min_xp;
+        $earned = $xp - $current->min_xp;
         $percentage = ($earned / $range) * 100;
 
         return (int) min(100, max(0, round($percentage)));

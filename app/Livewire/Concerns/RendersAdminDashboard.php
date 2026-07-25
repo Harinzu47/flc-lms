@@ -4,9 +4,8 @@ declare(strict_types=1);
 
 namespace App\Livewire\Concerns;
 
-use App\Models\User;
 use App\Models\Submission;
-use Illuminate\Support\Collection;
+use App\Models\User;
 use Illuminate\View\View;
 
 trait RendersAdminDashboard
@@ -21,7 +20,7 @@ trait RendersAdminDashboard
             ->where('is_flagged', false)
             ->count();
         $flaggedCount = Submission::where('is_flagged', true)->count();
-        
+
         $topStudents = $this->activeTab === 'leaderboard'
             ? User::getCachedLeaderboard(10)
             : collect();
@@ -37,7 +36,7 @@ trait RendersAdminDashboard
             'topStudents',
             'pendingSubmissions'
         ))
-        ->layout('layouts.base')
-        ->title('Admin Analytics Command Center — FLC LMS');
+            ->layout('layouts.base')
+            ->title('Admin Analytics Command Center — FLC LMS');
     }
 }

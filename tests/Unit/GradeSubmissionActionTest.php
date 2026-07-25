@@ -22,7 +22,7 @@ final class GradeSubmissionActionTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        $this->action = new GradeSubmissionAction();
+        $this->action = new GradeSubmissionAction;
     }
 
     public function test_grades_submission_and_awards_proportional_xp(): void

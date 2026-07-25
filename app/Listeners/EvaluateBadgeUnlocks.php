@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace App\Listeners;
 
-use App\Actions\Gamification\AwardMaterialXpAction;
 use App\Events\XpEarned;
 use App\Models\Badge;
+use App\Models\PendingCelebration;
 use App\Models\Submission;
 use App\Models\XpLog;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -27,8 +27,8 @@ final class EvaluateBadgeUnlocks implements ShouldQueue
 
         // 1. Pre-calculate metrics to avoid N+1 query locks inside the loop
         $userXp = $user->total_xp;
-        $totalRead = \App\Models\XpLog::where('user_id', $user->id)->where('action', 'material_read')->count();
-        $totalTasks = \App\Models\Submission::where('user_id', $user->id)->where('status', 'graded')->count();
+        $totalRead = XpLog::where('user_id', $user->id)->where('action', 'material_read')->count();
+        $totalTasks = Submission::where('user_id', $user->id)->where('status', 'graded')->count();
 
         // 2. Fetch available locked badges
         $availableBadges = Badge::whereDoesntHave('users', function ($query) use ($user): void {
@@ -68,13 +68,13 @@ final class EvaluateBadgeUnlocks implements ShouldQueue
      */
     private function dispatch(int $userId, string $name, string $description, string $icon): void
     {
-        \App\Models\PendingCelebration::create([
+        PendingCelebration::create([
             'user_id' => $userId,
-            'type'    => 'badge-unlocked',
+            'type' => 'badge-unlocked',
             'payload' => [
-                'name'        => $name,
+                'name' => $name,
                 'description' => $description,
-                'icon'        => $icon,
+                'icon' => $icon,
             ],
         ]);
     }

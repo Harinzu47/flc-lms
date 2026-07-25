@@ -15,23 +15,24 @@ use Illuminate\Support\Facades\Schema;
  * NOTE: Both columns may already exist (added by 2026_04_12_011654).
  * hasColumn() guards make this migration idempotent.
  */
-return new class extends Migration {
+return new class extends Migration
+{
     public function up(): void
     {
         Schema::table('users', function (Blueprint $table) {
             if (! Schema::hasColumn('users', 'level_id')) {
                 $table->foreignId('level_id')
-                      ->nullable()
-                      ->after('role')
-                      ->constrained('levels')
-                      ->nullOnDelete();
+                    ->nullable()
+                    ->after('role')
+                    ->constrained('levels')
+                    ->nullOnDelete();
             }
 
             if (! Schema::hasColumn('users', 'total_xp')) {
                 $table->unsignedInteger('total_xp')
-                      ->default(0)
-                      ->after('level_id')
-                      ->index(); // Indexed for leaderboard ORDER BY total_xp DESC
+                    ->default(0)
+                    ->after('level_id')
+                    ->index(); // Indexed for leaderboard ORDER BY total_xp DESC
             }
         });
     }

@@ -32,7 +32,7 @@ class XpLog extends Model
     protected function casts(): array
     {
         return [
-            'xp_earned'    => 'integer',
+            'xp_earned' => 'integer',
             'reference_id' => 'integer',
         ];
     }

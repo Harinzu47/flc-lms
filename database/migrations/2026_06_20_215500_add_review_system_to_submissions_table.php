@@ -12,10 +12,10 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('submissions', function (Blueprint $table) {
-            if (!Schema::hasColumn('submissions', 'is_flagged')) {
+            if (! Schema::hasColumn('submissions', 'is_flagged')) {
                 $table->boolean('is_flagged')->default(false)->index('submissions_is_flagged_index');
             }
-            if (!Schema::hasColumn('submissions', 'review_comment')) {
+            if (! Schema::hasColumn('submissions', 'review_comment')) {
                 $table->text('review_comment')->nullable()->after('is_flagged');
             }
         });
@@ -35,7 +35,7 @@ return new class extends Migration
             if (Schema::hasColumn('submissions', 'review_comment')) {
                 $columns[] = 'review_comment';
             }
-            if (!empty($columns)) {
+            if (! empty($columns)) {
                 $table->dropColumn($columns);
             }
         });

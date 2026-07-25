@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Livewire;
 
+use App\Models\Level;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\View\View;
@@ -49,7 +50,7 @@ class HallOfFame extends Component
             ->count() + 1;
 
         // Fetch all levels sorted by min_xp once to avoid N+1 query loops in the view
-        $allLevels = \App\Models\Level::query()
+        $allLevels = Level::query()
             ->orderBy('min_xp')
             ->get();
 

@@ -5,9 +5,9 @@ declare(strict_types=1);
 namespace Tests\Feature;
 
 use App\Events\XpEarned;
+use App\Livewire\Admin\UserManager;
 use App\Models\Badge;
 use App\Models\User;
-use App\Models\XpLog;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Event;
 use Livewire\Livewire;
@@ -40,7 +40,7 @@ class UserManagerTest extends TestCase
         $admin = User::factory()->create(['role' => 'admin']);
 
         Livewire::actingAs($admin)
-            ->test(\App\Livewire\Admin\UserManager::class)
+            ->test(UserManager::class)
             ->set('name', 'New Student')
             ->set('email', 'newstudent@example.com')
             ->set('role', 'member')
@@ -65,7 +65,7 @@ class UserManagerTest extends TestCase
         $student = User::factory()->create(['role' => 'member', 'total_xp' => 100]);
 
         Livewire::actingAs($admin)
-            ->test(\App\Livewire\Admin\UserManager::class)
+            ->test(UserManager::class)
             ->set('userId', $student->id)
             ->set('xpDelta', 250)
             ->set('xpReason', 'Bonus Tugas Tambahan')
@@ -111,7 +111,7 @@ class UserManagerTest extends TestCase
         $student->badges()->attach($badge1->id, ['unlocked_at' => $unlockedAt]);
 
         Livewire::actingAs($admin)
-            ->test(\App\Livewire\Admin\UserManager::class)
+            ->test(UserManager::class)
             ->set('userId', $student->id)
             ->set('selectedBadges', [(string) $badge1->id, (string) $badge2->id])
             ->call('syncBadges')

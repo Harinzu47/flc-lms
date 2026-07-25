@@ -5,7 +5,11 @@ declare(strict_types=1);
 namespace App\Livewire;
 
 use App\Actions\Gamification\AwardMaterialXpAction;
+use App\Models\Course;
 use App\Models\Material;
+use App\Models\Submission;
+use App\Models\XpLog;
+use Illuminate\View\View;
 use Livewire\Attributes\Layout;
 use Livewire\Attributes\Title;
 use Livewire\Component;
@@ -41,12 +45,12 @@ class MaterialShow extends Component
         // Prevent N+1 queries by pre-fetching completed course, module, material, and task collections
         $this->material->load(['module.course.modules.materials', 'module.course.modules.tasks']);
 
-        $readMaterialIds = \App\Models\XpLog::query()
+        $readMaterialIds = XpLog::query()
             ->where('user_id', $user->id)
             ->where('action', 'material_read')
             ->pluck('reference_id');
 
-        $gradedTaskIds = \App\Models\Submission::query()
+        $gradedTaskIds = Submission::query()
             ->where('user_id', $user->id)
             ->where('status', 'graded')
             ->pluck('task_id');
@@ -58,7 +62,7 @@ class MaterialShow extends Component
         $completedCourseIds = collect();
         $parentCourse = $this->material->module?->course;
         if ($parentCourse?->prerequisite_course_id !== null) {
-            $prereq = \App\Models\Course::query()
+            $prereq = Course::query()
                 ->with(['modules.materials', 'modules.tasks'])
                 ->find($parentCourse->prerequisite_course_id);
 
@@ -114,7 +118,7 @@ class MaterialShow extends Component
     // Render
     // -------------------------------------------------------------------------
 
-    public function render(): \Illuminate\View\View
+    public function render(): View
     {
         return view('livewire.material-show');
     }

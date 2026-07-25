@@ -25,10 +25,10 @@ final class SubmissionDownloadTest extends TestCase
         // Arrange
         $admin = User::factory()->create(['role' => 'admin']);
         $student = User::factory()->create(['role' => 'member']);
-        
+
         $filePath = 'submissions/sample.pdf';
         Storage::disk('local')->put($filePath, 'sample content');
-        
+
         $submission = Submission::factory()->create([
             'user_id' => $student->id,
             'file_url' => $filePath,
@@ -47,10 +47,10 @@ final class SubmissionDownloadTest extends TestCase
     {
         // Arrange
         $student = User::factory()->create(['role' => 'member']);
-        
+
         $filePath = 'submissions/student_doc.pdf';
         Storage::disk('local')->put($filePath, 'my work');
-        
+
         $submission = Submission::factory()->create([
             'user_id' => $student->id,
             'file_url' => $filePath,
@@ -70,10 +70,10 @@ final class SubmissionDownloadTest extends TestCase
         // Arrange
         $student1 = User::factory()->create(['role' => 'member']);
         $student2 = User::factory()->create(['role' => 'member']);
-        
+
         $filePath = 'submissions/secret.pdf';
         Storage::disk('local')->put($filePath, 'confidential');
-        
+
         $submission = Submission::factory()->create([
             'user_id' => $student2->id,
             'file_url' => $filePath,

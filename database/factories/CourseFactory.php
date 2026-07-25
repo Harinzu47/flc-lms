@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Database\Factories;
 
 use App\Models\Course;
-use App\Models\Level;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**

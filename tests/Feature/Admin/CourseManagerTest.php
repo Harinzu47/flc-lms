@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace Tests\Feature\Admin;
 
+use App\Livewire\Admin\CourseManager;
 use App\Models\Course;
-use App\Models\Module;
 use App\Models\Material;
-use App\Models\Task;
+use App\Models\Module;
 use App\Models\User;
 use App\Models\XpLog;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -41,7 +41,7 @@ final class CourseManagerTest extends TestCase
         $admin = User::factory()->create(['role' => 'admin']);
 
         Livewire::actingAs($admin)
-            ->test(\App\Livewire\Admin\CourseManager::class)
+            ->test(CourseManager::class)
             ->set('courseTitle', 'English For Science')
             ->set('courseDescription', 'Belajar bahasa Inggris ilmiah.')
             ->set('courseDifficultyLevel', 'intermediate')
@@ -81,7 +81,7 @@ final class CourseManagerTest extends TestCase
 
         // Test swap up: moving module2 up should swap orders
         Livewire::actingAs($admin)
-            ->test(\App\Livewire\Admin\CourseManager::class)
+            ->test(CourseManager::class)
             ->set('selectedCourseId', $course->id)
             ->call('moveModuleUp', $module2)
             ->assertDispatched('notify');
@@ -94,7 +94,7 @@ final class CourseManagerTest extends TestCase
     {
         $admin = User::factory()->create(['role' => 'admin']);
         $student = User::factory()->create(['role' => 'member']);
-        
+
         $course = Course::create(['title' => 'Test', 'difficulty_level' => 'beginner']);
         $module = Module::create(['course_id' => $course->id, 'title' => 'M1', 'sort_order' => 1]);
         $material = Material::create([
@@ -114,13 +114,13 @@ final class CourseManagerTest extends TestCase
 
         // Admin deletes the material
         Livewire::actingAs($admin)
-            ->test(\App\Livewire\Admin\CourseManager::class)
+            ->test(CourseManager::class)
             ->set('selectedCourseId', $course->id)
             ->call('deleteMaterial', $material)
             ->assertDispatched('notify');
 
         $this->assertDatabaseMissing('materials', ['id' => $material->id]);
-        
+
         // Verify that XpLog is also deleted (cascaded by static model listener)
         $this->assertDatabaseMissing('xp_logs', [
             'action' => 'material_read',

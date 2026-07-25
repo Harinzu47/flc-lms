@@ -6,6 +6,7 @@ namespace App\Livewire;
 
 use App\Models\Course;
 use App\Models\Submission;
+use App\Models\UserTaskStart;
 use App\Models\XpLog;
 use Illuminate\Support\Collection;
 use Illuminate\View\View;
@@ -30,10 +31,11 @@ class CourseShow extends Component
 
     /** @var Collection<int> Completed module IDs */
     public Collection $completedModuleIds;
+
     /** @var Collection<int, Submission> Submissions keyed by task_id */
     public Collection $submissionsMap;
 
-    /** @var Collection<int, \App\Models\UserTaskStart> Task starts keyed by task_id */
+    /** @var Collection<int, UserTaskStart> Task starts keyed by task_id */
     public Collection $taskStartsMap;
 
     public int $progressPercent = 0;
@@ -81,7 +83,7 @@ class CourseShow extends Component
             ->keyBy('task_id');
 
         // Load task starts for this user to calculate relative deadlines
-        $this->taskStartsMap = \App\Models\UserTaskStart::query()
+        $this->taskStartsMap = UserTaskStart::query()
             ->where('user_id', $user->id)
             ->whereIn('task_id', $taskIds)
             ->get()

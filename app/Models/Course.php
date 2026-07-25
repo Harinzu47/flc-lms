@@ -57,9 +57,7 @@ class Course extends Model
      * Determine if this course is locked for the user.
      * Evaluates in-memory if a collection of completed course IDs is provided.
      *
-     * @param User $user
-     * @param Collection<int>|null $completedCourseIds
-     * @return bool
+     * @param  Collection<int>|null  $completedCourseIds
      */
     public function isLockedForUser(User $user, ?Collection $completedCourseIds = null): bool
     {
@@ -74,12 +72,12 @@ class Course extends Model
         // 2. Check Prerequisite Gating
         if ($this->prerequisite_course_id !== null) {
             if ($completedCourseIds !== null) {
-                return !$completedCourseIds->contains($this->prerequisite_course_id);
+                return ! $completedCourseIds->contains($this->prerequisite_course_id);
             }
 
             // Database query fallback
             $prereq = $this->prerequisite;
-            if ($prereq !== null && !$prereq->isCompletedByUser($user)) {
+            if ($prereq !== null && ! $prereq->isCompletedByUser($user)) {
                 return true;
             }
         }
@@ -90,10 +88,8 @@ class Course extends Model
     /**
      * Determine if the user has completed this course (all materials read, all tasks completed/graded).
      *
-     * @param User $user
-     * @param Collection<int>|null $readMaterialIds
-     * @param Collection<int>|null $gradedTaskIds
-     * @return bool
+     * @param  Collection<int>|null  $readMaterialIds
+     * @param  Collection<int>|null  $gradedTaskIds
      */
     public function isCompletedByUser(User $user, ?Collection $readMaterialIds = null, ?Collection $gradedTaskIds = null): bool
     {
@@ -104,7 +100,7 @@ class Course extends Model
         }
 
         foreach ($modules as $module) {
-            if (!$module->isCompletedByUser($user, $readMaterialIds, $gradedTaskIds)) {
+            if (! $module->isCompletedByUser($user, $readMaterialIds, $gradedTaskIds)) {
                 return false;
             }
         }

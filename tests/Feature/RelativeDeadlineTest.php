@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Tests\Feature;
 
+use App\Livewire\GamifiedDashboard;
+use App\Livewire\TaskShow;
 use App\Models\Course;
 use App\Models\Module;
 use App\Models\Submission;
@@ -21,7 +23,7 @@ class RelativeDeadlineTest extends TestCase
     public function test_student_access_registers_start_time_safely(): void
     {
         $user = User::factory()->create(['role' => 'member']);
-        
+
         $course = Course::create([
             'title' => 'Test Course',
             'difficulty_level' => 'beginner',
@@ -52,7 +54,7 @@ class RelativeDeadlineTest extends TestCase
         ]);
 
         // Access the TaskShow Livewire component
-        Livewire::test(\App\Livewire\TaskShow::class, ['task' => $task])
+        Livewire::test(TaskShow::class, ['task' => $task])
             ->assertStatus(200);
 
         // Verify start record has been registered
@@ -69,7 +71,7 @@ class RelativeDeadlineTest extends TestCase
     public function test_student_subsequent_access_does_not_modify_start_time(): void
     {
         $user = User::factory()->create(['role' => 'member']);
-        
+
         $course = Course::create([
             'title' => 'Test Course',
             'difficulty_level' => 'beginner',
@@ -102,7 +104,7 @@ class RelativeDeadlineTest extends TestCase
         ]);
 
         // Access again
-        Livewire::test(\App\Livewire\TaskShow::class, ['task' => $task])
+        Livewire::test(TaskShow::class, ['task' => $task])
             ->assertStatus(200);
 
         // Verify started_at remains the same
@@ -113,7 +115,7 @@ class RelativeDeadlineTest extends TestCase
     public function test_personal_deadline_calculated_correctly(): void
     {
         $user = User::factory()->create(['role' => 'member']);
-        
+
         $course = Course::create([
             'title' => 'Test Course',
             'difficulty_level' => 'beginner',
@@ -149,7 +151,7 @@ class RelativeDeadlineTest extends TestCase
     public function test_upcoming_tasks_on_dashboard_excludes_submitted_tasks_unless_flagged(): void
     {
         $user = User::factory()->create(['role' => 'member']);
-        
+
         $course = Course::create([
             'title' => 'Test Course',
             'difficulty_level' => 'beginner',
@@ -223,11 +225,11 @@ class RelativeDeadlineTest extends TestCase
 
         $this->actingAs($user);
 
-        Livewire::test(\App\Livewire\GamifiedDashboard::class)
+        Livewire::test(GamifiedDashboard::class)
             ->assertStatus(200)
             ->assertViewHas('upcomingTasks', function ($tasks) use ($taskA, $taskB, $taskC) {
                 return $tasks->contains('id', $taskA->id)
-                    && !$tasks->contains('id', $taskB->id)
+                    && ! $tasks->contains('id', $taskB->id)
                     && $tasks->contains('id', $taskC->id);
             });
     }

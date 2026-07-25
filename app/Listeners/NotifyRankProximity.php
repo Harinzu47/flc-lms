@@ -8,6 +8,7 @@ use App\Events\XpEarned;
 use App\Models\PendingCelebration;
 use App\Models\User;
 use Illuminate\Contracts\Queue\ShouldQueue;
+use Illuminate\Database\QueryException;
 
 /**
  * Listener that notifies a member when they are approaching the rank of the
@@ -36,7 +37,7 @@ final class NotifyRankProximity implements ShouldQueue
             return;
         }
 
-        $threshold    = (int) config('gamification.rank_proximity_threshold', 50);
+        $threshold = (int) config('gamification.rank_proximity_threshold', 50);
         $minGapChange = (int) config('gamification.rank_proximity_min_gap_change', 10);
 
         // Find the member directly above this user on the leaderboard.
@@ -100,13 +101,13 @@ final class NotifyRankProximity implements ShouldQueue
             try {
                 PendingCelebration::create([
                     'user_id' => $user->id,
-                    'type'    => 'rank_progress',
+                    'type' => 'rank_progress',
                     'payload' => [
-                        'xp_gap'      => $gap,
+                        'xp_gap' => $gap,
                         'target_rank' => $targetRank,
                     ],
                 ]);
-            } catch (\Illuminate\Database\QueryException $e) {
+            } catch (QueryException $e) {
                 // Duplicate insert from concurrent worker — safe to ignore.
                 if ($e->getCode() !== '23000') {
                     throw $e;

@@ -60,17 +60,18 @@ class Submission extends Model
     {
         return $this->belongsTo(User::class);
     }
+
     /**
      * Get a clean, human-readable name for the submitted file.
      */
     public function getFriendlyFileNameAttribute(): string
     {
-        if (!$this->file_url) {
+        if (! $this->file_url) {
             return '';
         }
 
         $extension = pathinfo($this->file_url, PATHINFO_EXTENSION);
-        
+
         $userName = $this->user ? $this->user->name : 'Mahasiswa';
         $taskTitle = $this->task ? $this->task->title : 'Tugas';
 

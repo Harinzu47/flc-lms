@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace App\Livewire;
 
 use App\Models\Course;
-use App\Models\XpLog;
 use App\Models\Submission;
+use App\Models\XpLog;
 use Illuminate\View\View;
 use Livewire\Attributes\Layout;
 use Livewire\Attributes\Title;
@@ -47,7 +47,7 @@ class Library extends Component
         })->pluck('id');
 
         return view('livewire.library', [
-            'courses'            => $courses,
+            'courses' => $courses,
             'completedCourseIds' => $completedCourseIds,
         ]);
     }

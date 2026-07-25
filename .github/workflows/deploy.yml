@@ -57,6 +57,9 @@ jobs:
       - name: Install Composer dependencies
         run: composer install --prefer-dist --no-progress --no-interaction
 
+      - name: Check code style (Pint)
+        run: vendor/bin/pint --test
+
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
@@ -110,6 +113,12 @@ jobs:
           REDIS_HOST: 127.0.0.1
           REDIS_PORT: 6379
 
+      - name: Audit Composer dependencies
+        run: composer audit
+
+      - name: Audit npm dependencies
+        run: npm audit --audit-level=high
+
   deploy:
     name: Deploy to Production
     needs: test
@@ -138,7 +147,7 @@ jobs:
       - name: Verify deployment
         run: |
           sleep 5
-          STATUS=$(curl -s -o /dev/null -w "%{http_code}" https://hzcode.my.id)
+          STATUS=$(curl -s -o /dev/null -w "%{http_code}" "${{ secrets.APP_URL }}")
           echo "HTTP Status: $STATUS"
           if [ "$STATUS" -ge 500 ]; then
             echo "Deployment verification failed with status $STATUS"

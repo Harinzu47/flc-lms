@@ -7,6 +7,8 @@ namespace App\Livewire;
 use App\Actions\LMS\GradeSubmissionAction;
 use App\Models\Submission;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Gate;
+use Illuminate\View\View;
 use Livewire\Attributes\Layout;
 use Livewire\Attributes\Title;
 use Livewire\Component;
@@ -50,7 +52,7 @@ class GradingStation extends Component
 
     public function mount(): void
     {
-        \Illuminate\Support\Facades\Gate::authorize('grade', Submission::class);
+        Gate::authorize('grade', Submission::class);
         $this->loadPendingSubmissions();
     }
 
@@ -127,9 +129,9 @@ class GradingStation extends Component
             "scoreForm.{$submissionId}" => ['required', 'integer', 'min:0', 'max:100'],
         ], [
             "scoreForm.{$submissionId}.required" => 'Please enter a score.',
-            "scoreForm.{$submissionId}.integer"  => 'Score must be a whole number.',
-            "scoreForm.{$submissionId}.min"      => 'Score cannot be below 0.',
-            "scoreForm.{$submissionId}.max"      => 'Score cannot exceed 100.',
+            "scoreForm.{$submissionId}.integer" => 'Score must be a whole number.',
+            "scoreForm.{$submissionId}.min" => 'Score cannot be below 0.',
+            "scoreForm.{$submissionId}.max" => 'Score cannot exceed 100.',
         ]);
 
         // ── Execute the grading action ─────────────────────────────────────────
@@ -164,7 +166,7 @@ class GradingStation extends Component
 
     // ── Render ────────────────────────────────────────────────────────────────
 
-    public function render(): \Illuminate\View\View
+    public function render(): View
     {
         return view('livewire.grading-station');
     }

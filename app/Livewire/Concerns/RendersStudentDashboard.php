@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace App\Livewire\Concerns;
 
-use App\Models\User;
-use App\Models\Task;
 use App\Models\Level;
+use App\Models\Task;
+use App\Models\User;
 use Illuminate\View\View;
 
 trait RendersStudentDashboard
@@ -41,7 +41,7 @@ trait RendersStudentDashboard
             'upcomingTasks',
             'allLevels',
         ))
-        ->layout('layouts.gamified')
-        ->title('My Dashboard — FLC LMS');
+            ->layout('layouts.gamified')
+            ->title('My Dashboard — FLC LMS');
     }
 }

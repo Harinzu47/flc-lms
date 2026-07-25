@@ -5,12 +5,18 @@ declare(strict_types=1);
 namespace App\Livewire;
 
 use App\Actions\LMS\SubmitTaskAction;
+use App\Models\Course;
 use App\Models\Submission;
 use App\Models\Task;
+use App\Models\UserTaskStart;
+use App\Models\XpLog;
+use Illuminate\Database\QueryException;
+use Illuminate\View\View;
 use Livewire\Attributes\Layout;
 use Livewire\Attributes\Title;
 use Livewire\Attributes\Validate;
 use Livewire\Component;
+use Livewire\Features\SupportFileUploads\TemporaryUploadedFile;
 use Livewire\WithFileUploads;
 use Throwable;
 
@@ -37,7 +43,7 @@ class TaskShow extends Component
     // ── Form state ────────────────────────────────────────────────────────────
     public string $answerText = '';
 
-    /** @var \Livewire\Features\SupportFileUploads\TemporaryUploadedFile|null */
+    /** @var TemporaryUploadedFile|null */
     public $uploadedFile = null;
 
     // ── Derived state (set in mount, refreshed after submission) ─────────────
@@ -53,12 +59,12 @@ class TaskShow extends Component
         // Prevent N+1 queries by pre-fetching completed course, module, material, and task collections
         $task->load(['module.course.modules.materials', 'module.course.modules.tasks']);
 
-        $readMaterialIds = \App\Models\XpLog::query()
+        $readMaterialIds = XpLog::query()
             ->where('user_id', $user->id)
             ->where('action', 'material_read')
             ->pluck('reference_id');
 
-        $gradedTaskIds = \App\Models\Submission::query()
+        $gradedTaskIds = Submission::query()
             ->where('user_id', $user->id)
             ->where('status', 'graded')
             ->pluck('task_id');
@@ -70,7 +76,7 @@ class TaskShow extends Component
         $completedCourseIds = collect();
         $parentCourse = $task->module?->course;
         if ($parentCourse?->prerequisite_course_id !== null) {
-            $prereq = \App\Models\Course::query()
+            $prereq = Course::query()
                 ->with(['modules.materials', 'modules.tasks'])
                 ->find($parentCourse->prerequisite_course_id);
 
@@ -97,12 +103,12 @@ class TaskShow extends Component
 
         if ($this->task->days_limit !== null) {
             try {
-                $start = \App\Models\UserTaskStart::firstOrCreate(
+                $start = UserTaskStart::firstOrCreate(
                     ['user_id' => auth()->id(), 'task_id' => $this->task->id],
                     ['started_at' => now()]
                 );
-            } catch (\Illuminate\Database\QueryException $e) {
-                $start = \App\Models\UserTaskStart::where('user_id', auth()->id())->where('task_id', $this->task->id)->firstOrFail();
+            } catch (QueryException $e) {
+                $start = UserTaskStart::where('user_id', auth()->id())->where('task_id', $this->task->id)->firstOrFail();
             }
             $this->task->deadline = $start->started_at->copy()->addDays($this->task->days_limit);
         } else {
@@ -148,10 +154,10 @@ class TaskShow extends Component
         // ── Delegate to Action ────────────────────────────────────────────────
         try {
             $action->execute(
-                user:       auth()->user(),
-                task:       $this->task,
+                user: auth()->user(),
+                task: $this->task,
                 answerText: $this->task->type === 'essay' ? $this->answerText : null,
-                file:       $this->task->type === 'file_upload'
+                file: $this->task->type === 'file_upload'
                                 ? $this->uploadedFile?->getRealPath() !== null
                                     ? $this->uploadedFile   // Livewire wraps this as TemporaryUploadedFile
                                     : null
@@ -159,6 +165,7 @@ class TaskShow extends Component
             );
         } catch (Throwable $e) {
             $this->addError('submit', $e->getMessage());
+
             return;
         }
 
@@ -185,7 +192,7 @@ class TaskShow extends Component
     // Render
     // ─────────────────────────────────────────────────────────────────────────
 
-    public function render(): \Illuminate\View\View
+    public function render(): View
     {
         return view('livewire.task-show');
     }

@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace App\Livewire;
 
-use App\Models\User;
 use App\Livewire\Concerns\RendersAdminDashboard;
 use App\Livewire\Concerns\RendersStudentDashboard;
+use App\Models\User;
 use Illuminate\View\View;
 use Livewire\Component;
 

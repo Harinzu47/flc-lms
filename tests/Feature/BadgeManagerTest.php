@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Tests\Feature;
 
+use App\Livewire\Admin\BadgeManager;
 use App\Models\Badge;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -37,7 +38,7 @@ class BadgeManagerTest extends TestCase
         $admin = User::factory()->create(['role' => 'admin']);
 
         Livewire::actingAs($admin)
-            ->test(\App\Livewire\Admin\BadgeManager::class)
+            ->test(BadgeManager::class)
             ->set('name', 'Grammar Wizard')
             ->set('description', 'Completed three English tasks.')
             ->set('icon', '🧙')
@@ -68,7 +69,7 @@ class BadgeManagerTest extends TestCase
         ]);
 
         Livewire::actingAs($admin)
-            ->test(\App\Livewire\Admin\BadgeManager::class)
+            ->test(BadgeManager::class)
             ->call('edit', $badge)
             ->assertSet('name', 'Old Badge')
             ->set('name', 'Updated Badge')
@@ -90,7 +91,7 @@ class BadgeManagerTest extends TestCase
         ]);
 
         Livewire::actingAs($admin)
-            ->test(\App\Livewire\Admin\BadgeManager::class)
+            ->test(BadgeManager::class)
             ->call('deleteBadge', $badge->id)
             ->assertDispatched('notify');
 
