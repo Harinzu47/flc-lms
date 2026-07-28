@@ -63,16 +63,18 @@ class UserManager extends Component
             ->where('id', '!=', auth()->id()) // Proteksi diri: Jangan tampilkan admin yang sedang login
             ->when($this->search !== '', function (Builder $query) {
                 $query->where(function (Builder $subQuery) {
-                    $subQuery->where('name', 'like', '%'.$this->search.'%')
-                        ->orWhere('email', 'like', '%'.$this->search.'%');
+                    $subQuery->where('name', 'like', '%' . $this->search . '%')
+                        ->orWhere('email', 'like', '%' . $this->search . '%');
                 });
             })
             ->latest()
             ->paginate(10);
 
-        $allBadges = cache()->remember('badges.all_ordered', now()->addMinutes(10), function () {
-            return Badge::orderBy('name')->get();
-        });
+        $allBadges = Badge::hydrate(
+            cache()->remember('badges.all_ordered', now()->addMinutes(10), function () {
+                return Badge::orderBy('name')->get()->toArray();
+            })
+        );
 
         return view('livewire.admin.user-manager', compact('users', 'allBadges'));
     }
@@ -91,7 +93,7 @@ class UserManager extends Component
         $this->name = $user->name;
         $this->email = $user->email;
         $this->role = $user->role;
-        $this->selectedBadges = $user->badges()->pluck('badge_id')->map(fn ($id) => (string) $id)->toArray();
+        $this->selectedBadges = $user->badges()->pluck('badge_id')->map(fn($id) => (string) $id)->toArray();
         $this->isModalOpen = true;
     }
 
@@ -152,7 +154,7 @@ class UserManager extends Component
             // 1. Catat transaksi audit ke tabel xp_logs
             XpLog::create([
                 'user_id' => $user->id,
-                'action' => 'Manual Correction: '.$this->xpReason,
+                'action' => 'Manual Correction: ' . $this->xpReason,
                 'xp_earned' => $this->xpDelta,
                 'reference_id' => auth()->id(), // Mencatat ID Admin yang melakukan manipulasi
             ]);
