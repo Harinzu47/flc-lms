@@ -70,9 +70,11 @@ class UserManager extends Component
             ->latest()
             ->paginate(10);
 
-        $allBadges = cache()->remember('badges.all_ordered', now()->addMinutes(10), function () {
-            return Badge::orderBy('name')->get();
-        });
+        $allBadges = Badge::hydrate(
+            cache()->remember('badges.all_ordered', now()->addMinutes(10), function () {
+                return Badge::orderBy('name')->get()->toArray();
+            })
+        );
 
         return view('livewire.admin.user-manager', compact('users', 'allBadges'));
     }
