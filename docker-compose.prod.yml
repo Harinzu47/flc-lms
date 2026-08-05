@@ -54,9 +54,6 @@ services:
     networks:
       - flc
   worker:
-    build:
-      context: .
-      dockerfile: Dockerfile
     image: flc-lms:latest
     container_name: flc-worker
     command: php artisan queue:work --tries=3 --timeout=90
@@ -68,15 +65,14 @@ services:
         condition: service_healthy
       redis:
         condition: service_healthy
+      app:
+        condition: service_healthy
     volumes:
       - storage-data:/var/www/html/storage
     logging: *default-logging
     networks:
       - flc
   scheduler:
-    build:
-      context: .
-      dockerfile: Dockerfile
     image: flc-lms:latest
     container_name: flc-scheduler
     command: php artisan schedule:work
@@ -87,6 +83,8 @@ services:
       mysql:
         condition: service_healthy
       redis:
+        condition: service_healthy
+      app:
         condition: service_healthy
     volumes:
       - storage-data:/var/www/html/storage
