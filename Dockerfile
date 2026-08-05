@@ -53,21 +53,9 @@ FROM php:8.4-fpm-alpine
 
 WORKDIR /var/www/html
 
-RUN apk add --no-cache \
-        icu-dev \
-        libzip-dev \
-        libpng-dev \
-        libjpeg-turbo-dev \
-        freetype-dev \
-        oniguruma-dev \
-        libxml2-dev \
-        dos2unix \
-    && apk add --no-cache --virtual .build-deps \
-        $PHPIZE_DEPS \
-    && docker-php-ext-configure gd \
-        --with-freetype \
-        --with-jpeg \
-    && docker-php-ext-install \
+COPY --from=mlocati/php-extension-installer /usr/bin/install-php-extensions /usr/local/bin/
+
+RUN install-php-extensions \
         pdo_mysql \
         bcmath \
         exif \
@@ -77,9 +65,9 @@ RUN apk add --no-cache \
         opcache \
         pcntl \
         zip \
-    && pecl install redis \
-    && docker-php-ext-enable redis \
-    && apk del .build-deps
+        redis
+
+RUN apk add --no-cache dos2unix
 
 COPY --from=vendor /build /var/www/html
 
