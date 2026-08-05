@@ -4,7 +4,7 @@
 
 | Finding | Severity | Description | Recommendation |
 | --- | --- | --- | --- |
-| **A01:2021-RCE via Unrestricted File Upload** | **CRITICAL** | Submissions accept any file type (e.g. `.php`) stored directly in a public directory, allowing remote code execution. | Validate mime-types and file extensions. Do not execute scripts in public storage. |
+| **[RESOLVED] A01:2021-RCE via Unrestricted File Upload** | **CRITICAL** | Submissions accept any file type (e.g. `.php`) stored directly in a public directory, allowing remote code execution. | Validate mime-types and file extensions. Do not execute scripts in public storage. *(Note: Livewire validation `mimes:pdf,zip,rar,docx,doc,xlsx` implemented in TaskShow.php).* |
 | **A01:2021-Binary RBAC** | **Medium** | System relies on binary check (`role === 'admin'`) without granular permissions or policy controls. | Implement Laravel Policies and spatie/laravel-permission for granular RBAC. |
 | **A07:2021-No Multi-Factor Authentication** | **Low-Medium** | Login system does not support MFA for administrative accounts. | Integrate Breeze MFA or Laravel Fortify for administrative two-factor login. |
 | **A09:2021-Lack of Database Level Unique Guard** | **Low** | Absence of composite unique key on submissions can lead to duplicate entries via race conditions. | Add a unique composite index to `submissions` on `(user_id, task_id)`. |
@@ -26,7 +26,7 @@
   $fileUrl = $file->store('submissions', 'public');
   ```
   Since the public folder is symlinked to the web directory, a student can browse to `http://lms-url/storage/submissions/shell.php` and execute arbitrary bash/OS commands directly on the server, compromising the database and hosting environment.
-* **Severity:** **CRITICAL**
+* **Severity:** **[RESOLVED] CRITICAL** (Fixed in latest codebase)
 * **Recommendation:** Restrict accepted file uploads to secure formats (e.g. `pdf, zip, rar, docx`) and validate mime-types explicitly. Disable executable script execution in Nginx/Apache configuration for the `/storage` directory.
 * **Example Implementation:**
   ```php
@@ -73,3 +73,7 @@
 * **SQL Injection:** High security level. By writing standard Eloquent queries (e.g., `User::query()->where('role', 'member')->get()`), the engine compiles parameters using prepared SQL statements, neutralizing SQL injection vectors.
 * **Cross-Site Scripting (XSS):** Blade's standard output brackets `{{ $data }}` escape HTML characters securely. No unsafe raw output tags (`{!! !!}`) are used for user inputs.
 * **CSRF (Cross-Site Request Forgery):** Protected. Every Livewire component interaction automatically submits CSRF tokens via request headers, preventing unauthorized session actions.
+
+---
+
+> **AI Context Note (2026-07-31):** Security review context digested. RCE vulnerability on file upload is verified as patched via `mimes` validation in `TaskShow.php`. RBAC and session hardening are still outstanding recommendations.

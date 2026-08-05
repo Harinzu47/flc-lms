@@ -40,7 +40,7 @@ class UserManager extends Component
 
     public string $password = ''; // Diperlukan untuk Create, opsional untuk Edit
 
-    public string $role = 'member';
+    public string $role = 'peserta';
 
     // ── Gamification Adjustment Fields ───────────────────────────────────────
     public int $xpDelta = 0;
@@ -103,7 +103,7 @@ class UserManager extends Component
         $this->validate([
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'email', 'max:255', Rule::unique('users', 'email')->ignore($this->userId)],
-            'role' => ['required', 'in:admin,member'],
+            'role' => ['required', 'in:'.implode(',', User::ROLES)],
             'password' => [$this->userId ? 'nullable' : 'required', 'string', 'min:8'],
         ]);
 
@@ -148,6 +148,13 @@ class UserManager extends Component
         ]);
 
         $user = User::findOrFail($this->userId);
+
+        $projectedXp = $user->total_xp + $this->xpDelta;
+        if ($projectedXp < 0) {
+            $this->addError('xpDelta', "Tidak bisa mengurangi XP di bawah 0. Maksimal pengurangan: {$user->total_xp} XP.");
+
+            return;
+        }
 
         // Membungkus dalam transaksi database untuk menjamin kepatuhan ACID
         DB::transaction(function () use ($user) {
@@ -220,7 +227,7 @@ class UserManager extends Component
         $this->name = '';
         $this->email = '';
         $this->password = '';
-        $this->role = 'member';
+        $this->role = 'peserta';
         $this->xpDelta = 0;
         $this->xpReason = '';
         $this->selectedBadges = [];

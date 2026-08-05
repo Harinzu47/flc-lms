@@ -26,7 +26,7 @@ While the system is well-suited for small user groups, classroom testing, and th
 
 ## Top 10 Findings
 
-1. **[CRITICAL] RCE via Unrestricted File Upload:** Student task submissions accept any file type (e.g. `.php`) stored directly in a public directory.
+1. **[RESOLVED] [CRITICAL] RCE via Unrestricted File Upload:** Student task submissions accept any file type (e.g. `.php`) stored directly in a public directory. *(Note: Fixed in `TaskShow.php` with mime-type validation).*
    * *Location:* [TaskShow.php:L77-80](file:///d:/LMS%20FLC/flc-lms/app/Livewire/TaskShow.php#L77-80)
 2. **[HIGH] Gamification Rule Coupling:** XP updates and level checks run synchronously in the HTTP request thread, violating the event-driven goals defined in architectural guidelines.
    * *Location:* [MaterialShow.php:L56-67](file:///d:/LMS%20FLC/flc-lms/app/Livewire/MaterialShow.php#L56-67)
@@ -38,7 +38,7 @@ While the system is well-suited for small user groups, classroom testing, and th
    * *Location:* [2026_04_12_002845_create_submissions_table.php](file:///d:/LMS%20FLC/flc-lms/database/migrations/2026_04_12_002845_create_submissions_table.php)
 6. **[MEDIUM] Unindexed Claims Query:** The query that checks if a user has already read a material is unindexed on the `reference_id` column.
    * *Location:* [AwardMaterialXpAction.php:L35-39](file:///d:/LMS%20FLC/flc-lms/app/Actions/Gamification/AwardMaterialXpAction.php#L35-39)
-7. **[MEDIUM] Generic Boilerplate README:** The root README.md contains default Laravel framework instructions and completely lacks project info.
+7. **[RESOLVED] [MEDIUM] Generic Boilerplate README:** The root README.md contains default Laravel framework instructions and completely lacks project info. *(Note: `README.md` is now highly detailed and customized for FLC LMS).*
    * *Location:* [README.md](file:///d:/LMS%20FLC/flc-lms/README.md)
 8. **[MEDIUM] Lack of Granular Access Controls:** Authentication relies on binary `role === 'admin'` checks instead of modular permissions.
    * *Location:* [EnsureUserIsAdmin.php:L21-28](file:///d:/LMS%20FLC/flc-lms/app/Http/Middleware/EnsureUserIsAdmin.php#L21-28)
@@ -60,3 +60,7 @@ While the system is well-suited for small user groups, classroom testing, and th
 8. **Update Project README:** Replace the boilerplate Laravel README.md with comprehensive installation and testing guides.
 9. **Deploy Stateless Sessions:** Configure Redis or Database drivers as the session storage handler in production.
 10. **Build v1 REST API:** Develop REST APIs protected by Laravel Sanctum for mobile and university system integrations.
+
+---
+
+> **AI Context Note (2026-07-31):** Context successfully digested. The codebase has advanced beyond this summary in several areas (e.g., file validation in `TaskShow.php` and `README.md` documentation). Future architecture steps should focus on migrating gamification events to Redis Queues and resolving the Leaderboard N+1 query loops.

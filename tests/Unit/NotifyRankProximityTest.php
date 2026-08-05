@@ -32,8 +32,8 @@ final class NotifyRankProximityTest extends TestCase
             'gamification.rank_proximity_min_gap_change' => 10,
         ]);
 
-        $aboveUser = User::factory()->create(['role' => 'member', 'total_xp' => 120]);
-        $user = User::factory()->create(['role' => 'member', 'total_xp' => 100]);
+        $aboveUser = User::factory()->create(['role' => 'peserta', 'total_xp' => 120]);
+        $user = User::factory()->create(['role' => 'peserta', 'total_xp' => 100]);
 
         $this->listener->handle(new XpEarned($user, 10));
 
@@ -61,8 +61,8 @@ final class NotifyRankProximityTest extends TestCase
     {
         config(['gamification.rank_proximity_threshold' => 50]);
 
-        User::factory()->create(['role' => 'member', 'total_xp' => 200]);
-        $user = User::factory()->create(['role' => 'member', 'total_xp' => 100]);
+        User::factory()->create(['role' => 'peserta', 'total_xp' => 200]);
+        $user = User::factory()->create(['role' => 'peserta', 'total_xp' => 100]);
 
         $this->listener->handle(new XpEarned($user, 10));
 
@@ -78,7 +78,7 @@ final class NotifyRankProximityTest extends TestCase
     {
         config(['gamification.rank_proximity_threshold' => 50]);
 
-        $user = User::factory()->create(['role' => 'member', 'total_xp' => 500]);
+        $user = User::factory()->create(['role' => 'peserta', 'total_xp' => 500]);
 
         // No other member exists with more XP
         $this->listener->handle(new XpEarned($user, 10));
@@ -98,9 +98,9 @@ final class NotifyRankProximityTest extends TestCase
             'gamification.rank_proximity_min_gap_change' => 10,
         ]);
 
-        User::factory()->create(['role' => 'member', 'total_xp' => 130]);
+        User::factory()->create(['role' => 'peserta', 'total_xp' => 130]);
         $user = User::factory()->create([
-            'role' => 'member',
+            'role' => 'peserta',
             'total_xp' => 100,
             'last_rank_gap_notified' => 35, // Was notified when gap was 35
         ]);
@@ -123,9 +123,9 @@ final class NotifyRankProximityTest extends TestCase
             'gamification.rank_proximity_min_gap_change' => 10,
         ]);
 
-        User::factory()->create(['role' => 'member', 'total_xp' => 130]);
+        User::factory()->create(['role' => 'peserta', 'total_xp' => 130]);
         $user = User::factory()->create([
-            'role' => 'member',
+            'role' => 'peserta',
             'total_xp' => 110,
             'last_rank_gap_notified' => 35, // Was notified when gap was 35
         ]);
@@ -147,9 +147,9 @@ final class NotifyRankProximityTest extends TestCase
     {
         config(['gamification.rank_proximity_threshold' => 50]);
 
-        User::factory()->create(['role' => 'member', 'total_xp' => 200]);
+        User::factory()->create(['role' => 'peserta', 'total_xp' => 200]);
         $user = User::factory()->create([
-            'role' => 'member',
+            'role' => 'peserta',
             'total_xp' => 100,
             'last_rank_gap_notified' => 40,
         ]);
@@ -172,8 +172,8 @@ final class NotifyRankProximityTest extends TestCase
         config(['gamification.rank_proximity_threshold' => 50]);
 
         // Both users have the same total_xp — strict ">" means neither is "above"
-        User::factory()->create(['role' => 'member', 'total_xp' => 100]);
-        $user = User::factory()->create(['role' => 'member', 'total_xp' => 100]);
+        User::factory()->create(['role' => 'peserta', 'total_xp' => 100]);
+        $user = User::factory()->create(['role' => 'peserta', 'total_xp' => 100]);
 
         $this->listener->handle(new XpEarned($user, 10));
 
@@ -189,7 +189,7 @@ final class NotifyRankProximityTest extends TestCase
     {
         config(['gamification.rank_proximity_threshold' => 50]);
 
-        User::factory()->create(['role' => 'member', 'total_xp' => 120]);
+        User::factory()->create(['role' => 'peserta', 'total_xp' => 120]);
         $admin = User::factory()->create(['role' => 'admin', 'total_xp' => 100]);
 
         $this->listener->handle(new XpEarned($admin, 10));
@@ -209,8 +209,8 @@ final class NotifyRankProximityTest extends TestCase
             'gamification.rank_proximity_min_gap_change' => 10,
         ]);
 
-        User::factory()->create(['role' => 'member', 'total_xp' => 120]);
-        $user = User::factory()->create(['role' => 'member', 'total_xp' => 100]);
+        User::factory()->create(['role' => 'peserta', 'total_xp' => 120]);
+        $user = User::factory()->create(['role' => 'peserta', 'total_xp' => 100]);
 
         // Pre-existing pending celebration for this user
         PendingCelebration::create([
@@ -240,12 +240,12 @@ final class NotifyRankProximityTest extends TestCase
         ]);
 
         $aboveUser = User::factory()->create([
-            'role' => 'member',
+            'role' => 'peserta',
             'total_xp' => 120,
             'name' => 'Secret Person',
             'email' => 'secret@example.com',
         ]);
-        $user = User::factory()->create(['role' => 'member', 'total_xp' => 100]);
+        $user = User::factory()->create(['role' => 'peserta', 'total_xp' => 100]);
 
         $this->listener->handle(new XpEarned($user, 10));
 

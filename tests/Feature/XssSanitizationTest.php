@@ -166,7 +166,7 @@ final class XssSanitizationTest extends TestCase
 
     public function test_material_modal_preview_escapes_script_in_description(): void
     {
-        $admin = User::factory()->create(['role' => 'admin']);
+        $admin = User::factory()->create(['role' => 'instruktur']);
 
         Livewire::actingAs($admin)
             ->test(CourseManager::class)

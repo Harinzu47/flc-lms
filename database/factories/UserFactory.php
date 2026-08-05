@@ -30,6 +30,7 @@ class UserFactory extends Factory
             'email_verified_at' => now(),
             'password' => static::$password ??= Hash::make('password'),
             'remember_token' => Str::random(10),
+            'role' => 'peserta',
         ];
     }
 
@@ -41,5 +42,27 @@ class UserFactory extends Factory
         return $this->state(fn (array $attributes) => [
             'email_verified_at' => null,
         ]);
+    }
+
+    // ── Role Factory States ──────────────────────────────────────────────────
+
+    public function peserta(): static
+    {
+        return $this->state(['role' => 'peserta']);
+    }
+
+    public function instruktur(): static
+    {
+        return $this->state(['role' => 'instruktur']);
+    }
+
+    public function admin(): static
+    {
+        return $this->state(['role' => 'admin']);
+    }
+
+    public function bph(): static
+    {
+        return $this->state(['role' => 'bph']);
     }
 }

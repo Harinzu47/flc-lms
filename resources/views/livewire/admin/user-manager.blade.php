@@ -145,15 +145,17 @@
 
                                         {{-- Role --}}
                                         <td class="px-6 py-4">
-                                            @if($userItem->role === 'admin')
-                                                <span class="inline-flex items-center gap-1 bg-red-100 text-red-800 border border-red-200 px-2.5 py-0.5 rounded-full text-xs font-bold font-label uppercase">
-                                                    Admin
-                                                </span>
-                                            @else
-                                                <span class="inline-flex items-center gap-1 bg-green-100 text-green-800 border border-green-200 px-2.5 py-0.5 rounded-full text-xs font-bold font-label uppercase">
-                                                    Student
-                                                </span>
-                                            @endif
+                                            @php
+                                                $roleBadge = match($userItem->role) {
+                                                    'admin' => ['bg' => 'bg-red-100 text-red-800 border-red-200', 'label' => 'Admin'],
+                                                    'instruktur' => ['bg' => 'bg-blue-100 text-blue-800 border-blue-200', 'label' => 'Instruktur'],
+                                                    'bph' => ['bg' => 'bg-amber-100 text-amber-800 border-amber-200', 'label' => 'BPH'],
+                                                    default => ['bg' => 'bg-green-100 text-green-800 border-green-200', 'label' => 'Peserta'],
+                                                };
+                                            @endphp
+                                            <span class="inline-flex items-center gap-1 {{ $roleBadge['bg'] }} border px-2.5 py-0.5 rounded-full text-xs font-bold font-label uppercase">
+                                                {{ $roleBadge['label'] }}
+                                            </span>
                                         </td>
 
                                         {{-- Level --}}
@@ -394,8 +396,10 @@
                                 wire:model="role"
                                 class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
                             >
-                                <option value="member">Student (Member)</option>
-                                <option value="admin">Instructor (Admin)</option>
+                                <option value="peserta">Peserta (Student)</option>
+                                <option value="instruktur">Instruktur</option>
+                                <option value="admin">Admin</option>
+                                <option value="bph">BPH</option>
                             </select>
                             @error('role') <span class="text-error text-xs block mt-1 font-medium">{{ $message }}</span> @enderror
                         </div>

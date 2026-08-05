@@ -19,7 +19,7 @@ final class RankProgressCelebrationTest extends TestCase
 
     public function test_rank_progress_celebration_renders_with_progress_message(): void
     {
-        $user = User::factory()->create(['role' => 'member', 'total_xp' => 100]);
+        $user = User::factory()->create(['role' => 'peserta', 'total_xp' => 100]);
 
         PendingCelebration::create([
             'user_id' => $user->id,
@@ -45,7 +45,7 @@ final class RankProgressCelebrationTest extends TestCase
 
     public function test_rank_progress_pending_celebration_is_deleted_after_render(): void
     {
-        $user = User::factory()->create(['role' => 'member', 'total_xp' => 100]);
+        $user = User::factory()->create(['role' => 'peserta', 'total_xp' => 100]);
 
         PendingCelebration::create([
             'user_id' => $user->id,
@@ -72,13 +72,13 @@ final class RankProgressCelebrationTest extends TestCase
     public function test_no_user_identity_appears_in_celebration_hub_output(): void
     {
         $otherUser = User::factory()->create([
-            'role' => 'member',
+            'role' => 'peserta',
             'total_xp' => 200,
             'name' => 'TopSecretStudent',
             'email' => 'topsecret@example.com',
         ]);
 
-        $user = User::factory()->create(['role' => 'member', 'total_xp' => 185]);
+        $user = User::factory()->create(['role' => 'peserta', 'total_xp' => 185]);
 
         PendingCelebration::create([
             'user_id' => $user->id,
@@ -98,7 +98,7 @@ final class RankProgressCelebrationTest extends TestCase
 
     public function test_celebration_hub_renders_rank_progress_as_notify_dispatch(): void
     {
-        $user = User::factory()->create(['role' => 'member', 'total_xp' => 100]);
+        $user = User::factory()->create(['role' => 'peserta', 'total_xp' => 100]);
 
         PendingCelebration::create([
             'user_id' => $user->id,

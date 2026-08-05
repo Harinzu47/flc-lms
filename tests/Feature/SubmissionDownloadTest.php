@@ -23,8 +23,8 @@ final class SubmissionDownloadTest extends TestCase
     public function test_admin_can_download_any_student_submission(): void
     {
         // Arrange
-        $admin = User::factory()->create(['role' => 'admin']);
-        $student = User::factory()->create(['role' => 'member']);
+        $admin = User::factory()->create(['role' => 'instruktur']);
+        $student = User::factory()->create(['role' => 'peserta']);
 
         $filePath = 'submissions/sample.pdf';
         Storage::disk('local')->put($filePath, 'sample content');
@@ -46,7 +46,7 @@ final class SubmissionDownloadTest extends TestCase
     public function test_student_can_download_their_own_submission(): void
     {
         // Arrange
-        $student = User::factory()->create(['role' => 'member']);
+        $student = User::factory()->create(['role' => 'peserta']);
 
         $filePath = 'submissions/student_doc.pdf';
         Storage::disk('local')->put($filePath, 'my work');
@@ -68,8 +68,8 @@ final class SubmissionDownloadTest extends TestCase
     public function test_student_cannot_download_other_student_submission(): void
     {
         // Arrange
-        $student1 = User::factory()->create(['role' => 'member']);
-        $student2 = User::factory()->create(['role' => 'member']);
+        $student1 = User::factory()->create(['role' => 'peserta']);
+        $student2 = User::factory()->create(['role' => 'peserta']);
 
         $filePath = 'submissions/secret.pdf';
         Storage::disk('local')->put($filePath, 'confidential');
@@ -90,7 +90,7 @@ final class SubmissionDownloadTest extends TestCase
     public function test_unauthenticated_guests_cannot_download_any_submission(): void
     {
         // Arrange
-        $student = User::factory()->create(['role' => 'member']);
+        $student = User::factory()->create(['role' => 'peserta']);
         $submission = Submission::factory()->create(['user_id' => $student->id]);
 
         // Act
@@ -103,7 +103,7 @@ final class SubmissionDownloadTest extends TestCase
     public function test_returns_404_if_file_does_not_exist(): void
     {
         // Arrange
-        $student = User::factory()->create(['role' => 'member']);
+        $student = User::factory()->create(['role' => 'peserta']);
         $submission = Submission::factory()->create([
             'user_id' => $student->id,
             'file_url' => 'submissions/missing.pdf', // File does not exist on fake disk
@@ -120,7 +120,7 @@ final class SubmissionDownloadTest extends TestCase
     public function test_prevents_path_traversal_attempts(): void
     {
         // Arrange
-        $student = User::factory()->create(['role' => 'member']);
+        $student = User::factory()->create(['role' => 'peserta']);
         $submission = Submission::factory()->create([
             'user_id' => $student->id,
             'file_url' => 'submissions/../../database/database.sqlite',

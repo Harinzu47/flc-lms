@@ -28,7 +28,7 @@ class UserManagerTest extends TestCase
 
     public function test_non_admin_cannot_access_user_management(): void
     {
-        $student = User::factory()->create(['role' => 'member']);
+        $student = User::factory()->create(['role' => 'peserta']);
 
         $response = $this->actingAs($student)->get(route('admin.users'));
 
@@ -43,7 +43,7 @@ class UserManagerTest extends TestCase
             ->test(UserManager::class)
             ->set('name', 'New Student')
             ->set('email', 'newstudent@example.com')
-            ->set('role', 'member')
+            ->set('role', 'peserta')
             ->set('password', 'password123')
             ->call('save')
             ->assertHasNoErrors()
@@ -52,7 +52,7 @@ class UserManagerTest extends TestCase
         $this->assertDatabaseHas('users', [
             'name' => 'New Student',
             'email' => 'newstudent@example.com',
-            'role' => 'member',
+            'role' => 'peserta',
             'total_xp' => 0,
         ]);
     }
@@ -62,7 +62,7 @@ class UserManagerTest extends TestCase
         Event::fake([XpEarned::class]);
 
         $admin = User::factory()->create(['role' => 'admin']);
-        $student = User::factory()->create(['role' => 'member', 'total_xp' => 100]);
+        $student = User::factory()->create(['role' => 'peserta', 'total_xp' => 100]);
 
         Livewire::actingAs($admin)
             ->test(UserManager::class)
@@ -90,7 +90,7 @@ class UserManagerTest extends TestCase
     public function test_sync_badges_preserves_old_timestamps(): void
     {
         $admin = User::factory()->create(['role' => 'admin']);
-        $student = User::factory()->create(['role' => 'member']);
+        $student = User::factory()->create(['role' => 'peserta']);
         $badge1 = Badge::create([
             'name' => 'Badge One',
             'description' => 'Desc 1',

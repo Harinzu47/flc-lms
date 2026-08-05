@@ -20,7 +20,7 @@ final class CourseManagerTest extends TestCase
 
     public function test_admin_can_access_course_management(): void
     {
-        $admin = User::factory()->create(['role' => 'admin']);
+        $admin = User::factory()->create(['role' => 'instruktur']);
 
         $response = $this->actingAs($admin)->get(route('admin.courses'));
 
@@ -29,7 +29,7 @@ final class CourseManagerTest extends TestCase
 
     public function test_non_admin_cannot_access_course_management(): void
     {
-        $student = User::factory()->create(['role' => 'member']);
+        $student = User::factory()->create(['role' => 'peserta']);
 
         $response = $this->actingAs($student)->get(route('admin.courses'));
 
@@ -38,7 +38,7 @@ final class CourseManagerTest extends TestCase
 
     public function test_admin_can_create_course(): void
     {
-        $admin = User::factory()->create(['role' => 'admin']);
+        $admin = User::factory()->create(['role' => 'instruktur']);
 
         Livewire::actingAs($admin)
             ->test(CourseManager::class)
@@ -59,7 +59,7 @@ final class CourseManagerTest extends TestCase
 
     public function test_admin_can_create_module_and_swap_orders(): void
     {
-        $admin = User::factory()->create(['role' => 'admin']);
+        $admin = User::factory()->create(['role' => 'instruktur']);
         $course = Course::create([
             'title' => 'Biology 101',
             'description' => 'Intro to biology.',
@@ -92,8 +92,8 @@ final class CourseManagerTest extends TestCase
 
     public function test_deleting_material_cleans_up_related_xp_logs(): void
     {
-        $admin = User::factory()->create(['role' => 'admin']);
-        $student = User::factory()->create(['role' => 'member']);
+        $admin = User::factory()->create(['role' => 'instruktur']);
+        $student = User::factory()->create(['role' => 'peserta']);
 
         $course = Course::create(['title' => 'Test', 'difficulty_level' => 'beginner']);
         $module = Module::create(['course_id' => $course->id, 'title' => 'M1', 'sort_order' => 1]);

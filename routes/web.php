@@ -16,17 +16,20 @@ Route::get('/', function () {
         : redirect()->route('login');
 });
 
-// ── Dashboard (replaces Breeze's default closure) ─────────────────────────
+// ── Dashboard (all authenticated users — view differs by role) ────────────
 Route::get('/dashboard', GamifiedDashboard::class)
     ->middleware(['auth', 'verified'])
     ->name('dashboard');
 
+// ── Profile (accessible to all authenticated roles) ──────────────────────
 Route::middleware('auth')->group(function () {
-    // ── Profile ──────────────────────────────────────────────────────────
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+});
 
+// ── Student Routes (peserta-only) ────────────────────────────────────────
+Route::middleware(['auth', 'role:peserta'])->group(function () {
     // ── Courses (Student View) ───────────────────────────────────────────
     Route::get('/courses/{course}', CourseShow::class)->name('courses.show');
 
@@ -41,8 +44,10 @@ Route::middleware('auth')->group(function () {
 
     // ── Leaderboard ───────────────────────────────────────────────────────
     Route::get('/leaderboard', HallOfFame::class)->name('leaderboard');
+});
 
-    // ── Secure Submission Downloads ────────────────────────────────────────
+// ── Submission Downloads (peserta owns, instruktur grades) ────────────────
+Route::middleware(['auth', 'role:peserta,instruktur'])->group(function () {
     Route::get('/submissions/{submission}/download', [SubmissionDownloadController::class, 'download'])
         ->name('submissions.download');
 });
