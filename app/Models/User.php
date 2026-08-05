@@ -21,10 +21,13 @@ class User extends Authenticatable
 
     // ── RBAC Role Constants ──────────────────────────────────────────────────
 
-    public const ROLE_PESERTA    = 'peserta';
+    public const ROLE_PESERTA = 'peserta';
+
     public const ROLE_INSTRUKTUR = 'instruktur';
-    public const ROLE_ADMIN      = 'admin';
-    public const ROLE_BPH        = 'bph';
+
+    public const ROLE_ADMIN = 'admin';
+
+    public const ROLE_BPH = 'bph';
 
     /** @var list<string> All valid role values for validation rules. */
     public const ROLES = [

@@ -32,4 +32,3 @@ final class SubmissionPolicy
         return $user->isInstruktur();
     }
 }
-

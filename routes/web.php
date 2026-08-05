@@ -54,4 +54,3 @@ Route::middleware(['auth', 'role:peserta,instruktur'])->group(function () {
 
 require __DIR__.'/auth.php';
 require __DIR__.'/admin.php';
-

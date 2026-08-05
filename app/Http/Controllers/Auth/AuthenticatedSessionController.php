@@ -33,8 +33,8 @@ class AuthenticatedSessionController extends Controller
         // reach before being bounced to login. The fallback differs by role.
         $fallback = match ($request->user()->role) {
             'instruktur' => route('admin.courses', absolute: false),
-            'admin'      => route('admin.users', absolute: false),
-            default      => route('dashboard', absolute: false),  // peserta & bph
+            'admin' => route('admin.users', absolute: false),
+            default => route('dashboard', absolute: false),  // peserta & bph
         };
 
         return redirect()->intended($fallback);

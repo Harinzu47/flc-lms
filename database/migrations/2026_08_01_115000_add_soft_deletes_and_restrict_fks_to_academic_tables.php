@@ -2,6 +2,7 @@
 
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
@@ -10,23 +11,24 @@ return new class extends Migration
     {
         // 1. Add soft deletes to core academic models
         $tablesWithSoftDeletes = ['users', 'courses', 'modules', 'tasks', 'submissions'];
-        
+
         foreach ($tablesWithSoftDeletes as $tableName) {
             Schema::table($tableName, function (Blueprint $table) use ($tableName) {
-                if (!Schema::hasColumn($tableName, 'deleted_at')) {
+                if (! Schema::hasColumn($tableName, 'deleted_at')) {
                     $table->softDeletes();
                 }
             });
         }
 
         // 2. Convert FK constraints from cascadeOnDelete to restrictOnDelete
-        
+
         // Helper to safely drop foreign keys by column name
-        $dropFkByColumn = function($tableName, $columnName) {
-            if (\Illuminate\Support\Facades\DB::connection()->getDriverName() === 'sqlite') {
+        $dropFkByColumn = function ($tableName, $columnName) {
+            if (DB::connection()->getDriverName() === 'sqlite') {
                 Schema::table($tableName, function (Blueprint $table) use ($columnName) {
                     $table->dropForeign([$columnName]);
                 });
+
                 return;
             }
 
@@ -78,11 +80,12 @@ return new class extends Migration
     public function down(): void
     {
         // Helper to safely drop foreign keys by column name
-        $dropFkByColumn = function($tableName, $columnName) {
-            if (\Illuminate\Support\Facades\DB::connection()->getDriverName() === 'sqlite') {
+        $dropFkByColumn = function ($tableName, $columnName) {
+            if (DB::connection()->getDriverName() === 'sqlite') {
                 Schema::table($tableName, function (Blueprint $table) use ($columnName) {
                     $table->dropForeign([$columnName]);
                 });
+
                 return;
             }
 
@@ -133,7 +136,7 @@ return new class extends Migration
 
         // Drop soft deletes
         $tablesWithSoftDeletes = ['users', 'courses', 'modules', 'tasks', 'submissions'];
-        
+
         foreach ($tablesWithSoftDeletes as $tableName) {
             Schema::table($tableName, function (Blueprint $table) use ($tableName) {
                 if (Schema::hasColumn($tableName, 'deleted_at')) {

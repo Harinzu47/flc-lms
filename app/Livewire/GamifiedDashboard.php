@@ -34,4 +34,3 @@ class GamifiedDashboard extends Component
         return $this->renderStudentDashboard($user);
     }
 }
-

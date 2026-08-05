@@ -103,7 +103,7 @@ class UserManager extends Component
         $this->validate([
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'email', 'max:255', Rule::unique('users', 'email')->ignore($this->userId)],
-            'role' => ['required', 'in:' . implode(',', \App\Models\User::ROLES)],
+            'role' => ['required', 'in:'.implode(',', User::ROLES)],
             'password' => [$this->userId ? 'nullable' : 'required', 'string', 'min:8'],
         ]);
 
@@ -152,6 +152,7 @@ class UserManager extends Component
         $projectedXp = $user->total_xp + $this->xpDelta;
         if ($projectedXp < 0) {
             $this->addError('xpDelta', "Tidak bisa mengurangi XP di bawah 0. Maksimal pengurangan: {$user->total_xp} XP.");
+
             return;
         }
 

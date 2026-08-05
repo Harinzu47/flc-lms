@@ -19,4 +19,3 @@ final class CoursePolicy
         return $user->isInstruktur();
     }
 }
-

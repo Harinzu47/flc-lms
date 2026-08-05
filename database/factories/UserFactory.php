@@ -66,4 +66,3 @@ class UserFactory extends Factory
         return $this->state(['role' => 'bph']);
     }
 }
-

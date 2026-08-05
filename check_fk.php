@@ -1,7 +1,11 @@
 <?php
+
+use Illuminate\Contracts\Console\Kernel;
+use Illuminate\Support\Facades\Schema;
+
 require 'vendor/autoload.php';
 $app = require_once 'bootstrap/app.php';
-$app->make(Illuminate\Contracts\Console\Kernel::class)->bootstrap();
+$app->make(Kernel::class)->bootstrap();
 
-$fks = \Illuminate\Support\Facades\Schema::getForeignKeys('xp_logs');
+$fks = Schema::getForeignKeys('xp_logs');
 echo json_encode($fks, JSON_PRETTY_PRINT);

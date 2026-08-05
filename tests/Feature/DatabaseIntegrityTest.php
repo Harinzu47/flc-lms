@@ -27,7 +27,7 @@ final class DatabaseIntegrityTest extends TestCase
 
         $this->assertDatabaseMissing('users', ['id' => $user->id, 'deleted_at' => null]);
         $this->assertDatabaseHas('users', ['id' => $user->id]);
-        
+
         $this->assertNull(User::find($user->id));
         $this->assertNotNull(User::withTrashed()->find($user->id));
     }
@@ -55,7 +55,7 @@ final class DatabaseIntegrityTest extends TestCase
 
         $this->expectException(QueryException::class);
         $this->expectExceptionMessageMatches('/Cannot delete or update a parent row: a foreign key constraint fails|FOREIGN KEY constraint failed/');
-        
+
         $course->forceDelete();
     }
 
@@ -80,7 +80,7 @@ final class DatabaseIntegrityTest extends TestCase
         $course = Course::factory()->create();
         $module = Module::factory()->create(['course_id' => $course->id]);
         $task = Task::factory()->create(['module_id' => $module->id]);
-        
+
         $submission = Submission::factory()->create([
             'user_id' => $user->id,
             'task_id' => $task->id,
