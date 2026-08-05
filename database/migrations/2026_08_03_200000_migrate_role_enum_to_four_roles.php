@@ -15,7 +15,7 @@ use Illuminate\Support\Facades\Schema;
  *   - 'admin'  → 'admin'   (unchanged — existing admins retain their role)
  *
  * Strategy:
- *   - MySQL: ALTER TABLE … MODIFY COLUMN (native ENUM support)
+ *   - MySQL: ALTER TABLE … MODIFY COLUMN (native ENUM support with 3-step safe conversion)
  *   - SQLite: Column is stored as TEXT, so we only need the data migration.
  *             Laravel's SQLite schema treats ENUM as TEXT under the hood.
  */
@@ -25,17 +25,22 @@ return new class extends Migration
     {
         $driver = DB::getDriverName();
 
-        // Step 1: Expand the ENUM to include new roles (MySQL only)
         if ($driver === 'mysql') {
-            DB::statement("ALTER TABLE users MODIFY COLUMN role ENUM('peserta','instruktur','admin','bph') NOT NULL DEFAULT 'peserta'");
+            // Step 1: Perlebar ENUM sementara agar bisa menampung data lama ('member') dan data baru
+            DB::statement("ALTER TABLE users MODIFY COLUMN role ENUM('member', 'admin', 'peserta', 'instruktur', 'bph') NOT NULL DEFAULT 'peserta'");
         }
 
-        // Step 2: Migrate existing data — rename 'member' → 'peserta'
+        // Step 2: Migrate existing data — rename 'member' → 'peserta' (Berlaku untuk semua driver)
         DB::table('users')
             ->where('role', 'member')
             ->update(['role' => 'peserta']);
 
-        // Step 3: For SQLite, update the default via Schema (TEXT column)
+        if ($driver === 'mysql') {
+            // Step 3: Kunci kembali ENUM secara ketat hanya untuk 4 aktor yang baru
+            DB::statement("ALTER TABLE users MODIFY COLUMN role ENUM('peserta', 'instruktur', 'admin', 'bph') NOT NULL DEFAULT 'peserta'");
+        }
+
+        // Step 4: For SQLite, update the default via Schema (TEXT column)
         if ($driver === 'sqlite') {
             Schema::table('users', function ($table) {
                 $table->string('role')->default('peserta')->change();
@@ -47,7 +52,12 @@ return new class extends Migration
     {
         $driver = DB::getDriverName();
 
-        // Step 1: Reverse data migration
+        if ($driver === 'mysql') {
+            // Step 1: Perlebar ENUM sementara untuk menerima 'member' saat rollback
+            DB::statement("ALTER TABLE users MODIFY COLUMN role ENUM('peserta', 'instruktur', 'admin', 'bph', 'member') NOT NULL DEFAULT 'member'");
+        }
+
+        // Step 2: Reverse data migration
         DB::table('users')
             ->where('role', 'peserta')
             ->update(['role' => 'member']);
@@ -57,9 +67,9 @@ return new class extends Migration
             ->whereIn('role', ['instruktur', 'bph'])
             ->update(['role' => 'admin']);
 
-        // Step 2: Shrink the ENUM back (MySQL only)
         if ($driver === 'mysql') {
-            DB::statement("ALTER TABLE users MODIFY COLUMN role ENUM('admin','member') NOT NULL DEFAULT 'member'");
+            // Step 3: Shrink the ENUM back to the original 2 roles
+            DB::statement("ALTER TABLE users MODIFY COLUMN role ENUM('admin', 'member') NOT NULL DEFAULT 'member'");
         }
 
         if ($driver === 'sqlite') {
