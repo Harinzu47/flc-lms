@@ -16,6 +16,7 @@ final class CoursePolicy
      */
     public function manage(User $user): bool
     {
-        return $user->role === 'admin';
+        return $user->isInstruktur();
     }
 }
+

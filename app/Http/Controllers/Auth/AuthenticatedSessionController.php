@@ -31,9 +31,11 @@ class AuthenticatedSessionController extends Controller
         // ── Role-based post-login redirect ────────────────────────────────
         // redirect()->intended() respects any URL the user was trying to
         // reach before being bounced to login. The fallback differs by role.
-        $fallback = $request->user()->role === 'admin'
-            ? route('admin.courses', absolute: false)
-            : route('dashboard', absolute: false);
+        $fallback = match ($request->user()->role) {
+            'instruktur' => route('admin.courses', absolute: false),
+            'admin'      => route('admin.users', absolute: false),
+            default      => route('dashboard', absolute: false),  // peserta & bph
+        };
 
         return redirect()->intended($fallback);
     }

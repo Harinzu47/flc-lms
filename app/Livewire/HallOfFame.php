@@ -37,7 +37,7 @@ class HallOfFame extends Component
 
         // Top 50 members by total XP, highest first.
         $topUsers = User::query()
-            ->where('role', 'member')
+            ->where('role', User::ROLE_PESERTA)
             ->orderByDesc('total_xp')
             ->take(50)
             ->get();
@@ -45,7 +45,7 @@ class HallOfFame extends Component
         // Rank = number of members with MORE XP than the current user + 1.
         // Using a scalar COUNT avoids loading the entire table.
         $currentUserRank = User::query()
-            ->where('role', 'member')
+            ->where('role', User::ROLE_PESERTA)
             ->where('total_xp', '>', $authUser->total_xp)
             ->count() + 1;
 

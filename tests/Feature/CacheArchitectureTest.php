@@ -71,8 +71,8 @@ final class CacheArchitectureTest extends TestCase
     public function test_leaderboard_returns_hydrated_users_and_relations_from_cold_and_warm_cache(): void
     {
         $level = Level::factory()->create(['min_xp' => 0, 'name' => 'Starter']);
-        $user1 = User::factory()->create(['role' => 'member', 'total_xp' => 500, 'level_id' => $level->id]);
-        $user2 = User::factory()->create(['role' => 'member', 'total_xp' => 100, 'level_id' => $level->id]);
+        $user1 = User::factory()->create(['role' => 'peserta', 'total_xp' => 500, 'level_id' => $level->id]);
+        $user2 = User::factory()->create(['role' => 'peserta', 'total_xp' => 100, 'level_id' => $level->id]);
 
         $this->assertFalse(cache()->has('leaderboard.top.5'));
 
@@ -99,7 +99,7 @@ final class CacheArchitectureTest extends TestCase
     public function test_leaderboard_cache_invalidates_when_user_xp_or_details_change(): void
     {
         $level = Level::factory()->create(['min_xp' => 0]);
-        $user = User::factory()->create(['role' => 'member', 'total_xp' => 100, 'level_id' => $level->id]);
+        $user = User::factory()->create(['role' => 'peserta', 'total_xp' => 100, 'level_id' => $level->id]);
 
         // Warm up cache
         User::getCachedLeaderboard(5);

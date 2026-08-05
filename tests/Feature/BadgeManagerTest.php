@@ -26,7 +26,7 @@ class BadgeManagerTest extends TestCase
 
     public function test_non_admin_cannot_access_badge_management(): void
     {
-        $student = User::factory()->create(['role' => 'member']);
+        $student = User::factory()->create(['role' => 'peserta']);
 
         $response = $this->actingAs($student)->get(route('admin.badges'));
 

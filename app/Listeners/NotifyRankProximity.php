@@ -33,7 +33,7 @@ final class NotifyRankProximity implements ShouldQueue
         $user = $event->user;
 
         // Only members participate in the leaderboard ranking.
-        if ($user->role !== 'member') {
+        if ($user->role !== User::ROLE_PESERTA) {
             return;
         }
 
@@ -44,7 +44,7 @@ final class NotifyRankProximity implements ShouldQueue
         // Uses scalar query — never loads the full collection.
         // Strict ">" means tied users are NOT considered "above" each other.
         $aboveUserXp = User::query()
-            ->where('role', 'member')
+            ->where('role', User::ROLE_PESERTA)
             ->where('total_xp', '>', $user->total_xp)
             ->orderBy('total_xp')
             ->value('total_xp');
@@ -82,7 +82,7 @@ final class NotifyRankProximity implements ShouldQueue
         // HallOfFame.php — rank = (members with more XP) + 1, then minus 1
         // because we want the rank they'd reach by overtaking one person.
         $currentRank = User::query()
-            ->where('role', 'member')
+            ->where('role', User::ROLE_PESERTA)
             ->where('total_xp', '>', $user->total_xp)
             ->count() + 1;
 

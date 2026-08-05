@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Collection;
@@ -16,7 +17,44 @@ use Illuminate\Support\Collection;
 class User extends Authenticatable
 {
     /** @use HasFactory<UserFactory> */
-    use HasFactory, Notifiable;
+    use HasFactory, Notifiable, SoftDeletes;
+
+    // ── RBAC Role Constants ──────────────────────────────────────────────────
+
+    public const ROLE_PESERTA    = 'peserta';
+    public const ROLE_INSTRUKTUR = 'instruktur';
+    public const ROLE_ADMIN      = 'admin';
+    public const ROLE_BPH        = 'bph';
+
+    /** @var list<string> All valid role values for validation rules. */
+    public const ROLES = [
+        self::ROLE_PESERTA,
+        self::ROLE_INSTRUKTUR,
+        self::ROLE_ADMIN,
+        self::ROLE_BPH,
+    ];
+
+    // ── Role Helpers ─────────────────────────────────────────────────────────
+
+    public function isPeserta(): bool
+    {
+        return $this->role === self::ROLE_PESERTA;
+    }
+
+    public function isInstruktur(): bool
+    {
+        return $this->role === self::ROLE_INSTRUKTUR;
+    }
+
+    public function isAdmin(): bool
+    {
+        return $this->role === self::ROLE_ADMIN;
+    }
+
+    public function isBph(): bool
+    {
+        return $this->role === self::ROLE_BPH;
+    }
 
     /**
      * The attributes that are mass assignable.
@@ -114,7 +152,7 @@ class User extends Authenticatable
     {
         $data = cache()->remember('leaderboard.top.'.$limit, now()->addMinutes(5), function () use ($limit) {
             return self::query()
-                ->where('role', 'member')
+                ->where('role', self::ROLE_PESERTA)
                 ->with(['level'])
                 ->orderByDesc('total_xp')
                 ->take($limit)

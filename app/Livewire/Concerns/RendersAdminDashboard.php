@@ -15,7 +15,7 @@ trait RendersAdminDashboard
      */
     protected function renderAdminDashboard(User $user): View
     {
-        $totalStudents = User::where('role', 'member')->count();
+        $totalStudents = User::where('role', User::ROLE_PESERTA)->count();
         $pendingGradingCount = Submission::whereNull('score')
             ->where('is_flagged', false)
             ->count();

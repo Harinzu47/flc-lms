@@ -18,10 +18,10 @@ final class SubmissionPolicy
     public function view(User $user, ?Submission $submission = null): bool
     {
         if ($submission === null) {
-            return $user->role === 'admin';
+            return $user->isInstruktur();
         }
 
-        return $user->id === $submission->user_id || $user->role === 'admin';
+        return $user->id === $submission->user_id || $user->isInstruktur();
     }
 
     /**
@@ -29,6 +29,7 @@ final class SubmissionPolicy
      */
     public function grade(User $user, ?Submission $submission = null): bool
     {
-        return $user->role === 'admin';
+        return $user->isInstruktur();
     }
 }
+

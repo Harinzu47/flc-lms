@@ -27,10 +27,11 @@ class GamifiedDashboard extends Component
         /** @var User $user */
         $user = auth()->user();
 
-        if ($user->role === 'admin') {
+        if ($user->isBph()) {
             return $this->renderAdminDashboard($user);
         }
 
         return $this->renderStudentDashboard($user);
     }
 }
+

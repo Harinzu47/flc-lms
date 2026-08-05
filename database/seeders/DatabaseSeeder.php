@@ -69,9 +69,31 @@ class DatabaseSeeder extends Seeder
         $admin = User::updateOrCreate(
             ['email' => 'admin@lms.local'],
             [
-                'name' => 'Dosen Penguji',
+                'name' => 'Admin Sistem',
                 'password' => Hash::make('password'),
                 'role' => 'admin',
+                'level_id' => $level1->id,
+                'email_verified_at' => now(),
+            ]
+        );
+
+        $instruktur = User::updateOrCreate(
+            ['email' => 'instruktur@lms.local'],
+            [
+                'name' => 'Dosen Instruktur',
+                'password' => Hash::make('password'),
+                'role' => 'instruktur',
+                'level_id' => $level1->id,
+                'email_verified_at' => now(),
+            ]
+        );
+
+        $bph = User::updateOrCreate(
+            ['email' => 'bph@lms.local'],
+            [
+                'name' => 'Staff BPH',
+                'password' => Hash::make('password'),
+                'role' => 'bph',
                 'level_id' => $level1->id,
                 'email_verified_at' => now(),
             ]
@@ -82,7 +104,7 @@ class DatabaseSeeder extends Seeder
             [
                 'name' => 'Mahasiswa Berprestasi',
                 'password' => Hash::make('password'),
-                'role' => 'member',
+                'role' => 'peserta',
                 'total_xp' => 2500,
                 'level_id' => $level3->id,
                 'email_verified_at' => now(),
@@ -107,7 +129,7 @@ class DatabaseSeeder extends Seeder
                     [
                         'name' => "Mahasiswa Kelas {$i}",
                         'password' => Hash::make('password'),
-                        'role' => 'member',
+                        'role' => 'peserta',
                         'total_xp' => 100 * $i,
                         'level_id' => $i >= 5 ? $level2->id : $level1->id,
                         'email_verified_at' => now(),

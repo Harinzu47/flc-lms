@@ -22,7 +22,7 @@ class RelativeDeadlineTest extends TestCase
 
     public function test_student_access_registers_start_time_safely(): void
     {
-        $user = User::factory()->create(['role' => 'member']);
+        $user = User::factory()->create(['role' => 'peserta']);
 
         $course = Course::create([
             'title' => 'Test Course',
@@ -70,7 +70,7 @@ class RelativeDeadlineTest extends TestCase
 
     public function test_student_subsequent_access_does_not_modify_start_time(): void
     {
-        $user = User::factory()->create(['role' => 'member']);
+        $user = User::factory()->create(['role' => 'peserta']);
 
         $course = Course::create([
             'title' => 'Test Course',
@@ -114,7 +114,7 @@ class RelativeDeadlineTest extends TestCase
 
     public function test_personal_deadline_calculated_correctly(): void
     {
-        $user = User::factory()->create(['role' => 'member']);
+        $user = User::factory()->create(['role' => 'peserta']);
 
         $course = Course::create([
             'title' => 'Test Course',
@@ -150,7 +150,7 @@ class RelativeDeadlineTest extends TestCase
 
     public function test_upcoming_tasks_on_dashboard_excludes_submitted_tasks_unless_flagged(): void
     {
-        $user = User::factory()->create(['role' => 'member']);
+        $user = User::factory()->create(['role' => 'peserta']);
 
         $course = Course::create([
             'title' => 'Test Course',

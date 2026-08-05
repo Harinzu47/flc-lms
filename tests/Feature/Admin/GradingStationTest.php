@@ -22,7 +22,7 @@ final class GradingStationTest extends TestCase
 
     public function test_admin_can_access_grading_station(): void
     {
-        $admin = User::factory()->create(['role' => 'admin']);
+        $admin = User::factory()->create(['role' => 'instruktur']);
 
         $response = $this->actingAs($admin)->get(route('admin.grading'));
 
@@ -31,7 +31,7 @@ final class GradingStationTest extends TestCase
 
     public function test_non_admin_cannot_access_grading_station(): void
     {
-        $student = User::factory()->create(['role' => 'member']);
+        $student = User::factory()->create(['role' => 'peserta']);
 
         $response = $this->actingAs($student)->get(route('admin.grading'));
 
@@ -42,8 +42,8 @@ final class GradingStationTest extends TestCase
     {
         Event::fake([XpEarned::class]);
 
-        $admin = User::factory()->create(['role' => 'admin']);
-        $student = User::factory()->create(['role' => 'member', 'total_xp' => 100]);
+        $admin = User::factory()->create(['role' => 'instruktur']);
+        $student = User::factory()->create(['role' => 'peserta', 'total_xp' => 100]);
 
         $course = Course::create(['title' => 'Test Course', 'difficulty_level' => 'beginner']);
         $module = Module::create(['course_id' => $course->id, 'title' => 'Module 1', 'sort_order' => 1]);
@@ -93,8 +93,8 @@ final class GradingStationTest extends TestCase
 
     public function test_admin_can_flag_submission_for_revision(): void
     {
-        $admin = User::factory()->create(['role' => 'admin']);
-        $student = User::factory()->create(['role' => 'member']);
+        $admin = User::factory()->create(['role' => 'instruktur']);
+        $student = User::factory()->create(['role' => 'peserta']);
 
         $course = Course::create(['title' => 'Test Course', 'difficulty_level' => 'beginner']);
         $module = Module::create(['course_id' => $course->id, 'title' => 'Module 1', 'sort_order' => 1]);

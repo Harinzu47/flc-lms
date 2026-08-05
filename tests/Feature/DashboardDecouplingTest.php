@@ -16,7 +16,7 @@ class DashboardDecouplingTest extends TestCase
 
     public function test_admin_receives_analytics_dashboard_on_dashboard_endpoint(): void
     {
-        $admin = User::factory()->create(['role' => 'admin']);
+        $admin = User::factory()->create(['role' => 'bph']);
 
         $this->actingAs($admin);
 
@@ -37,7 +37,7 @@ class DashboardDecouplingTest extends TestCase
 
     public function test_student_receives_gamified_dashboard_on_dashboard_endpoint(): void
     {
-        $student = User::factory()->create(['role' => 'member']);
+        $student = User::factory()->create(['role' => 'peserta']);
 
         $this->actingAs($student);
 

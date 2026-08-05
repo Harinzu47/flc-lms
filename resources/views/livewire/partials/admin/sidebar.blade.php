@@ -1,14 +1,37 @@
 @php
     $activePage ??= '';
     $pendingCount = isset($pendingSubmissions) ? $pendingSubmissions->count() : 0;
+    $user = auth()->user();
 
+    // ── Role-aware navigation items ──────────────────────────────────────
     $navItems = [
-        ['key' => 'dashboard', 'label' => 'Dashboard',  'icon' => 'dashboard',      'route' => route('dashboard')],
-        ['key' => 'users',     'label' => 'Users',       'icon' => 'group',          'route' => route('admin.users')],
-        ['key' => 'courses',   'label' => 'Courses',     'icon' => 'auto_stories',   'route' => route('admin.courses')],
-        ['key' => 'badges',    'label' => 'Badges',      'icon' => 'military_tech',  'route' => route('admin.badges')],
-        ['key' => 'grading',   'label' => 'Grading',     'icon' => 'grade',          'route' => route('admin.grading')],
+        ['key' => 'dashboard', 'label' => 'Dashboard', 'icon' => 'dashboard', 'route' => route('dashboard')],
     ];
+
+    if ($user->isInstruktur()) {
+        $navItems[] = ['key' => 'courses', 'label' => 'Courses', 'icon' => 'auto_stories', 'route' => route('admin.courses')];
+        $navItems[] = ['key' => 'grading', 'label' => 'Grading', 'icon' => 'grade', 'route' => route('admin.grading')];
+    }
+
+    if ($user->isAdmin()) {
+        $navItems[] = ['key' => 'users',  'label' => 'Users',  'icon' => 'group',         'route' => route('admin.users')];
+        $navItems[] = ['key' => 'badges', 'label' => 'Badges', 'icon' => 'military_tech', 'route' => route('admin.badges')];
+    }
+
+    // ── Dynamic brand title per role ─────────────────────────────────────
+    $panelTitle = match ($user->role) {
+        'instruktur' => 'Instruktur Panel',
+        'admin'      => 'Admin Portal',
+        'bph'        => 'BPH Analytics',
+        default      => 'Portal',
+    };
+
+    $panelSubtitle = match ($user->role) {
+        'instruktur' => 'Course & Grading',
+        'admin'      => 'User & Badge Management',
+        'bph'        => 'Read-Only Monitoring',
+        default      => 'Management',
+    };
 @endphp
 
 <aside x-data="{ sidebarOpen: false }"
@@ -27,8 +50,8 @@
                     <span class="material-symbols-outlined">school</span>
                 </div>
                 <div>
-                    <h2 class="font-headline font-extrabold text-blue-900 text-lg leading-none">Admin Portal</h2>
-                    <p class="text-xs text-on-surface-variant mt-1">Academic Management</p>
+                    <h2 class="font-headline font-extrabold text-blue-900 text-lg leading-none">{{ $panelTitle }}</h2>
+                    <p class="text-xs text-on-surface-variant mt-1">{{ $panelSubtitle }}</p>
                 </div>
             </div>
         </div>
@@ -61,12 +84,14 @@
 
         {{-- Bottom Actions --}}
         <div class="px-4 mt-auto pt-6">
-            <a href="{{ route('admin.courses') }}"
-               wire:navigate
-               class="w-full bg-primary text-on-primary py-3 rounded-xl font-semibold flex items-center justify-center gap-2 shadow-md hover:opacity-90 transition-opacity text-sm">
-                <span class="material-symbols-outlined" aria-hidden="true">add</span>
-                New Course
-            </a>
+            @if($user->isInstruktur())
+                <a href="{{ route('admin.courses') }}"
+                   wire:navigate
+                   class="w-full bg-primary text-on-primary py-3 rounded-xl font-semibold flex items-center justify-center gap-2 shadow-md hover:opacity-90 transition-opacity text-sm">
+                    <span class="material-symbols-outlined" aria-hidden="true">add</span>
+                    New Course
+                </a>
+            @endif
             <div class="mt-6 pt-4 space-y-1" style="border-top: 1px solid rgba(195,198,215,0.4);">
                 <a href="#"
                    class="flex items-center gap-3 text-on-surface-variant px-4 py-3 hover:text-primary transition-colors text-sm">
@@ -86,3 +111,4 @@
         </div>
     </div>
 </aside>
+
