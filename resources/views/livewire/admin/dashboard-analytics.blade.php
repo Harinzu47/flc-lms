@@ -38,11 +38,11 @@
                         <div class="flex items-center gap-3 mb-1">
                             <div class="w-1 h-7 bg-primary rounded-full" aria-hidden="true"></div>
                             <h2 class="text-3xl font-headline font-extrabold text-on-surface tracking-tight">
-                                Admin Analytics Command Center
+                                BPH Analytics Command Center
                             </h2>
                         </div>
                         <p class="text-sm text-on-surface-variant font-medium">
-                            Real-time platform metrics, grading queue status, and student engagement telemetry.
+                            Real-time platform metrics and student engagement telemetry.
                         </p>
                     </div>
                 </div>
@@ -86,21 +86,19 @@
                                 </div>
                             </div>
 
-                            {{-- Card 2: Pending Grading --}}
-                            <a href="{{ route('admin.grading') }}" wire:navigate
-                                class="bg-white p-6 rounded-2xl border border-slate-100 shadow-sm flex items-center justify-between group hover:border-primary/30 transition-all">
+                            {{-- Card 2: Pending Grading (Read-only for BPH) --}}
+                            <div
+                                class="bg-white p-6 rounded-2xl border border-slate-100 shadow-sm flex items-center justify-between">
                                 <div>
                                     <p class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">Antrean
                                         Penilaian Pending</p>
-                                    <h3
-                                        class="text-3xl font-black text-slate-800 font-headline group-hover:text-primary transition-colors">
+                                    <h3 class="text-3xl font-black text-slate-800 font-headline">
                                         {{ $pendingGradingCount }}</h3>
                                 </div>
-                                <div
-                                    class="w-12 h-12 bg-amber-50 rounded-xl flex items-center justify-center text-amber-600 group-hover:bg-primary/10 group-hover:text-primary transition-colors">
+                                <div class="w-12 h-12 bg-amber-50 rounded-xl flex items-center justify-center text-amber-600">
                                     <span class="material-symbols-outlined text-2xl">pending</span>
                                 </div>
-                            </a>
+                            </div>
 
                             {{-- Card 3: Flagged Tasks --}}
                             <div
@@ -113,23 +111,6 @@
                                 <div class="w-12 h-12 bg-red-100 rounded-xl flex items-center justify-center text-red-600">
                                     <span class="material-symbols-outlined text-2xl">report</span>
                                 </div>
-                            </div>
-                        </div>
-
-                        {{-- Quick Action Launchers --}}
-                        <div class="bg-white p-6 rounded-2xl border border-slate-100 shadow-sm">
-                            <h3 class="text-lg font-bold text-slate-800 mb-4 font-headline">Quick Action Launchers</h3>
-                            <div class="flex flex-wrap gap-4">
-                                <a href="{{ route('admin.courses') }}" wire:navigate
-                                    class="bg-primary text-on-primary px-5 py-3 rounded-xl font-bold text-sm shadow-md hover:opacity-90 transition-opacity flex items-center gap-2">
-                                    <span class="material-symbols-outlined text-base">add</span>
-                                    + Buat Kursus Baru
-                                </a>
-                                <a href="{{ route('admin.users') }}" wire:navigate
-                                    class="bg-slate-100 hover:bg-slate-200 text-slate-800 px-5 py-3 rounded-xl font-bold text-sm transition-all flex items-center gap-2">
-                                    <span class="material-symbols-outlined text-base">manage_accounts</span>
-                                    Kelola Akun & Distribusi XP
-                                </a>
                             </div>
                         </div>
                     </div>
@@ -151,7 +132,6 @@
                                         <th class="py-3 px-6">Nama Mahasiswa</th>
                                         <th class="py-3 px-6">Tingkatan Level</th>
                                         <th class="py-3 px-6">Total Akumulasi XP</th>
-                                        <th class="py-3 px-6 text-right">Aksi</th>
                                     </tr>
                                 </thead>
                                 <tbody class="divide-y divide-slate-100 text-sm">
@@ -181,18 +161,10 @@
                                             <td class="py-4 px-6 font-headline font-black text-slate-700">
                                                 {{ number_format($student->total_xp) }} XP
                                             </td>
-                                            <td class="py-4 px-6 text-right">
-                                                <a href="{{ route('admin.users', ['search' => $student->email]) }}"
-                                                    wire:navigate
-                                                    class="inline-flex items-center gap-1 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold px-3 py-1.5 rounded-lg text-xs transition-colors">
-                                                    <span class="material-symbols-outlined text-sm">manage_accounts</span>
-                                                    Kelola Tindakan
-                                                </a>
-                                            </td>
                                         </tr>
                                     @empty
                                         <tr>
-                                            <td colspan="5" class="text-center py-8 text-slate-400">
+                                            <td colspan="4" class="text-center py-8 text-slate-400">
                                                 Tidak ada data mahasiswa.
                                             </td>
                                         </tr>
