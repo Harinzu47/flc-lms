@@ -19,7 +19,8 @@ use Illuminate\Support\Facades\Schema;
  *   - SQLite: Column is stored as TEXT, so we only need the data migration.
  *             Laravel's SQLite schema treats ENUM as TEXT under the hood.
  */
-return new class extends Migration {
+return new class extends Migration
+{
     public function up(): void
     {
         $driver = DB::getDriverName();
