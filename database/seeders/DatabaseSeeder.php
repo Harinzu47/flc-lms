@@ -69,7 +69,7 @@ class DatabaseSeeder extends Seeder
         $admin = User::updateOrCreate(
             ['email' => 'admin@lms.local'],
             [
-                'name' => 'Admin Sistem',
+                'name' => 'Admin',
                 'password' => Hash::make('password'),
                 'role' => 'admin',
                 'level_id' => $level1->id,

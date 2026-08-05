@@ -27,6 +27,14 @@ class GamifiedDashboard extends Component
         /** @var User $user */
         $user = auth()->user();
 
+        if ($user->isInstruktur()) {
+            return redirect()->route('admin.courses');
+        }
+
+        if ($user->isAdmin()) {
+            return redirect()->route('admin.users');
+        }
+
         if ($user->isBph()) {
             return $this->renderAdminDashboard($user);
         }

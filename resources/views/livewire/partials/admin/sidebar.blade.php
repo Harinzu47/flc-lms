@@ -4,9 +4,11 @@
     $user = auth()->user();
 
     // ── Role-aware navigation items ──────────────────────────────────────
-    $navItems = [
-        ['key' => 'dashboard', 'label' => 'Dashboard', 'icon' => 'dashboard', 'route' => route('dashboard')],
-    ];
+    $navItems = [];
+
+    if ($user->isBph() || $user->isPeserta()) {
+        $navItems[] = ['key' => 'dashboard', 'label' => 'Dashboard', 'icon' => 'dashboard', 'route' => route('dashboard')];
+    }
 
     if ($user->isInstruktur()) {
         $navItems[] = ['key' => 'courses', 'label' => 'Courses', 'icon' => 'auto_stories', 'route' => route('admin.courses')];

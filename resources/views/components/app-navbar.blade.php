@@ -9,23 +9,56 @@
                 aria-label="Toggle sidebar menu">
                 <span class="material-symbols-outlined block text-2xl">menu</span>
             </button>
-            <a href="{{ route('dashboard') }}" wire:navigate
+            @php
+                $user = auth()->user();
+                $homeRoute = match ($user->role) {
+                    'instruktur' => route('admin.courses'),
+                    'admin' => route('admin.users'),
+                    default => route('dashboard'),
+                };
+            @endphp
+            <a href="{{ $homeRoute }}" wire:navigate
                 class="text-2xl font-bold tracking-tighter text-blue-800 font-headline">
                 FLC UMJ LMS
             </a>
             <div class="hidden md:flex gap-6 items-center">
-                <a href="{{ route('dashboard') }}" wire:navigate
-                    class="font-headline font-semibold tracking-tight transition-colors {{ request()->routeIs('dashboard') ? 'text-primary border-b-2 border-primary pb-1' : 'text-on-surface-variant hover:text-primary' }}">
-                    Dashboard
-                </a>
-                <a href="{{ route('library') }}" wire:navigate
-                    class="font-headline font-semibold tracking-tight transition-colors {{ request()->routeIs('library', 'courses.show', 'materials.show', 'tasks.show') ? 'text-primary border-b-2 border-primary pb-1' : 'text-on-surface-variant hover:text-primary' }}">
-                    Courses
-                </a>
-                <a href="{{ route('leaderboard') }}" wire:navigate
-                    class="font-headline font-semibold tracking-tight transition-colors {{ request()->routeIs('leaderboard') ? 'text-primary border-b-2 border-primary pb-1' : 'text-on-surface-variant hover:text-primary' }}">
-                    Leaderboard
-                </a>
+                @if($user->isPeserta())
+                    <a href="{{ route('dashboard') }}" wire:navigate
+                        class="font-headline font-semibold tracking-tight transition-colors {{ request()->routeIs('dashboard') ? 'text-primary border-b-2 border-primary pb-1' : 'text-on-surface-variant hover:text-primary' }}">
+                        Dashboard
+                    </a>
+                    <a href="{{ route('library') }}" wire:navigate
+                        class="font-headline font-semibold tracking-tight transition-colors {{ request()->routeIs('library', 'courses.show', 'materials.show', 'tasks.show') ? 'text-primary border-b-2 border-primary pb-1' : 'text-on-surface-variant hover:text-primary' }}">
+                        Courses
+                    </a>
+                    <a href="{{ route('leaderboard') }}" wire:navigate
+                        class="font-headline font-semibold tracking-tight transition-colors {{ request()->routeIs('leaderboard') ? 'text-primary border-b-2 border-primary pb-1' : 'text-on-surface-variant hover:text-primary' }}">
+                        Leaderboard
+                    </a>
+                @elseif($user->isInstruktur())
+                    <a href="{{ route('admin.courses') }}" wire:navigate
+                        class="font-headline font-semibold tracking-tight transition-colors {{ request()->routeIs('admin.courses') ? 'text-primary border-b-2 border-primary pb-1' : 'text-on-surface-variant hover:text-primary' }}">
+                        Course Manager
+                    </a>
+                    <a href="{{ route('admin.grading') }}" wire:navigate
+                        class="font-headline font-semibold tracking-tight transition-colors {{ request()->routeIs('admin.grading') ? 'text-primary border-b-2 border-primary pb-1' : 'text-on-surface-variant hover:text-primary' }}">
+                        Grading Station
+                    </a>
+                @elseif($user->isAdmin())
+                    <a href="{{ route('admin.users') }}" wire:navigate
+                        class="font-headline font-semibold tracking-tight transition-colors {{ request()->routeIs('admin.users') ? 'text-primary border-b-2 border-primary pb-1' : 'text-on-surface-variant hover:text-primary' }}">
+                        User Manager
+                    </a>
+                    <a href="{{ route('admin.badges') }}" wire:navigate
+                        class="font-headline font-semibold tracking-tight transition-colors {{ request()->routeIs('admin.badges') ? 'text-primary border-b-2 border-primary pb-1' : 'text-on-surface-variant hover:text-primary' }}">
+                        Badge Manager
+                    </a>
+                @elseif($user->isBph())
+                    <a href="{{ route('dashboard') }}" wire:navigate
+                        class="font-headline font-semibold tracking-tight transition-colors {{ request()->routeIs('dashboard') ? 'text-primary border-b-2 border-primary pb-1' : 'text-on-surface-variant hover:text-primary' }}">
+                        Analytics Dashboard
+                    </a>
+                @endif
             </div>
         </div>
 
