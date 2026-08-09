@@ -14,7 +14,7 @@
         </span>
     </div>
 
-    @php $restUsers = $topUsers->skip(3); @endphp
+    @php $restUsers = $topUsers->skip(3)->values(); @endphp
 
     @if($restUsers->isEmpty())
         <div
