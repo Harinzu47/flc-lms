@@ -202,8 +202,9 @@ File `.env` adalah file konfigurasi yang berisi pengaturan aplikasi (database, p
    cp .env.example .env
    ```
 
-2. Buka file `.env` yang baru dibuat menggunakan text editor (Notepad, VS Code, atau editor lain), lalu ubah bagian database menjadi seperti ini:
+2. File `.env.example` sudah dikonfigurasi dengan nilai default yang siap pakai untuk Docker. Pastikan bagian-bagian penting berikut sudah benar:
 
+   **Database (MySQL via Docker):**
    ```env
    DB_CONNECTION=mysql
    DB_HOST=mysql
@@ -213,12 +214,23 @@ File `.env` adalah file konfigurasi yang berisi pengaturan aplikasi (database, p
    DB_PASSWORD=password
    ```
 
-   Dan ubah juga bagian Redis:
+   **Redis (Cache & Queue):**
    ```env
    REDIS_HOST=redis
+   QUEUE_CONNECTION=redis
    ```
 
-   > 💡 **Penjelasan:** `DB_HOST=mysql` dan `REDIS_HOST=redis` merujuk ke nama layanan Docker (bukan `localhost`), karena aplikasi berjalan di dalam kontainer Docker yang saling terhubung lewat jaringan internal.
+   **Mail (Mailpit — email testing lokal):**
+   ```env
+   MAIL_MAILER=smtp
+   MAIL_HOST=mailpit
+   MAIL_PORT=1025
+   ```
+
+   > 💡 **Penjelasan:**
+   > - `DB_HOST=mysql`, `REDIS_HOST=redis`, dan `MAIL_HOST=mailpit` merujuk ke nama layanan Docker (bukan `localhost`), karena aplikasi berjalan di dalam kontainer Docker yang saling terhubung lewat jaringan internal.
+   > - `QUEUE_CONNECTION=redis` memastikan job seperti sinkronisasi XP, badge, dan notifikasi diproses secara asinkron oleh queue worker.
+   > - `MAIL_MAILER=smtp` + `MAIL_HOST=mailpit` mengarahkan semua email ke Mailpit, yang bisa dilihat di browser pada `http://localhost:8025`.
 
 3. Simpan file `.env`.
 
@@ -264,7 +276,16 @@ docker run --rm \
 
 ### Tahap 5 — Jalankan Docker (Laravel Sail)
 
-Laravel Sail adalah wrapper Docker yang sudah dikonfigurasi khusus untuk proyek ini. Sail akan menjalankan 3 layanan sekaligus: **PHP/Laravel**, **MySQL**, dan **Redis**.
+Laravel Sail adalah wrapper Docker yang sudah dikonfigurasi khusus untuk proyek ini. Sail akan menjalankan **6 layanan** sekaligus:
+
+| Layanan | Fungsi |
+|---|---|
+| `laravel.test` | Server PHP/Laravel utama |
+| `mysql` | Database MySQL 8.4 |
+| `redis` | Cache & Queue broker |
+| `worker` | Queue worker — memproses job asinkron (XP, badge, notifikasi) |
+| `scheduler` | Task scheduler — menjalankan scheduled tasks otomatis |
+| `mailpit` | Email testing — tangkap & lihat semua email di browser |
 
 1. Jalankan Sail di mode latar belakang (detached):
 
@@ -283,22 +304,25 @@ Laravel Sail adalah wrapper Docker yang sudah dikonfigurasi khusus untuk proyek 
    ./vendor/bin/sail up -d
    ```
 
-   > ⏳ Pertama kali menjalankan ini akan **memerlukan waktu cukup lama** (5–15 menit) karena Docker harus mengunduh dan membangun image PHP, MySQL, dan Redis. Sabar ya!
+   > ⏳ Pertama kali menjalankan ini akan **memerlukan waktu cukup lama** (5–15 menit) karena Docker harus mengunduh dan membangun image PHP, MySQL, Redis, dan Mailpit. Sabar ya!
    >
    > Kamu akan melihat output seperti ini:
    > ```
    > [+] Building ...
-   > [+] Running 3/3
-   >  ✔ Container flc-lms-redis-1       Started
-   >  ✔ Container flc-lms-mysql-1       Started
+   > [+] Running 6/6
+   >  ✔ Container flc-lms-redis-1        Started
+   >  ✔ Container flc-lms-mysql-1        Started
+   >  ✔ Container flc-lms-mailpit-1      Started
    >  ✔ Container flc-lms-laravel.test-1 Started
+   >  ✔ Container flc-lms-worker-1       Started
+   >  ✔ Container flc-lms-scheduler-1    Started
    > ```
 
 2. Pastikan semua kontainer berjalan:
    ```bash
    docker ps
    ```
-   Kamu harus melihat 3 kontainer: `laravel.test`, `mysql`, dan `redis`.
+   Kamu harus melihat **6 kontainer**: `laravel.test`, `mysql`, `redis`, `worker`, `scheduler`, dan `mailpit`.
 
    ✅ Server lokal sudah berjalan!
 
@@ -360,6 +384,15 @@ Sekarang kita akan menjalankan beberapa perintah Laravel di dalam kontainer Dock
    ```
 3. Kamu akan melihat halaman utama FLC UMJ Gamified LMS! 🎉
 
+4. **📧 Mailpit (Email Testing):**
+   Buka tab baru di browser dan akses:
+   ```
+   http://localhost:8025
+   ```
+   Di sini kamu bisa melihat **semua email** yang dikirim oleh aplikasi (notifikasi, verifikasi email, dll) tanpa perlu konfigurasi SMTP sungguhan. Sangat berguna untuk testing!
+
+   > 💡 **Tips:** Mailpit menangkap semua email yang dikirim aplikasi. Tidak ada email yang benar-benar terkirim ke internet — semuanya aman untuk testing lokal.
+
 ---
 
 ### Tahap 8 — Login dengan Akun Demo
@@ -385,25 +418,61 @@ Aplikasi sudah dilengkapi dengan akun demo yang bisa langsung digunakan:
 
 Berikut referensi cepat perintah-perintah yang akan sering kamu pakai:
 
+### Umum
+
 | Perintah | Fungsi |
 |---|---|
-| `./vendor/bin/sail up -d` | Menjalankan semua kontainer di latar belakang |
+| `./vendor/bin/sail up -d` | Menjalankan semua 6 kontainer di latar belakang |
 | `./vendor/bin/sail down` | Menghentikan semua kontainer |
+| `./vendor/bin/sail ps` | Lihat status semua kontainer |
+| `./vendor/bin/sail logs -f` | Lihat log semua kontainer secara real-time |
+
+### Laravel & Database
+
+| Perintah | Fungsi |
+|---|---|
 | `./vendor/bin/sail artisan migrate` | Menjalankan migrasi database |
 | `./vendor/bin/sail artisan migrate:fresh --seed` | Reset database & isi ulang data awal |
 | `./vendor/bin/sail artisan key:generate` | Generate application key |
-| `./vendor/bin/sail npm install` | Instal paket NPM |
-| `./vendor/bin/sail npm run dev` | Jalankan Vite dev server |
-| `./vendor/bin/sail npm run build` | Build aset untuk produksi |
 | `./vendor/bin/sail artisan tinker` | Buka Laravel REPL (untuk debugging) |
 | `./vendor/bin/sail shell` | Masuk ke shell kontainer Laravel |
 | `./vendor/bin/sail mysql` | Masuk ke MySQL CLI |
+
+### Frontend (NPM / Vite)
+
+| Perintah | Fungsi |
+|---|---|
+| `./vendor/bin/sail npm install` | Instal paket NPM |
+| `./vendor/bin/sail npm run dev` | Jalankan Vite dev server |
+| `./vendor/bin/sail npm run build` | Build aset untuk produksi |
+
+### Queue & Scheduler
+
+| Perintah | Fungsi |
+|---|---|
+| `./vendor/bin/sail logs worker -f` | Lihat log queue worker secara real-time |
+| `./vendor/bin/sail logs scheduler -f` | Lihat log scheduler secara real-time |
+| `./vendor/bin/sail artisan queue:retry all` | Retry semua job yang gagal |
+| `./vendor/bin/sail artisan queue:flush` | Hapus semua job yang gagal |
+| `docker compose restart worker` | Restart queue worker (setelah ubah kode listener) |
+
+### Email (Mailpit)
+
+| Akses | URL |
+|---|---|
+| Mailpit Web UI | `http://localhost:8025` |
+| SMTP Server | `mailpit:1025` (internal Docker) |
 
 > 💡 **Tips:** Supaya tidak perlu mengetik `./vendor/bin/sail` terus-menerus, kamu bisa membuat alias. Tambahkan baris ini ke file `~/.bashrc` atau `~/.zshrc` (Mac/Linux):
 > ```bash
 > alias sail='./vendor/bin/sail'
 > ```
 > Setelah itu cukup ketik `sail up -d`, `sail artisan migrate`, dll.
+>
+> **Untuk Windows PowerShell**, tambahkan ke `$PROFILE`:
+> ```powershell
+> function sail { ./vendor/bin/sail @args }
+> ```
 
 ---
 
@@ -452,6 +521,42 @@ Pastikan Vite dev server berjalan:
 ./vendor/bin/sail npm run dev
 ```
 **Jangan tutup terminal ini** selama mengakses aplikasi.
+
+### ❌ Badge / Level-up / Notifikasi tidak muncul setelah aksi
+Pastikan kontainer `worker` berjalan:
+```bash
+docker ps | grep worker
+```
+Jika tidak berjalan, restart:
+```bash
+docker compose restart worker
+```
+Cek log worker untuk melihat apakah ada error:
+```bash
+./vendor/bin/sail logs worker -f
+```
+
+### ❌ Email tidak muncul di Mailpit
+1. Pastikan kontainer `mailpit` berjalan: `docker ps | grep mailpit`
+2. Pastikan file `.env` sudah benar:
+   ```env
+   MAIL_MAILER=smtp
+   MAIL_HOST=mailpit
+   MAIL_PORT=1025
+   ```
+3. Buka Mailpit UI di `http://localhost:8025`
+4. Jika masih kosong, coba kirim test email:
+   ```bash
+   ./vendor/bin/sail artisan tinker
+   >>> Mail::raw('Test email', fn($m) => $m->to('test@example.com')->subject('Test'));
+   ```
+
+### ❌ Port 8025 sudah dipakai (Mailpit)
+Ubah port Mailpit di file `.env`:
+```env
+FORWARD_MAILPIT_PORT=9025
+```
+Lalu akses Mailpit di `http://localhost:9025`.
 
 ---
 
