@@ -75,6 +75,11 @@ class CourseShow extends Component
         if ($user->isPeserta() && ! $course->isEnrolledByUser($user)) {
             abort(403, 'Akses Ditolak: Anda belum mengambil peminatan kursus ini.');
         }
+
+        if ($user->isPeserta() && $course->kategori_bahasa !== 'general' && ! $user->hasLanguageTrack($course->kategori_bahasa)) {
+            abort(403, 'Akses Ditolak: Peminatan bahasa tidak sesuai dengan profil Anda.');
+        }
+
         // 3. Load full modules tree
         $this->course = $course->load(['modules.materials', 'modules.tasks', 'minLevel', 'prerequisite']);
 

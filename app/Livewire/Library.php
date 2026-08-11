@@ -24,11 +24,16 @@ class Library extends Component
         $user = auth()->user();
 
         // 1. Eager load minLevel, prerequisite, and modules with items to check completion in-memory
-        $courses = Course::query()
+        $coursesQuery = Course::query()
             ->with(['minLevel', 'prerequisite', 'modules.materials', 'modules.tasks'])
-            ->where('is_published', true)
-            ->orderBy('id')
-            ->get();
+            ->where('is_published', true);
+
+        if ($user->isPeserta()) {
+            $tracks = array_merge($user->peminatan_bahasa ?? [], ['general']);
+            $coursesQuery->whereIn('kategori_bahasa', $tracks);
+        }
+
+        $courses = $coursesQuery->orderBy('id')->get();
 
         // 2. Mitigate N+1 queries by fetching student reads and grades in single queries
         $readMaterialIds = XpLog::query()

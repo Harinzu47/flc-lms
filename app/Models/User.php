@@ -92,6 +92,7 @@ class User extends Authenticatable
             'password' => 'hashed',
             'total_xp' => 'integer',
             'last_rank_gap_notified' => 'integer',
+            'peminatan_bahasa' => 'array',
         ];
     }
 
@@ -138,6 +139,18 @@ class User extends Authenticatable
     public function courses(): BelongsToMany
     {
         return $this->belongsToMany(Course::class)->withTimestamps();
+    }
+
+    /**
+     * Determine if the user has a specific language track.
+     */
+    public function hasLanguageTrack(string $track): bool
+    {
+        if (empty($this->peminatan_bahasa)) {
+            return false;
+        }
+
+        return in_array($track, $this->peminatan_bahasa);
     }
 
     // -------------------------------------------------------------------------

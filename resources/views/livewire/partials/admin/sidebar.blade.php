@@ -16,6 +16,8 @@
     }
 
     if ($user->isAdmin()) {
+        $navItems[] = ['key' => 'courses', 'label' => 'Courses', 'icon' => 'auto_stories', 'route' => route('admin.courses')];
+        $navItems[] = ['key' => 'grading', 'label' => 'Grading', 'icon' => 'grade', 'route' => route('admin.grading')];
         $navItems[] = ['key' => 'users',  'label' => 'Users',  'icon' => 'group',         'route' => route('admin.users')];
         $navItems[] = ['key' => 'badges', 'label' => 'Badges', 'icon' => 'military_tech', 'route' => route('admin.badges')];
     }
@@ -86,7 +88,7 @@
 
         {{-- Bottom Actions --}}
         <div class="px-4 mt-auto pt-6">
-            @if($user->isInstruktur())
+            @if($user->isInstruktur() || $user->isAdmin())
                 <a href="{{ route('admin.courses') }}"
                    wire:navigate
                    class="w-full bg-primary text-on-primary py-3 rounded-xl font-semibold flex items-center justify-center gap-2 shadow-md hover:opacity-90 transition-opacity text-sm">

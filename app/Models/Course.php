@@ -22,6 +22,7 @@ class Course extends Model
         'difficulty_level',
         'min_level_required',
         'prerequisite_course_id',
+        'kategori_bahasa',
         'is_published',
     ];
 
