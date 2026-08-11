@@ -14,8 +14,20 @@ final class CoursePolicy
     /**
      * Determine whether the user can manage courses (and associated curriculum like modules, materials, tasks).
      */
-    public function manage(User $user): bool
+    public function manage(User $user, ?\App\Models\Course $course = null): bool
     {
-        return $user->isInstruktur();
+        if ($user->isAdmin()) {
+            return true;
+        }
+
+        if (!$user->isInstruktur()) {
+            return false;
+        }
+
+        if ($course === null) {
+            return true;
+        }
+
+        return $course->isEnrolledByUser($user);
     }
 }

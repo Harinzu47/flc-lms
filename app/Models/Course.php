@@ -7,6 +7,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Collection;
@@ -33,6 +34,34 @@ class Course extends Model
     public function modules(): HasMany
     {
         return $this->hasMany(Module::class)->orderBy('sort_order');
+    }
+
+    /**
+     * All users attached to this course (any role).
+     */
+    public function users(): BelongsToMany
+    {
+        return $this->belongsToMany(User::class)->withTimestamps();
+    }
+
+    /**
+     * Peserta (students) enrolled in this course.
+     */
+    public function peserta(): BelongsToMany
+    {
+        return $this->belongsToMany(User::class)
+            ->where('users.role', User::ROLE_PESERTA)
+            ->withTimestamps();
+    }
+
+    /**
+     * Instruktur (teachers) assigned to this course.
+     */
+    public function instruktur(): BelongsToMany
+    {
+        return $this->belongsToMany(User::class)
+            ->where('users.role', User::ROLE_INSTRUKTUR)
+            ->withTimestamps();
     }
 
     protected static function booted()
@@ -84,6 +113,14 @@ class Course extends Model
         }
 
         return false;
+    }
+
+    /**
+     * Determine if the user is explicitly enrolled in or assigned to this course.
+     */
+    public function isEnrolledByUser(User $user): bool
+    {
+        return $this->users()->where('users.id', $user->id)->exists();
     }
 
     /**

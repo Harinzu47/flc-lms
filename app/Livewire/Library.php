@@ -46,9 +46,31 @@ class Library extends Component
             return $c->isCompletedByUser($user, $readMaterialIds, $gradedTaskIds);
         })->pluck('id');
 
+        $enrolledCourseIds = $user->courses()->pluck('courses.id');
+
         return view('livewire.library', [
             'courses' => $courses,
             'completedCourseIds' => $completedCourseIds,
+            'enrolledCourseIds' => $enrolledCourseIds,
         ]);
+    }
+
+    /**
+     * Enroll the current user into a course (ambil peminatan).
+     */
+    public function enroll(int $courseId): void
+    {
+        $course = Course::where('is_published', true)->findOrFail($courseId);
+        $user = auth()->user();
+
+        // Security check: Ensure the course isn't locked by level/prerequisite
+        if ($course->isLockedForUser($user)) {
+            abort(403, 'Akses Ditolak: Anda belum memenuhi syarat untuk mengambil peminatan ini.');
+        }
+
+        // Attach user to course (using syncWithoutDetaching to prevent duplicates)
+        $user->courses()->syncWithoutDetaching([$course->id]);
+
+        $this->dispatch('notify', message: "Berhasil mengambil peminatan: {$course->title}");
     }
 }

@@ -137,12 +137,15 @@ class RelativeDeadlineTest extends TestCase
             'days_limit' => 5,
         ]);
 
+        $user->courses()->attach($course);
+
         $start = UserTaskStart::create([
             'user_id' => $user->id,
             'task_id' => $task->id,
             'started_at' => now(),
         ]);
 
+        $task->refresh();
         $deadline = $task->getPersonalDeadlineFor($user);
         $this->assertNotNull($deadline);
         $this->assertTrue($start->started_at->copy()->addDays(5)->eq($deadline));
@@ -222,6 +225,8 @@ class RelativeDeadlineTest extends TestCase
             'status' => 'pending',
             'is_flagged' => true,
         ]);
+
+        $user->courses()->attach($course);
 
         $this->actingAs($user);
 
