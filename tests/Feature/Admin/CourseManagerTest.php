@@ -135,34 +135,34 @@ final class CourseManagerTest extends TestCase
     public function test_instruktur_can_only_see_assigned_courses(): void
     {
         $instruktur = User::factory()->create(['role' => 'instruktur']);
-        
+
         $assignedCourse = Course::create(['title' => 'Assigned', 'difficulty_level' => 'beginner']);
         $unassignedCourse = Course::create(['title' => 'Unassigned', 'difficulty_level' => 'beginner']);
-        
+
         $instruktur->courses()->attach($assignedCourse);
-        
+
         Livewire::actingAs($instruktur)
             ->test(CourseManager::class)
             ->assertSee('Assigned')
-            ->assertViewHas('courses', function($courses) {
+            ->assertViewHas('courses', function ($courses) {
                 return $courses->count() === 1 && $courses->first()->title === 'Assigned';
             });
     }
-    
+
     public function test_admin_can_assign_instruktur_to_course(): void
     {
         $admin = User::factory()->create(['role' => 'admin']);
         $instruktur = User::factory()->create(['role' => 'instruktur']);
-        
+
         $course = Course::create(['title' => 'Physics 101', 'difficulty_level' => 'beginner']);
-        
+
         Livewire::actingAs($admin)
             ->test(CourseManager::class)
             ->call('openAssignInstrukturModal', $course->id)
             ->set('selectedInstrukturIds', [$instruktur->id])
             ->call('saveInstrukturAssignments')
             ->assertDispatched('notify');
-            
+
         $this->assertTrue($course->instruktur()->where('users.id', $instruktur->id)->exists());
     }
 }

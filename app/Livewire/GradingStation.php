@@ -161,12 +161,11 @@ class GradingStation extends Component
             ->with(['user', 'task.module.course'])      // Eager-load: avoids N+1 in the sidebar list
             ->orderByDesc('is_flagged')
             ->orderBy('created_at');
-            
+
         $user = auth()->user();
         if ($user->isInstruktur()) {
             $assignedCourseIds = $user->courses()->pluck('courses.id');
-            $query->whereHas('task.module.course', fn ($q) =>
-                $q->whereIn('courses.id', $assignedCourseIds)
+            $query->whereHas('task.module.course', fn ($q) => $q->whereIn('courses.id', $assignedCourseIds)
             );
         }
 

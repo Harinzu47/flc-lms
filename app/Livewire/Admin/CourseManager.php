@@ -30,7 +30,9 @@ class CourseManager extends Component
 
     // ── Instruktur Assignment Form Properties ────────────────────────────────
     public bool $isAssignInstrukturModalOpen = false;
+
     public ?int $assignCourseId = null;
+
     public array $selectedInstrukturIds = [];
 
     // ── Course Form Properties ───────────────────────────────────────────────
@@ -159,29 +161,29 @@ class CourseManager extends Component
     {
         abort_unless(auth()->user()->isAdmin(), 403);
         $this->assignCourseId = $courseId;
-        
+
         $course = Course::findOrFail($courseId);
         // Pre-check already assigned instruktur
         $this->selectedInstrukturIds = $course->instruktur()->pluck('users.id')->toArray();
-        
+
         $this->isAssignInstrukturModalOpen = true;
     }
 
     public function saveInstrukturAssignments(): void
     {
         abort_unless(auth()->user()->isAdmin(), 403);
-        
+
         if ($this->assignCourseId !== null) {
             $course = Course::findOrFail($this->assignCourseId);
-            
+
             // Only sync instruktur roles to avoid detaching pesertas
             $pesertaIds = $course->peserta()->pluck('users.id')->toArray();
-            
+
             $course->users()->sync(array_merge($pesertaIds, $this->selectedInstrukturIds));
-            
+
             $this->dispatch('notify', message: 'Instruktur assignment updated successfully.');
         }
-        
+
         $this->closeAssignInstrukturModal();
     }
 
