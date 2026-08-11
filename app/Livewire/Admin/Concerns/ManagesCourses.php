@@ -25,6 +25,7 @@ trait ManagesCourses
         $this->courseTitle = $course->title;
         $this->courseDescription = $course->description ?? '';
         $this->courseDifficultyLevel = $course->difficulty_level;
+        $this->courseKategoriBahasa = $course->kategori_bahasa ?? 'general';
         $this->courseMinLevelRequired = $course->min_level_required;
         $this->coursePrerequisiteId = $course->prerequisite_course_id;
         $this->courseIsPublished = $course->is_published;
@@ -38,6 +39,7 @@ trait ManagesCourses
             'courseTitle' => ['required', 'string', 'max:255'],
             'courseDescription' => ['nullable', 'string', 'max:1000'],
             'courseDifficultyLevel' => ['required', 'in:beginner,intermediate,advanced'],
+            'courseKategoriBahasa' => ['required', 'string', 'max:50'],
             'courseMinLevelRequired' => ['nullable', 'integer', 'exists:levels,id'],
             'coursePrerequisiteId' => ['nullable', 'integer', 'exists:courses,id', 'different:courseId'],
         ]);
@@ -46,6 +48,7 @@ trait ManagesCourses
             'title' => $this->courseTitle,
             'description' => $this->courseDescription ?: null,
             'difficulty_level' => $this->courseDifficultyLevel,
+            'kategori_bahasa' => $this->courseKategoriBahasa,
             'min_level_required' => $this->courseMinLevelRequired ?: null,
             'prerequisite_course_id' => $this->coursePrerequisiteId ?: null,
             'is_published' => $this->courseIsPublished,
@@ -86,6 +89,7 @@ trait ManagesCourses
         $this->courseTitle = '';
         $this->courseDescription = '';
         $this->courseDifficultyLevel = 'beginner';
+        $this->courseKategoriBahasa = 'general';
         $this->courseMinLevelRequired = null;
         $this->coursePrerequisiteId = null;
         $this->courseIsPublished = false;

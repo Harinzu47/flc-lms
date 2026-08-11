@@ -41,6 +41,8 @@
             </main>
         </div>
 
+        <livewire:language-track-onboarding />
+
         @livewireScripts
     </body>
 </html>
