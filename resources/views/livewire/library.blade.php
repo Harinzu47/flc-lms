@@ -92,8 +92,39 @@
                         @endif
                     </div>
                 </div>
+            @elseif(!$enrolledCourseIds->contains($course->id))
+                {{-- ── UNLOCKED BUT NOT ENROLLED STATE LOOK ── --}}
+                <div class="bg-surface-container-low/50 rounded-2xl p-6 border border-outline-variant/30 hover:border-primary/40 transition-all flex flex-col justify-between h-72 shadow-sm group border-dashed relative">
+                    <div>
+                        <div class="flex items-center justify-between mb-4">
+                            <span class="inline-flex items-center gap-1 text-[10px] font-bold font-label uppercase tracking-widest {{ $diffClass }} px-2.5 py-1 rounded-full border">
+                                {{ $course->difficulty_level }}
+                            </span>
+                            <span class="material-symbols-outlined text-outline-variant group-hover:text-primary transition-colors">favorite_border</span>
+                        </div>
+                        <h3 class="font-headline font-bold text-on-surface text-lg leading-tight mb-2 group-hover:text-primary transition-colors">
+                            {{ $course->title }}
+                        </h3>
+                        <p class="text-xs text-on-surface-variant line-clamp-3">
+                            {{ $course->description }}
+                        </p>
+                    </div>
+
+                    <div class="flex items-center justify-between mt-6 pt-4 border-t border-outline-variant/10">
+                        <span class="text-[10px] font-bold font-label text-secondary uppercase tracking-widest flex items-center gap-1">
+                            <span class="material-symbols-outlined text-xs" style="font-variation-settings:'FILL' 1;">menu_book</span>
+                            {{ $course->modules()->count() }} Modules
+                        </span>
+                        
+                        <button wire:click="enroll({{ $course->id }})"
+                                wire:confirm="Apakah Anda yakin ingin mengambil peminatan kursus ini?"
+                                class="bg-primary hover:bg-primary-container text-on-primary hover:text-primary px-4 py-2 rounded-xl text-xs font-bold transition-all shadow-sm flex items-center gap-1">
+                            Ambil Peminatan
+                        </button>
+                    </div>
+                </div>
             @else
-                {{-- ── UNLOCKED STATE LOOK ── --}}
+                {{-- ── ENROLLED & UNLOCKED STATE LOOK ── --}}
                 <div class="bg-surface-container-lowest rounded-2xl p-6 border border-outline-variant/10 hover:shadow-md hover:border-primary/20 transition-all flex flex-col justify-between h-72 shadow-sm group">
                     <div>
                         <div class="flex items-center justify-between mb-4">

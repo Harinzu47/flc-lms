@@ -79,6 +79,8 @@ final class CourseManagerTest extends TestCase
             'sort_order' => 2,
         ]);
 
+        $admin->courses()->attach($course);
+
         // Test swap up: moving module2 up should swap orders
         Livewire::actingAs($admin)
             ->test(CourseManager::class)
@@ -112,6 +114,8 @@ final class CourseManagerTest extends TestCase
             'reference_id' => $material->id,
         ]);
 
+        $admin->courses()->attach($course);
+
         // Admin deletes the material
         Livewire::actingAs($admin)
             ->test(CourseManager::class)
@@ -126,5 +130,39 @@ final class CourseManagerTest extends TestCase
             'action' => 'material_read',
             'reference_id' => $material->id,
         ]);
+    }
+
+    public function test_instruktur_can_only_see_assigned_courses(): void
+    {
+        $instruktur = User::factory()->create(['role' => 'instruktur']);
+
+        $assignedCourse = Course::create(['title' => 'Assigned', 'difficulty_level' => 'beginner']);
+        $unassignedCourse = Course::create(['title' => 'Unassigned', 'difficulty_level' => 'beginner']);
+
+        $instruktur->courses()->attach($assignedCourse);
+
+        Livewire::actingAs($instruktur)
+            ->test(CourseManager::class)
+            ->assertSee('Assigned')
+            ->assertViewHas('courses', function ($courses) {
+                return $courses->count() === 1 && $courses->first()->title === 'Assigned';
+            });
+    }
+
+    public function test_admin_can_assign_instruktur_to_course(): void
+    {
+        $admin = User::factory()->create(['role' => 'admin']);
+        $instruktur = User::factory()->create(['role' => 'instruktur']);
+
+        $course = Course::create(['title' => 'Physics 101', 'difficulty_level' => 'beginner']);
+
+        Livewire::actingAs($admin)
+            ->test(CourseManager::class)
+            ->call('openAssignInstrukturModal', $course->id)
+            ->set('selectedInstrukturIds', [$instruktur->id])
+            ->call('saveInstrukturAssignments')
+            ->assertDispatched('notify');
+
+        $this->assertTrue($course->instruktur()->where('users.id', $instruktur->id)->exists());
     }
 }

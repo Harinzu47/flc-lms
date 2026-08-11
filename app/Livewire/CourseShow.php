@@ -71,6 +71,10 @@ class CourseShow extends Component
         if ($course->isLockedForUser($user, $this->completedCourseIds)) {
             abort(403, 'Akses Ditolak: Kursus ini masih terkunci! Selesaikan persyaratan terlebih dahulu.');
         }
+
+        if ($user->isPeserta() && ! $course->isEnrolledByUser($user)) {
+            abort(403, 'Akses Ditolak: Anda belum mengambil peminatan kursus ini.');
+        }
         // 3. Load full modules tree
         $this->course = $course->load(['modules.materials', 'modules.tasks', 'minLevel', 'prerequisite']);
 

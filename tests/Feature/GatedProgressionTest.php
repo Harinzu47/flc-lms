@@ -217,6 +217,8 @@ class GatedProgressionTest extends TestCase
             'xp_reward' => 10,
         ]);
 
+        $user->courses()->attach($course);
+
         $response = $this->actingAs($user)->get(route('materials.show', $material));
         $response->assertStatus(200);
     }
@@ -246,10 +248,42 @@ class GatedProgressionTest extends TestCase
             'file_url' => 'https://example.com/attachment.pdf',
         ]);
 
+        $user->courses()->attach($course);
+
         $response = $this->actingAs($user)->get(route('materials.show', $material));
         $response->assertStatus(200);
         $response->assertSee('Hello World Story');
         $response->assertSee('Resource Pendukung Kuliah');
         $response->assertSee('https://example.com/attachment.pdf');
+    }
+
+    public function test_unenrolled_peserta_cannot_access_course_content(): void
+    {
+        $user = User::factory()->create(['total_xp' => 100]);
+
+        $course = Course::create([
+            'title' => 'Unenrolled Course',
+            'difficulty_level' => 'beginner',
+            'is_published' => true,
+        ]);
+
+        $response = $this->actingAs($user)->get(route('courses.show', $course));
+        $response->assertStatus(403);
+    }
+
+    public function test_enrolled_peserta_can_access_course_content(): void
+    {
+        $user = User::factory()->create(['total_xp' => 100]);
+
+        $course = Course::create([
+            'title' => 'Enrolled Course',
+            'difficulty_level' => 'beginner',
+            'is_published' => true,
+        ]);
+
+        $user->courses()->attach($course);
+
+        $response = $this->actingAs($user)->get(route('courses.show', $course));
+        $response->assertStatus(200);
     }
 }

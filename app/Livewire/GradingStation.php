@@ -156,12 +156,20 @@ class GradingStation extends Component
 
     private function loadPendingSubmissions(): void
     {
-        $this->pendingSubmissions = Submission::query()
+        $query = Submission::query()
             ->where('status', 'pending')
-            ->with(['user', 'task'])      // Eager-load: avoids N+1 in the sidebar list
+            ->with(['user', 'task.module.course'])      // Eager-load: avoids N+1 in the sidebar list
             ->orderByDesc('is_flagged')
-            ->orderBy('created_at')
-            ->get();
+            ->orderBy('created_at');
+
+        $user = auth()->user();
+        if ($user->isInstruktur()) {
+            $assignedCourseIds = $user->courses()->pluck('courses.id');
+            $query->whereHas('task.module.course', fn ($q) => $q->whereIn('courses.id', $assignedCourseIds)
+            );
+        }
+
+        $this->pendingSubmissions = $query->get();
     }
 
     // ── Render ────────────────────────────────────────────────────────────────

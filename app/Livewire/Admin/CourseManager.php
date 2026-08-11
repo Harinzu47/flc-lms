@@ -28,6 +28,13 @@ class CourseManager extends Component
     // ── Navigation State ─────────────────────────────────────────────────────
     public ?int $selectedCourseId = null; // If set, opens "Builder Mode" for this course
 
+    // ── Instruktur Assignment Form Properties ────────────────────────────────
+    public bool $isAssignInstrukturModalOpen = false;
+
+    public ?int $assignCourseId = null;
+
+    public array $selectedInstrukturIds = [];
+
     // ── Course Form Properties ───────────────────────────────────────────────
     public bool $isCourseModalOpen = false;
 
@@ -117,15 +124,19 @@ class CourseManager extends Component
         }
 
         // List Mode
-        $courses = Course::query()
-            ->with(['minLevel', 'prerequisite'])
-            ->latest()
-            ->paginate(10);
+        $query = Course::query()->with(['minLevel', 'prerequisite']);
+
+        if (auth()->user()->isInstruktur()) {
+            $query->whereHas('users', fn ($q) => $q->where('users.id', auth()->id()));
+        }
+
+        $courses = $query->latest()->paginate(10);
 
         return view('livewire.admin.course-manager', [
             'courses' => $courses,
             'levels' => User::allLevels(),
             'coursesList' => Course::orderBy('title')->get(),
+            'instrukturList' => User::where('role', User::ROLE_INSTRUKTUR)->orderBy('name')->get(),
         ]);
     }
 
@@ -142,5 +153,44 @@ class CourseManager extends Component
         Gate::authorize('manage', Course::class);
         $this->selectedCourseId = null;
         $this->resetPage();
+    }
+
+    // ── Instruktur Assignment Actions ────────────────────────────────────────
+
+    public function openAssignInstrukturModal(int $courseId): void
+    {
+        abort_unless(auth()->user()->isAdmin(), 403);
+        $this->assignCourseId = $courseId;
+
+        $course = Course::findOrFail($courseId);
+        // Pre-check already assigned instruktur
+        $this->selectedInstrukturIds = $course->instruktur()->pluck('users.id')->toArray();
+
+        $this->isAssignInstrukturModalOpen = true;
+    }
+
+    public function saveInstrukturAssignments(): void
+    {
+        abort_unless(auth()->user()->isAdmin(), 403);
+
+        if ($this->assignCourseId !== null) {
+            $course = Course::findOrFail($this->assignCourseId);
+
+            // Only sync instruktur roles to avoid detaching pesertas
+            $pesertaIds = $course->peserta()->pluck('users.id')->toArray();
+
+            $course->users()->sync(array_merge($pesertaIds, $this->selectedInstrukturIds));
+
+            $this->dispatch('notify', message: 'Instruktur assignment updated successfully.');
+        }
+
+        $this->closeAssignInstrukturModal();
+    }
+
+    public function closeAssignInstrukturModal(): void
+    {
+        $this->isAssignInstrukturModalOpen = false;
+        $this->assignCourseId = null;
+        $this->selectedInstrukturIds = [];
     }
 }

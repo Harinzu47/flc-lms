@@ -103,6 +103,7 @@ class Task extends Model
     {
         return self::query()
             ->whereNotNull('days_limit')
+            ->whereHas('module.course.users', fn ($q) => $q->where('users.id', $user->id))
             ->whereHas('userStarts', fn ($q) => $q->where('user_id', $user->id))
             ->with(['userStarts' => function ($query) use ($user) {
                 $query->where('user_id', $user->id);

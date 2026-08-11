@@ -45,4 +45,5 @@
     @include('livewire.admin.course.module-modal')
     @include('livewire.admin.course.material-modal')
     @include('livewire.admin.course.task-modal')
+    @include('livewire.admin.course.assign-instruktur-modal')
 </div>

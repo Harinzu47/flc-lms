@@ -132,6 +132,14 @@ class User extends Authenticatable
             ->withPivot('unlocked_at');
     }
 
+    /**
+     * The courses this user is enrolled in (peserta) or assigned to (instruktur).
+     */
+    public function courses(): BelongsToMany
+    {
+        return $this->belongsToMany(Course::class)->withTimestamps();
+    }
+
     // -------------------------------------------------------------------------
     // Gamification Helpers
     // -------------------------------------------------------------------------

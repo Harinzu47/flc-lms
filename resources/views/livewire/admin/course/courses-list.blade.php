@@ -59,6 +59,11 @@
                         </td>
                         <td class="px-6 py-4 text-right">
                             <div class="flex items-center justify-end gap-2">
+                                @if(auth()->user()->isAdmin())
+                                    <button wire:click="openAssignInstrukturModal({{ $crs->id }})" class="p-2 border border-slate-200 hover:bg-slate-50 text-slate-600 rounded-xl transition-all shadow-sm flex items-center justify-center" title="Assign Instruktur">
+                                        <span class="material-symbols-outlined text-base block">person_add</span>
+                                    </button>
+                                @endif
                                 <button wire:click="selectCourse({{ $crs->id }})" class="bg-primary hover:bg-primary-container text-on-primary hover:text-primary px-3 py-1.5 rounded-xl text-xs font-bold transition-all shadow-sm flex items-center gap-0.5">
                                     <span class="material-symbols-outlined text-sm">settings_input_composite</span>
                                     Builder
