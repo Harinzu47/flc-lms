@@ -46,6 +46,8 @@ class CourseManager extends Component
 
     public string $courseDifficultyLevel = 'beginner';
 
+    public string $courseKategoriBahasa = 'general';
+
     public ?int $courseMinLevelRequired = null;
 
     public ?int $coursePrerequisiteId = null;

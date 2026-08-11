@@ -68,6 +68,7 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
+        'peminatan_bahasa',
     ];
 
     /**

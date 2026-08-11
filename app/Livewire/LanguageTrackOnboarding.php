@@ -32,10 +32,9 @@ class LanguageTrackOnboarding extends Component
         ]);
 
         $this->isOpen = false;
-        $this->dispatch('notify', message: 'Peminatan bahasa berhasil disimpan!');
         
-        // Refresh the page so the library re-renders with the new tracks
-        $this->redirect(request()->header('Referer') ?? route('dashboard'), navigate: true);
+        // Force a hard reload so the UI and queries update correctly
+        $this->js('window.location.reload();');
     }
 
     public function render()

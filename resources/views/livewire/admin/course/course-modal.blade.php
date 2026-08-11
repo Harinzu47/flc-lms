@@ -40,15 +40,26 @@
                     </div>
                 </div>
 
-                <div>
-                    <label class="block text-sm font-bold font-headline text-on-surface mb-1">Prerequisite Course</label>
-                    <select wire:model="coursePrerequisiteId" class="w-full bg-surface-container-low border border-slate-200 rounded-xl px-4 py-2.5 text-sm focus:border-primary focus:ring-1 focus:ring-primary outline-none">
-                        <option value="">None</option>
-                        @foreach($coursesList as $c)
-                            <option value="{{ $c->id }}">{{ $c->title }}</option>
-                        @endforeach
-                    </select>
-                    @error('coursePrerequisiteId') <span class="text-xs text-error mt-1 block">{{ $message }}</span> @enderror
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-sm font-bold font-headline text-on-surface mb-1">Prerequisite Course</label>
+                        <select wire:model="coursePrerequisiteId" class="w-full bg-surface-container-low border border-slate-200 rounded-xl px-4 py-2.5 text-sm focus:border-primary focus:ring-1 focus:ring-primary outline-none">
+                            <option value="">None</option>
+                            @foreach($coursesList as $c)
+                                <option value="{{ $c->id }}">{{ $c->title }}</option>
+                            @endforeach
+                        </select>
+                        @error('coursePrerequisiteId') <span class="text-xs text-error mt-1 block">{{ $message }}</span> @enderror
+                    </div>
+                    <div>
+                        <label class="block text-sm font-bold font-headline text-on-surface mb-1">Kategori Bahasa</label>
+                        <select wire:model="courseKategoriBahasa" class="w-full bg-surface-container-low border border-slate-200 rounded-xl px-4 py-2.5 text-sm focus:border-primary focus:ring-1 focus:ring-primary outline-none">
+                            <option value="general">General (Semua Peminatan)</option>
+                            <option value="inggris">Bahasa Inggris</option>
+                            <option value="arab">Bahasa Arab</option>
+                        </select>
+                        @error('courseKategoriBahasa') <span class="text-xs text-error mt-1 block">{{ $message }}</span> @enderror
+                    </div>
                 </div>
 
                 <div class="flex items-center gap-2 pt-2">
