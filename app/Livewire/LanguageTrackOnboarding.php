@@ -9,6 +9,7 @@ use Livewire\Component;
 class LanguageTrackOnboarding extends Component
 {
     public array $selectedTracks = [];
+
     public bool $isOpen = false;
 
     public function mount(): void
@@ -23,6 +24,7 @@ class LanguageTrackOnboarding extends Component
     {
         if (empty($this->selectedTracks)) {
             $this->addError('selectedTracks', 'Silakan pilih setidaknya satu peminatan bahasa.');
+
             return;
         }
 
@@ -32,7 +34,7 @@ class LanguageTrackOnboarding extends Component
         ]);
 
         $this->isOpen = false;
-        
+
         // Force a hard reload so the UI and queries update correctly
         $this->js('window.location.reload();');
     }
