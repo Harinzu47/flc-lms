@@ -58,7 +58,13 @@ trait ManagesCourses
             Course::findOrFail($this->courseId)->update($data);
             $message = 'Course updated successfully.';
         } else {
-            Course::create($data);
+            $course = Course::create($data);
+
+            // Automatically assign the instructor to the course they just created
+            if (auth()->user() && auth()->user()->isInstruktur()) {
+                $course->users()->attach(auth()->id());
+            }
+
             $message = 'Course created successfully.';
         }
 
