@@ -71,6 +71,9 @@
                                 <button wire:click="editCourse({{ $crs->id }})" class="p-2 border border-slate-200 hover:bg-slate-50 text-slate-600 rounded-xl transition-all shadow-sm" title="Edit Course details">
                                     <span class="material-symbols-outlined text-base block">edit</span>
                                 </button>
+                                <button wire:click="deleteCourse({{ $crs->id }})" wire:confirm="Are you sure you want to delete this course? This action cannot be undone." class="p-2 border border-red-200 hover:bg-red-50 text-red-600 rounded-xl transition-all shadow-sm" title="Delete Course">
+                                    <span class="material-symbols-outlined text-base block">delete</span>
+                                </button>
                             </div>
                         </td>
                     </tr>

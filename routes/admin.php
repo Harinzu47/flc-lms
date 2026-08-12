@@ -26,6 +26,9 @@ Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () 
     // ── Instruktur Routes (Course & Grading) ─────────────────────────────
     Route::middleware('role:instruktur,admin')->group(function () {
         Route::get('/courses', CourseManager::class)->name('courses');
+    });
+
+    Route::middleware('role:instruktur')->group(function () {
         Route::get('/grading', GradingStation::class)->name('grading');
     });
 

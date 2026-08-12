@@ -42,6 +42,8 @@ class UserManager extends Component
 
     public string $role = 'peserta';
 
+    public array $peminatanBahasa = [];
+
     // ── Gamification Adjustment Fields ───────────────────────────────────────
     public int $xpDelta = 0;
 
@@ -93,6 +95,7 @@ class UserManager extends Component
         $this->name = $user->name;
         $this->email = $user->email;
         $this->role = $user->role;
+        $this->peminatanBahasa = $user->peminatan_bahasa ?? [];
         $this->selectedBadges = $user->badges()->pluck('badge_id')->map(fn ($id) => (string) $id)->toArray();
         $this->isModalOpen = true;
     }
@@ -105,6 +108,8 @@ class UserManager extends Component
             'email' => ['required', 'string', 'email', 'max:255', Rule::unique('users', 'email')->ignore($this->userId)],
             'role' => ['required', 'in:'.implode(',', User::ROLES)],
             'password' => [$this->userId ? 'nullable' : 'required', 'string', 'min:8'],
+            'peminatanBahasa' => ['nullable', 'array'],
+            'peminatanBahasa.*' => ['string', 'in:inggris,arab'],
         ]);
 
         $data = [
@@ -120,12 +125,14 @@ class UserManager extends Component
             $user = User::findOrFail($this->userId);
             $user->fill($data);
             $user->role = $this->role;
+            $user->peminatan_bahasa = $this->peminatanBahasa;
             $user->save();
             $message = 'User account updated successfully.';
         } else {
             $user = new User;
             $user->fill($data);
             $user->role = $this->role;
+            $user->peminatan_bahasa = $this->peminatanBahasa;
             $user->total_xp = 0;
             $user->save();
             $message = 'User account created successfully.';
@@ -228,6 +235,7 @@ class UserManager extends Component
         $this->email = '';
         $this->password = '';
         $this->role = 'peserta';
+        $this->peminatanBahasa = [];
         $this->xpDelta = 0;
         $this->xpReason = '';
         $this->selectedBadges = [];

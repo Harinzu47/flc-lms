@@ -404,6 +404,22 @@
                             @error('role') <span class="text-error text-xs block mt-1 font-medium">{{ $message }}</span> @enderror
                         </div>
 
+                        {{-- Peminatan Bahasa --}}
+                        <div class="space-y-2">
+                            <label class="block text-sm font-bold font-headline text-on-surface">Peminatan Bahasa (Language Tracks)</label>
+                            <div class="grid grid-cols-2 gap-4">
+                                <label class="flex items-center gap-3 p-3 border rounded-xl cursor-pointer transition-all hover:bg-slate-50 border-slate-200">
+                                    <input type="checkbox" wire:model="peminatanBahasa" value="inggris" class="w-4 h-4 text-primary border-slate-300 rounded focus:ring-primary focus:ring-2">
+                                    <span class="font-bold text-slate-800 text-sm">Bahasa Inggris</span>
+                                </label>
+                                <label class="flex items-center gap-3 p-3 border rounded-xl cursor-pointer transition-all hover:bg-slate-50 border-slate-200">
+                                    <input type="checkbox" wire:model="peminatanBahasa" value="arab" class="w-4 h-4 text-primary border-slate-300 rounded focus:ring-primary focus:ring-2">
+                                    <span class="font-bold text-slate-800 text-sm">Bahasa Arab</span>
+                                </label>
+                            </div>
+                            @error('peminatanBahasa') <span class="text-error text-xs block mt-1 font-medium">{{ $message }}</span> @enderror
+                        </div>
+
                         {{-- Password --}}
                         <div class="space-y-2">
                             <label for="input-password" class="block text-sm font-bold font-headline text-on-surface">
