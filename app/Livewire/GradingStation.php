@@ -80,6 +80,7 @@ class GradingStation extends Component
     public function toggleFlag(int $id): void
     {
         $submission = Submission::findOrFail($id);
+        Gate::authorize('grade', $submission);
 
         if (! $submission->is_flagged) {
             // Validate that reviewComment is required, string, and of appropriate length
@@ -121,6 +122,8 @@ class GradingStation extends Component
         if ($this->selectedSubmission === null) {
             return;
         }
+
+        Gate::authorize('grade', $this->selectedSubmission);
 
         $submissionId = $this->selectedSubmission->id;
 

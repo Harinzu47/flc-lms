@@ -22,11 +22,14 @@ class LanguageTrackOnboarding extends Component
 
     public function save(): void
     {
-        if (empty($this->selectedTracks)) {
-            $this->addError('selectedTracks', 'Silakan pilih setidaknya satu peminatan bahasa.');
-
-            return;
-        }
+        $this->validate([
+            'selectedTracks' => ['required', 'array', 'min:1'],
+            'selectedTracks.*' => ['string', 'in:inggris,arab'],
+        ], [
+            'selectedTracks.required' => 'Silakan pilih setidaknya satu peminatan bahasa.',
+            'selectedTracks.min' => 'Silakan pilih setidaknya satu peminatan bahasa.',
+            'selectedTracks.*.in' => 'Peminatan bahasa yang dipilih tidak valid.',
+        ]);
 
         $user = auth()->user();
         $user->update([

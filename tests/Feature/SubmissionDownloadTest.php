@@ -23,8 +23,8 @@ final class SubmissionDownloadTest extends TestCase
     public function test_admin_can_download_any_student_submission(): void
     {
         // Arrange
-        $admin = User::factory()->create(['role' => 'instruktur']);
-        $student = User::factory()->create(['role' => 'peserta']);
+        $admin = User::factory()->create(['role' => User::ROLE_ADMIN]);
+        $student = User::factory()->create(['role' => User::ROLE_PESERTA]);
 
         $filePath = 'submissions/sample.pdf';
         Storage::disk('local')->put($filePath, 'sample content');
@@ -41,6 +41,48 @@ final class SubmissionDownloadTest extends TestCase
         // Assert
         $response->assertStatus(200);
         $this->assertEquals('sample content', $response->streamedContent());
+    }
+
+    public function test_assigned_instructor_can_download_student_submission(): void
+    {
+        $instruktur = User::factory()->create(['role' => User::ROLE_INSTRUKTUR]);
+        $student = User::factory()->create(['role' => User::ROLE_PESERTA]);
+
+        $filePath = 'submissions/instructor_sample.pdf';
+        Storage::disk('local')->put($filePath, 'instructor sample');
+
+        $submission = Submission::factory()->create([
+            'user_id' => $student->id,
+            'file_url' => $filePath,
+        ]);
+
+        $course = $submission->task->module->course;
+        $course->users()->attach($instruktur->id);
+
+        $response = $this->actingAs($instruktur)
+            ->get(route('submissions.download', $submission));
+
+        $response->assertStatus(200);
+        $this->assertEquals('instructor sample', $response->streamedContent());
+    }
+
+    public function test_unassigned_instructor_cannot_download_student_submission(): void
+    {
+        $instruktur = User::factory()->create(['role' => User::ROLE_INSTRUKTUR]);
+        $student = User::factory()->create(['role' => User::ROLE_PESERTA]);
+
+        $filePath = 'submissions/other_course.pdf';
+        Storage::disk('local')->put($filePath, 'other course content');
+
+        $submission = Submission::factory()->create([
+            'user_id' => $student->id,
+            'file_url' => $filePath,
+        ]);
+
+        $response = $this->actingAs($instruktur)
+            ->get(route('submissions.download', $submission));
+
+        $response->assertStatus(403);
     }
 
     public function test_student_can_download_their_own_submission(): void

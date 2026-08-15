@@ -92,21 +92,15 @@ final class CourseManagerTest extends TestCase
         $this->assertEquals(1, $module2->fresh()->sort_order);
     }
 
-    public function test_deleting_material_cleans_up_related_xp_logs(): void
+    public function test_deleting_material_preserves_historical_xp_logs(): void
     {
-        $admin = User::factory()->create(['role' => 'instruktur']);
+        $admin = User::factory()->create(['role' => 'admin']);
         $student = User::factory()->create(['role' => 'peserta']);
 
-        $course = Course::create(['title' => 'Test', 'difficulty_level' => 'beginner']);
-        $module = Module::create(['course_id' => $course->id, 'title' => 'M1', 'sort_order' => 1]);
-        $material = Material::create([
-            'module_id' => $module->id,
-            'title' => 'Readings',
-            'type' => 'article',
-            'xp_reward' => 10,
-        ]);
+        $course = Course::create(['title' => 'Sample Course', 'difficulty_level' => 'beginner']);
+        $module = Module::create(['course_id' => $course->id, 'title' => 'Sample Module', 'sort_order' => 1]);
+        $material = Material::create(['module_id' => $module->id, 'title' => 'Sample Material', 'type' => 'document']);
 
-        // Simulate student reading material and earning XP
         XpLog::create([
             'user_id' => $student->id,
             'action' => 'material_read',
@@ -125,8 +119,8 @@ final class CourseManagerTest extends TestCase
 
         $this->assertDatabaseMissing('materials', ['id' => $material->id]);
 
-        // Verify that XpLog is also deleted (cascaded by static model listener)
-        $this->assertDatabaseMissing('xp_logs', [
+        // Verify that XpLog is preserved as an append-only audit trail
+        $this->assertDatabaseHas('xp_logs', [
             'action' => 'material_read',
             'reference_id' => $material->id,
         ]);

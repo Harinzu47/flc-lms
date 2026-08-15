@@ -46,8 +46,8 @@ Route::middleware(['auth', 'role:peserta'])->group(function () {
     Route::get('/leaderboard', HallOfFame::class)->name('leaderboard');
 });
 
-// ── Submission Downloads (peserta owns, instruktur grades) ────────────────
-Route::middleware(['auth', 'role:peserta,instruktur'])->group(function () {
+// ── Submission Downloads (peserta owns, instruktur grades, admin audits) ───
+Route::middleware(['auth', 'role:peserta,instruktur,admin'])->group(function () {
     Route::get('/submissions/{submission}/download', [SubmissionDownloadController::class, 'download'])
         ->name('submissions.download');
 });

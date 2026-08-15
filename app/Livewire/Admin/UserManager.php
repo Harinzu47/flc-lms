@@ -216,6 +216,18 @@ class UserManager extends Component
 
     public function delete(User $user): void
     {
+        if ($user->id === auth()->id()) {
+            $this->dispatch('notify', message: 'Anda tidak dapat menghapus akun Anda sendiri.');
+
+            return;
+        }
+
+        if ($user->isAdmin() && User::where('role', User::ROLE_ADMIN)->count() <= 1) {
+            $this->dispatch('notify', message: 'Tidak dapat menghapus admin terakhir pada sistem.');
+
+            return;
+        }
+
         $user->delete();
         $this->resetPage();
         $this->dispatch('notify', message: "User '{$user->name}' has been removed.");
