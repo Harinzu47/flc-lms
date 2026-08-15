@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Livewire\Admin\Concerns;
 
-use App\Models\Course;
 use App\Models\Material;
 use App\Models\Module;
 use App\Models\Task;

@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Tests\Feature;
 
-use App\Actions\LMS\GradeSubmissionAction;
 use App\Livewire\Admin\CourseManager;
 use App\Livewire\Admin\UserManager;
 use App\Livewire\GamifiedDashboard;
