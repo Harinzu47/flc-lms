@@ -90,7 +90,7 @@
         </table>
     </div>
 
-    @if($courses instanceof \Illuminate\Contracts\Pagination\Paginator && $courses->hasPages())
+    @if($courses instanceof \Illuminate\Pagination\AbstractPaginator && $courses->hasPages())
         <div class="px-6 py-4 border-t border-outline-variant/10">
             {{ $courses->links() }}
         </div>

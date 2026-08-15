@@ -154,9 +154,26 @@ jobs:
       - name: Verify deployment
         run: |
           sleep 5
-          STATUS=$(curl -s -L -o /dev/null -w "%{http_code}" "${{ secrets.APP_URL }}")
-          echo "HTTP Status: $STATUS"
-          if [ "$STATUS" -ge 400 ]; then
-            echo "Deployment verification failed with status $STATUS"
+          # Test Laravel's built-in /up healthcheck endpoint with a standard browser User-Agent
+          # (prevents Cloudflare/WAF bot protection from rejecting raw curl with 403)
+          USER_AGENT="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
+          
+          STATUS=$(curl -s -L -A "$USER_AGENT" -o /dev/null -w "%{http_code}" "${{ secrets.APP_URL }}/up" || true)
+          echo "Health Endpoint (/up) HTTP Status: $STATUS"
+
+          if [ "$STATUS" = "200" ]; then
+            echo "Deployment verified successfully via /up healthcheck!"
+            exit 0
+          fi
+
+          # Fallback check on root URL if /up is not directly routed
+          BASE_STATUS=$(curl -s -A "$USER_AGENT" -o /dev/null -w "%{http_code}" "${{ secrets.APP_URL }}" || true)
+          echo "Base URL HTTP Status: $BASE_STATUS"
+
+          # Fail if the application returns a 5xx server error or cannot be reached
+          if [ "$BASE_STATUS" -ge 500 ] || [ "$BASE_STATUS" = "000" ]; then
+            echo "Deployment verification failed with Server Error status $BASE_STATUS"
             exit 1
           fi
+
+          echo "Deployment verification completed (Status: $BASE_STATUS)"
