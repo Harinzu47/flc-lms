@@ -67,7 +67,7 @@ jobs:
           cache: "npm"
 
       - name: Install npm dependencies
-        run: npm install
+        run: npm ci
 
       - name: Build frontend assets (sanity check)
         run: npm run build
@@ -139,17 +139,24 @@ jobs:
             cd ~/apps/flc-lms
             git pull origin main
             docker compose -f docker-compose.prod.yml build
-            docker compose -f docker-compose.prod.yml up -d
-            echo "Waiting for app to be healthy..."
-            sleep 10
+            docker compose -f docker-compose.prod.yml up -d --remove-orphans
+            echo "Waiting for app container to be healthy..."
+            for i in $(seq 1 12); do
+              if docker ps --filter name=flc-app --filter health=healthy | grep -q flc-app; then
+                echo "Container flc-app is healthy!"
+                break
+              fi
+              echo "Waiting for healthcheck ($i/12)..."
+              sleep 5
+            done
             docker ps --filter name=flc-app --filter health=healthy | grep flc-app
 
       - name: Verify deployment
         run: |
           sleep 5
-          STATUS=$(curl -s -o /dev/null -w "%{http_code}" "${{ secrets.APP_URL }}")
+          STATUS=$(curl -s -L -o /dev/null -w "%{http_code}" "${{ secrets.APP_URL }}")
           echo "HTTP Status: $STATUS"
-          if [ "$STATUS" -ge 500 ]; then
+          if [ "$STATUS" -ge 400 ]; then
             echo "Deployment verification failed with status $STATUS"
             exit 1
           fi
