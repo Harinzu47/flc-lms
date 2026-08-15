@@ -19,7 +19,7 @@ trait ManagesCourses
 
     public function editCourse(Course $course): void
     {
-        Gate::authorize('manage', Course::class);
+        Gate::authorize('manage', $course);
         $this->resetCourseForm();
         $this->courseId = $course->id;
         $this->courseTitle = $course->title;
@@ -34,7 +34,13 @@ trait ManagesCourses
 
     public function saveCourse(): void
     {
-        Gate::authorize('manage', Course::class);
+        if ($this->courseId !== null) {
+            $course = Course::findOrFail($this->courseId);
+            Gate::authorize('manage', $course);
+        } else {
+            Gate::authorize('manage', Course::class);
+        }
+
         $this->validate([
             'courseTitle' => ['required', 'string', 'max:255'],
             'courseDescription' => ['nullable', 'string', 'max:1000'],
@@ -74,7 +80,7 @@ trait ManagesCourses
 
     public function deleteCourse(Course $course): void
     {
-        Gate::authorize('manage', Course::class);
+        Gate::authorize('manage', $course);
         DB::transaction(function () use ($course): void {
             $course->delete();
         });

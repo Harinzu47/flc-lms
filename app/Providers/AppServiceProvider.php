@@ -50,24 +50,20 @@ class AppServiceProvider extends ServiceProvider
 
         Livewire::listen('component.dehydrate', function ($component, $context) {
             if (auth()->check()) {
-                static $pending = null;
-                static $dispatched = false;
+                $pending = PendingCelebration::where('user_id', auth()->id())->get();
 
-                if ($pending === null) {
-                    $pending = PendingCelebration::where('user_id', auth()->id())->get();
-                }
-
-                if (! $dispatched && $pending->isNotEmpty()) {
+                if ($pending->isNotEmpty()) {
                     foreach ($pending as $item) {
-                        $payload = $item->payload;
+                        $payload = $item->payload ?? [];
                         if ($item->type === 'badge-unlocked') {
                             $component->dispatch('badge-unlocked', name: $payload['name'] ?? '', description: $payload['description'] ?? '', icon: $payload['icon'] ?? '');
                         } elseif ($item->type === 'level-up') {
                             $component->dispatch('level-up', levelName: $payload['levelName'] ?? '', targetXp: $payload['targetXp'] ?? 0);
+                        } elseif ($item->type === 'rank_progress') {
+                            $component->dispatch('rank_progress', xp_gap: $payload['xp_gap'] ?? 0, target_rank: $payload['target_rank'] ?? 0);
                         }
                         $item->delete();
                     }
-                    $dispatched = true;
                 }
             }
         });

@@ -13,14 +13,15 @@ trait ManagesModules
 {
     public function createModule(): void
     {
-        Gate::authorize('manage', Course::class);
+        $course = Course::findOrFail($this->selectedCourseId);
+        Gate::authorize('manage', $course);
         $this->resetModuleForm();
         $this->isModuleModalOpen = true;
     }
 
     public function editModule(Module $module): void
     {
-        Gate::authorize('manage', Course::class);
+        Gate::authorize('manage', $module->course);
         $this->resetModuleForm();
         $this->moduleId = $module->id;
         $this->moduleTitle = $module->title;
@@ -31,7 +32,9 @@ trait ManagesModules
 
     public function saveModule(): void
     {
-        Gate::authorize('manage', Course::class);
+        $course = Course::findOrFail($this->selectedCourseId);
+        Gate::authorize('manage', $course);
+
         $this->validate([
             'moduleTitle' => ['required', 'string', 'max:255'],
             'moduleDescription' => ['nullable', 'string', 'max:1000'],
@@ -59,7 +62,7 @@ trait ManagesModules
 
     public function deleteModule(Module $module): void
     {
-        Gate::authorize('manage', Course::class);
+        Gate::authorize('manage', $module->course);
         DB::transaction(function () use ($module): void {
             $module->delete();
         });
@@ -69,7 +72,7 @@ trait ManagesModules
 
     public function moveModuleUp(Module $module): void
     {
-        Gate::authorize('manage', Course::class);
+        Gate::authorize('manage', $module->course);
         DB::transaction(function () use ($module) {
             $previousModule = Module::query()
                 ->where('course_id', $module->course_id)
@@ -88,7 +91,7 @@ trait ManagesModules
 
     public function moveModuleDown(Module $module): void
     {
-        Gate::authorize('manage', Course::class);
+        Gate::authorize('manage', $module->course);
         DB::transaction(function () use ($module) {
             $nextModule = Module::query()
                 ->where('course_id', $module->course_id)

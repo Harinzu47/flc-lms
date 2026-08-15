@@ -6,6 +6,7 @@ namespace App\Livewire\Admin\Concerns;
 
 use App\Models\Course;
 use App\Models\Material;
+use App\Models\Module;
 use App\Models\Task;
 use Illuminate\Support\Facades\Gate;
 
@@ -14,7 +15,8 @@ trait ManagesMaterialsAndTasks
     // ── Material CRUD Actions ────────────────────────────────────────────────
     public function createMaterial(int $moduleId): void
     {
-        Gate::authorize('manage', Course::class);
+        $module = Module::findOrFail($moduleId);
+        Gate::authorize('manage', $module->course);
         $this->resetMaterialForm();
         $this->materialModuleId = $moduleId;
         $this->isMaterialModalOpen = true;
@@ -22,7 +24,7 @@ trait ManagesMaterialsAndTasks
 
     public function editMaterial(Material $material): void
     {
-        Gate::authorize('manage', Course::class);
+        Gate::authorize('manage', $material->module->course);
         $this->resetMaterialForm();
         $this->materialId = $material->id;
         $this->materialModuleId = $material->module_id;
@@ -36,7 +38,9 @@ trait ManagesMaterialsAndTasks
 
     public function saveMaterial(): void
     {
-        Gate::authorize('manage', Course::class);
+        $module = Module::findOrFail($this->materialModuleId);
+        Gate::authorize('manage', $module->course);
+
         $this->validate([
             'materialTitle' => ['required', 'string', 'max:255'],
             'materialDescription' => ['nullable', 'string', 'max:20000'],
@@ -68,7 +72,7 @@ trait ManagesMaterialsAndTasks
 
     public function deleteMaterial(Material $material): void
     {
-        Gate::authorize('manage', Course::class);
+        Gate::authorize('manage', $material->module->course);
         $material->delete();
         $this->dispatch('notify', message: 'Material deleted.');
     }
@@ -94,7 +98,8 @@ trait ManagesMaterialsAndTasks
     // ── Task CRUD Actions ────────────────────────────────────────────────────
     public function createTask(int $moduleId): void
     {
-        Gate::authorize('manage', Course::class);
+        $module = Module::findOrFail($moduleId);
+        Gate::authorize('manage', $module->course);
         $this->resetTaskForm();
         $this->taskModuleId = $moduleId;
         $this->isTaskModalOpen = true;
@@ -102,7 +107,7 @@ trait ManagesMaterialsAndTasks
 
     public function editTask(Task $task): void
     {
-        Gate::authorize('manage', Course::class);
+        Gate::authorize('manage', $task->module->course);
         $this->resetTaskForm();
         $this->taskId = $task->id;
         $this->taskModuleId = $task->module_id;
@@ -116,7 +121,9 @@ trait ManagesMaterialsAndTasks
 
     public function saveTask(): void
     {
-        Gate::authorize('manage', Course::class);
+        $module = Module::findOrFail($this->taskModuleId);
+        Gate::authorize('manage', $module->course);
+
         $this->validate([
             'taskTitle' => ['required', 'string', 'max:255'],
             'taskDescription' => ['required', 'string', 'max:2000'],
@@ -148,7 +155,7 @@ trait ManagesMaterialsAndTasks
 
     public function deleteTask(Task $task): void
     {
-        Gate::authorize('manage', Course::class);
+        Gate::authorize('manage', $task->module->course);
         $task->delete();
         $this->dispatch('notify', message: 'Task deleted.');
     }

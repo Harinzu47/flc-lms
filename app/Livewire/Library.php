@@ -73,6 +73,11 @@ class Library extends Component
             abort(403, 'Akses Ditolak: Anda belum memenuhi syarat untuk mengambil peminatan ini.');
         }
 
+        // Security check: Ensure language track matches student's profile
+        if ($user->isPeserta() && $course->kategori_bahasa !== 'general' && ! $user->hasLanguageTrack($course->kategori_bahasa)) {
+            abort(403, 'Akses Ditolak: Peminatan bahasa tidak sesuai dengan profil Anda.');
+        }
+
         // Attach user to course (using syncWithoutDetaching to prevent duplicates)
         $user->courses()->syncWithoutDetaching([$course->id]);
 

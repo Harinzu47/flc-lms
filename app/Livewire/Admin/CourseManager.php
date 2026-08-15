@@ -145,7 +145,8 @@ class CourseManager extends Component
     // ── Navigation Actions ───────────────────────────────────────────────────
     public function selectCourse(int $id): void
     {
-        Gate::authorize('manage', Course::class);
+        $course = Course::findOrFail($id);
+        Gate::authorize('manage', $course);
         $this->selectedCourseId = $id;
         $this->resetPage();
     }

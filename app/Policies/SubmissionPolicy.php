@@ -17,11 +17,25 @@ final class SubmissionPolicy
      */
     public function view(User $user, ?Submission $submission = null): bool
     {
+        if ($user->isAdmin()) {
+            return true;
+        }
+
         if ($submission === null) {
             return $user->isInstruktur();
         }
 
-        return $user->id === $submission->user_id || $user->isInstruktur();
+        if ($user->id === $submission->user_id) {
+            return true;
+        }
+
+        if ($user->isInstruktur()) {
+            $course = $submission->task?->module?->course;
+
+            return $course !== null && $course->isEnrolledByUser($user);
+        }
+
+        return false;
     }
 
     /**
@@ -29,6 +43,20 @@ final class SubmissionPolicy
      */
     public function grade(User $user, ?Submission $submission = null): bool
     {
-        return $user->isInstruktur();
+        if ($user->isAdmin()) {
+            return true;
+        }
+
+        if (! $user->isInstruktur()) {
+            return false;
+        }
+
+        if ($submission === null) {
+            return true;
+        }
+
+        $course = $submission->task?->module?->course;
+
+        return $course !== null && $course->isEnrolledByUser($user);
     }
 }

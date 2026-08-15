@@ -22,18 +22,30 @@ class GamifiedDashboard extends Component
 
     public string $activeTab = 'overview';
 
+    public function mount(): void
+    {
+        /** @var User|null $user */
+        $user = auth()->user();
+
+        if ($user !== null) {
+            if ($user->isInstruktur()) {
+                $this->redirectRoute('admin.courses');
+
+                return;
+            }
+
+            if ($user->isAdmin()) {
+                $this->redirectRoute('admin.users');
+
+                return;
+            }
+        }
+    }
+
     public function render(): View
     {
         /** @var User $user */
         $user = auth()->user();
-
-        if ($user->isInstruktur()) {
-            return redirect()->route('admin.courses');
-        }
-
-        if ($user->isAdmin()) {
-            return redirect()->route('admin.users');
-        }
 
         if ($user->isBph()) {
             return $this->renderAdminDashboard($user);
