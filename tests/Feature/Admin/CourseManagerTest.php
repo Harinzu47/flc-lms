@@ -159,4 +159,21 @@ final class CourseManagerTest extends TestCase
 
         $this->assertTrue($course->instruktur()->where('users.id', $instruktur->id)->exists());
     }
+
+    public function test_admin_cannot_assign_non_instruktur_to_course(): void
+    {
+        $admin = User::factory()->create(['role' => 'admin']);
+        $peserta = User::factory()->create(['role' => 'peserta']);
+
+        $course = Course::create(['title' => 'Chemistry 101', 'difficulty_level' => 'beginner']);
+
+        Livewire::actingAs($admin)
+            ->test(CourseManager::class)
+            ->call('openAssignInstrukturModal', $course->id)
+            ->set('selectedInstrukturIds', [$peserta->id])
+            ->call('saveInstrukturAssignments')
+            ->assertHasErrors(['selectedInstrukturIds.0' => 'exists']);
+
+        $this->assertFalse($course->instruktur()->where('users.id', $peserta->id)->exists());
+    }
 }

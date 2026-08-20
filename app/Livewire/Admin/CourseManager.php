@@ -176,6 +176,11 @@ class CourseManager extends Component
     {
         abort_unless(auth()->user()->isAdmin(), 403);
 
+        $this->validate([
+            'selectedInstrukturIds' => 'array',
+            'selectedInstrukturIds.*' => 'exists:users,id,role,'.User::ROLE_INSTRUKTUR,
+        ]);
+
         if ($this->assignCourseId !== null) {
             $course = Course::findOrFail($this->assignCourseId);
 
