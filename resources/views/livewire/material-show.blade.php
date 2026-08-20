@@ -105,10 +105,10 @@
 
             {{-- ── Rich Text Content ───────────────────────────────── --}}
             <section class="prose prose-indigo max-w-none">
-                {!! \Illuminate\Support\Str::markdown($material->description ?? '', [
+                {!! \Stevebauman\Purify\Facades\Purify::clean(\Illuminate\Support\Str::markdown($material->description ?? '', [
     'html_input' => 'escape',
     'allow_unsafe_links' => false,
-]) !!}
+])) !!}
             </section>
 
             {{-- ── Bottom Resource Card (Hybrid Lesson attachment) ───────────────── --}}
