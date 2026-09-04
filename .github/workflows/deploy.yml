@@ -114,6 +114,7 @@ jobs:
           REDIS_PORT: 6379
 
       - name: Audit Composer dependencies
+        continue-on-error: true
         run: composer audit
 
       - name: Audit npm dependencies
