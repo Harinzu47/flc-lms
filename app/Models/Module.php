@@ -88,41 +88,35 @@ class Module extends Model
     {
         // Check Materials
         $materials = $this->materials;
-        foreach ($materials as $material) {
-            if ($readMaterialIds !== null) {
-                if (! $readMaterialIds->contains($material->id)) {
-                    return false;
-                }
-            } else {
-                $hasRead = XpLog::query()
-                    ->where('user_id', $user->id)
-                    ->where('action', 'material_read')
-                    ->where('reference_id', $material->id)
-                    ->exists();
 
-                if (! $hasRead) {
-                    return false;
-                }
+        if ($readMaterialIds === null && $materials->isNotEmpty()) {
+            $readMaterialIds = XpLog::query()
+                ->where('user_id', $user->id)
+                ->where('action', 'material_read')
+                ->whereIn('reference_id', $materials->pluck('id'))
+                ->pluck('reference_id');
+        }
+
+        foreach ($materials as $material) {
+            if (! $readMaterialIds->contains($material->id)) {
+                return false;
             }
         }
 
         // Check Tasks
         $tasks = $this->tasks;
-        foreach ($tasks as $task) {
-            if ($gradedTaskIds !== null) {
-                if (! $gradedTaskIds->contains($task->id)) {
-                    return false;
-                }
-            } else {
-                $isGraded = Submission::query()
-                    ->where('user_id', $user->id)
-                    ->where('task_id', $task->id)
-                    ->where('status', 'graded')
-                    ->exists();
 
-                if (! $isGraded) {
-                    return false;
-                }
+        if ($gradedTaskIds === null && $tasks->isNotEmpty()) {
+            $gradedTaskIds = Submission::query()
+                ->where('user_id', $user->id)
+                ->whereIn('task_id', $tasks->pluck('id'))
+                ->where('status', 'graded')
+                ->pluck('task_id');
+        }
+
+        foreach ($tasks as $task) {
+            if (! $gradedTaskIds->contains($task->id)) {
+                return false;
             }
         }
 
